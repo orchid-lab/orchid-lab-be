@@ -1,0 +1,44 @@
+﻿version: "3.8"
+
+services:
+  orchid-backend-net.api:
+    image: ${DOCKER_REGISTRY:-orchidbackendnetapi}
+    build:
+      context: .
+      dockerfile: orchid-backend-net.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_HTTP_PORTS=8080
+      - REDIS_HOST=orchid-redis
+      - GMAIL_CLIENT_ID=${GMAIL_CLIENT_ID}
+      - GMAIL_CLIENT_SECRET=${GMAIL_CLIENT_SECRET}
+      - GMAIL_REFRESH_TOKEN=${GMAIL_REFRESH_TOKEN}
+      - GMAIL_EMAIL=${GMAIL_EMAIL}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      - orchid-redis
+    networks:
+      - sep-orchid-lab-network
+    restart: always
+
+  orchid-redis:
+    image: redis:latest
+    command: redis-server --requirepass "0911861612Val@"
+    volumes:
+      - redis-data:/data
+    networks:
+      - sep-orchid-lab-network
+    restart: always
+
+networks:
+  sep-orchid-lab-network:
+    external: true
+    driver: bridge
+
+volumes:
+  redis-data:
+    driver: local

@@ -1,0 +1,317 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Báo cáo Nhật ký Thí nghiệm</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+            margin-top: 25px;
+        }
+
+        h1 {
+            font-size: 2em;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 1.5em;
+            color: #2980b9;
+        }
+
+        h3 {
+            font-size: 1.2em;
+            color: #34495e;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .note {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+
+        .status-true {
+            color: green;
+            font-weight: bold;
+        }
+
+        .status-false {
+            color: red;
+        }
+
+        .stage-container {
+            margin-bottom: 40px;
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Nhật ký Thí nghiệm {{experimentLog.Name}}</h1>
+
+        <!-- 🔹 Section: Thông tin chung -->
+        <div id="section-general">
+            <h2>Thông tin chung</h2>
+            <table>
+                <tr>
+                    <th>Mục</th>
+                    <th>Chi tiết</th>
+                </tr>
+                <tr>
+                    <td>Nghiên cứu sinh</td>
+                    <td>{{experimentLog.Create_by}}</td>
+                </tr>
+                <tr>
+                    <td>Kỹ thuật viên</td>
+                    <td>
+                        {{ for tech in technicianNames }}
+                        {{ tech }}{{ if !for.last }}, {{ end }}
+                        {{ end }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Ngày bắt đầu</td>
+                    <td>{{experimentLog.Create_date}}</td>
+                </tr>
+                <tr>
+                    <td>Ngày kết thúc dự kiến</td>
+                    <td>{{experimentLog.End_date}}</td>
+                </tr>
+                <tr>
+                    <td>Ngày kết thúc thực tế</td>
+                    <td>{{ experimentLog.Update_date }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- 🔹 Section: Cây giống -->
+        <div id="section-samples">
+            <h2>Cây giống</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên Local</th>
+                        <th>Tên Khoa học</th>
+                        <th>Đặc điểm</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ for seedling in seedlings }}
+                    <tr>
+                        <td>{{ seedling.LocalName }}</td>
+                        <td>{{ seedling.ScientificName }}</td>
+                        <td>
+                            {{ if seedling.Characteristics && seedling.Characteristics.size > 0 }}
+                            <ul>
+                                {{ for c in seedling.Characteristics }}
+                                <li>{{c.SeedlingAttribute.Name}}: {{ c.Value }}</li>
+                                {{ end }}
+                            </ul>
+                            {{ else }}
+                            <em>Không có đặc điểm</em>
+                            {{ end }}
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 🔹 Section: Quy trình -->
+        <div id="section-method">
+            <h2>Quy trình {{ method.Name }}</h2>
+            <table>
+                <tr>
+                    <th>Tên Quy trình</th>
+                    <th>Tổng số ngày dự kiến</th>
+                </tr>
+                {{for s in method.Stages}}
+                <tr>
+                    <td>{{ s.Name }}</td>
+                    <td>{{ s.DateOfProcessing }}</td>
+                </tr>
+                {{end}}
+            </table>
+        </div>
+
+        <!-- 🔹 Section: Các giai đoạn với công việc và sample tương ứng -->
+        {{ for stage in method.Stages }}
+        <div class="stage-container">
+            <h2>Giai đoạn {{ stage.Step }}: {{ stage.Name }}</h2>
+            <p class="note">Số ngày dự kiến: {{ stage.DateOfProcessing }}</p>
+
+            <!-- Nguyên vật liệu -->
+            <h3>Nguyên vật liệu</h3>
+            <table>
+                <tr>
+                    <th>Tên</th>
+                    <th>Đơn vị</th>
+                </tr>
+                {{ for e in stage.ElementInStage }}
+                <tr>
+                    <td>{{ e.Elements.Name }}</td>
+                    <td>{{ e.Elements.Description }}</td>
+                </tr>
+                {{ end }}
+            </table>
+
+            <!-- Công việc trong giai đoạn này -->
+            <h3>Công việc đã được giao</h3>
+            {{ if stage.Tasks && stage.Tasks.size > 0 }}
+            <table>
+                <tr>
+                    <th>Tên công việc</th>
+                    <th>Người nhận công việc</th>
+                    <th>Ngày giao</th>
+                    <th>Thời điểm hoàn thành</th>
+                    <th>Tên thuộc tính</th>
+                    <th>Số lượng</th>
+                    <th>Đơn vị</th>
+                </tr>
+
+                {{ for task in stage.Tasks }}
+                <tr>
+                    <td rowspan="{{ task.Attributes.size }}">{{ task.TaskName }}</td>
+                    <td rowspan="{{ task.Attributes.size }}">{{ task.AssignedTo }}</td>
+                    <td rowspan="{{ task.Attributes.size }}">{{ task.AssignedDate }}</td>
+                    <td rowspan="{{ task.Attributes.size }}">{{ task.CompletedDate }}</td>
+
+                    <!-- phần tử Attribute đầu tiên -->
+                    <td>{{ task.Attributes[0].Name }}</td>
+                    <td>{{ task.Attributes[0].Value }}</td>
+                    <td>{{ task.Attributes[0].Unit }}</td>
+                </tr>
+
+                <!-- các phần tử Attribute còn lại -->
+                {{ for attr in task.Attributes offset:1 }}
+                <tr>
+                    <td>{{ attr.Name }}</td>
+                    <td>{{ attr.Value }}</td>
+                    <td>{{ attr.Unit }}</td>
+                </tr>
+                {{ end }}
+                {{ end }}
+            </table>
+            {{ else }}
+            <p class="note">Không có công việc nào trong giai đoạn này.</p>
+            {{ end }}
+
+            <!-- Sample trong giai đoạn này -->
+            <h3>Sample</h3>
+            {{ if stage.Samples && stage.Samples.size > 0 }}
+            <table>
+                <tr>
+                    <th rowspan="2">Tên Sample</th>
+                    <th rowspan="2">Khỏe mạnh</th>
+                    <th colspan="6">Báo cáo</th>
+                </tr>
+                <tr>
+                    <th>Ngày tạo</th>
+                    <th>Tên dữ liệu tham chiếu</th>
+                    <th>Max</th>
+                    <th>Min</th>
+                    <th>Dữ liệu thực tế</th>
+                    <th>Đơn vị</th>
+                </tr>
+
+                {{ for sample in stage.Samples }}
+                {{ for report in sample.Reports }}
+                <tr>
+                    {{ if for.first }}
+                    <td rowspan="{{ sample.Reports.size }}">{{ sample.SampleName }}</td>
+                    <td rowspan="{{ sample.Reports.size }}" class="{{ if sample.IsInfected }}status-false{{ else }}status-true{{ end }}">
+                        {{ if sample.IsInfected }}Không khỏe{{ else }}Khỏe{{ end }}
+                    </td>
+                    {{ end }}
+                    <td>{{ report.CreatedDate }}</td>
+                    <td>{{ report.ReferenceName }}</td>
+                    <td>{{ report.Max }}</td>
+                    <td>{{ report.Min }}</td>
+                    <td>{{ report.Actual }}</td>
+                    <td>{{ report.Unit }}</td>
+                </tr>
+                {{ end }}
+                {{ end }}
+            </table>
+            {{ else }}
+            <p class="note">Không có sample nào trong giai đoạn này.</p>
+            {{ end }}
+        </div>
+        {{ end }}
+
+        <!-- 🔹 Section: Thống kê -->
+        <div id="section-summary">
+            <h2>Thống kê</h2>
+            <table>
+                <tr>
+                    <th>Mục</th>
+                    <th>Tổng</th>
+                    <th>Đúng hạn</th>
+                    <th>Trễ hạn</th>
+                    <th>Bị hủy</th>
+                </tr>
+                <tr>
+                    <td>Tổng task</td>
+                    <td>{{TotalTasks}}</td>
+                    <td>{{TasksOnTime}}</td>
+                    <td>{{TasksLate}}</td>
+                    <td>{{TasksCancelled}}</td>
+                </tr>
+                <tr>
+                    <td>Tổng sample</td>
+                    <td>{{TotalSamples}}</td>
+                    <td>{{SamplesCompleted}}</td>
+                    <td>{{SamplesSick}}</td>
+                    <td>{{SamplesCancelled}}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

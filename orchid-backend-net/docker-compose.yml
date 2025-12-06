@@ -20,12 +20,12 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
-      - orchid-redis
+      - sep-orchid-redis
     networks:
       - sep-orchid-lab-network
     restart: always
 
-  orchid-redis:
+  sep-orchid-redis:
     image: redis:latest
     command: redis-server --requirepass "0911861612Val@"
     volumes:

@@ -72,11 +72,11 @@ namespace orchid_backend_net.Infrastructure
 
 
             //Seed data generation
-            using (var scope = services.BuildServiceProvider().CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
-                SeedDataGenerator.SeedAsync(dbContext).GetAwaiter().GetResult();
-            }
+            //using (var scope = services.BuildServiceProvider().CreateScope())
+            //{
+            //    var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
+            //    SeedDataGenerator.SeedAsync(dbContext).GetAwaiter().GetResult();
+            //}
 
             //Add repositories
             services.AddScoped<IUserRepository, UserRepository>();

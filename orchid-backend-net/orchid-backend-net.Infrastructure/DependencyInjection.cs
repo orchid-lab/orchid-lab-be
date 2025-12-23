@@ -64,6 +64,7 @@ namespace orchid_backend_net.Infrastructure
             using (var scope = services.BuildServiceProvider().CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
+                dbContext.Database.Migrate();
                 SeedDataGenerator.SeedAsync(dbContext)
                                  .GetAwaiter()
                                  .GetResult();

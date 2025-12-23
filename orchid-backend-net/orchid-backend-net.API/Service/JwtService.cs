@@ -7,14 +7,35 @@ using System.Text;
 
 namespace orchid_backend_net.API.Service
 {
+    /// <summary>
+    /// Jwt Service for create JWT Token
+    /// </summary>
     public class JwtService
     {
         public class Token
         {
+            /// <summary>
+            /// AccessToken JWT using for authorization
+            /// </summary>
             public required string AccessToken { get; set; }
+            /// <summary>
+            /// RefreshToken JWT using for get new AccessToken
+            /// </summary>
             public required string RefreshToken { get; set; }
-            public UserDTO? UserDTO { get; set; } = null;
+            /// <summary>
+            /// User information
+            /// </summary>
+            public UserDto? UserDTO { get; set; } = null;
         }
+
+        /// <summary>
+        /// Create JWT Token method
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <param name="roles"></param>
+        /// <param name="refreshToken"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Token CreateToken(string ID, string roles, string refreshToken, string name)
         {
             var claims = new List<Claim>

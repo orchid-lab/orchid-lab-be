@@ -11,7 +11,6 @@ using orchid_backend_net.Infrastructure.Repository;
 using orchid_backend_net.Infrastructure.Service;
 using orchid_backend_net.Infrastructure.Service.CloudinarySettings;
 using orchid_backend_net.Infrastructure.Service.GmailSettings;
-using orchid_backend_net.Infrastructure.Service.PdfGenerator;
 using orchid_backend_net.Infrastructure.Service.RedisSettings;
 
 namespace orchid_backend_net.Infrastructure
@@ -36,7 +35,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddStackExchangeRedisCache(options =>
             {
                 var redisOptions = configuration.GetSection("Redis").Get<RedisOptions>();
-                options.Configuration = redisOptions.Configuration;
+                options.Configuration = redisOptions!.Configuration;
                 options.InstanceName = redisOptions.InstanceName;
             });
 
@@ -58,60 +57,26 @@ namespace orchid_backend_net.Infrastructure
             //gmail services 
             //only use for production stage
             //when use in local please comment these lines 
-            services.Configure<GmailOptions>(options =>
+            services.Configure<GmailOptions>(configuration.GetSection("Gmail"));
+
+
+            //Seed data generation and check migration
+            using (var scope = services.BuildServiceProvider().CreateScope())
             {
-                options.ClientId = Environment.GetEnvironmentVariable("GMAIL_CLIENT_ID") ?? "";
-                options.ClientSecret = Environment.GetEnvironmentVariable("GMAIL_CLIENT_SECRET") ?? "";
-                options.RefreshToken = Environment.GetEnvironmentVariable("GMAIL_REFRESH_TOKEN") ?? "";
-                options.Email = Environment.GetEnvironmentVariable("GMAIL_EMAIL") ?? "";
-            });
+                var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
+                dbContext.Database.Migrate();
 
-            //gmail services
-            //for local
-            //services.Configure<GmailOptions>(configuration.GetSection("GmailOptions"));
+                SeedDataGenerator.SeedAsync(dbContext)
+                                 .GetAwaiter()
+                                 .GetResult();
+            }
 
-
-            //Seed data generation
-            //using (var scope = services.BuildServiceProvider().CreateScope())
-            //{
-            //    var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
-            //    SeedDataGenerator.SeedAsync(dbContext).GetAwaiter().GetResult();
-            //}
-
+            //service
+            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<ICacheService, RedisCacheService>();
+            services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
             //Add repositories
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IRoleRepository, RoleRepository>();
-            services.AddScoped<IElementRepositoty, ElementRepository>();
-            services.AddScoped<IExperimentLogRepository, ExperimentLogRepository>();
-            services.AddScoped<ILabRoomRepository, LabRoomRepository>();
-            services.AddScoped<IMethodRepository, MethodRepository>();
-            services.AddScoped<IReportRepository, RepostRepository>();
-            services.AddScoped<ISampleRepository, SampleRepository>();
-            services.AddScoped<ISeedlingAttributeRepository, SeedlingAttributeRepository>();
-            services.AddScoped<ISeedlingRepository, SeedlingRepository>();
-            services.AddScoped<ICharactersicticRepository, CharacteristicRepository>();
-            services.AddScoped<IStageRepository, StageRepository>();
-            services.AddScoped<ITaskAttributeRepository, TaskAttributeRepository>();
-            services.AddScoped<ITaskRepository, TaskRepository>();
-            services.AddScoped<ITaskAssignRepository, TaskAssignRepository>();
-            services.AddScoped<IHybridizationRepository, HybridizationRepository>();
-            services.AddScoped<ILinkedRepository, LinkedRepository>();
-            services.AddScoped<ITissueCultureBatchRepository, TissueCultureBatchRepository>();
-            services.AddScoped<IElementInStageRepository, ElementInStageRepository>();
-            services.AddScoped<IReferentRepository, ReferentRepository>();
-            services.AddScoped<IImageRepository, ImageRepository>();
-            services.AddScoped<IReportRepository, ReportRepository>();
-            services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
-            services.AddScoped<IOrchidAnalyzerService, OrchidAnalyzerService>();
-            services.AddScoped<ICacheService, RedisCacheService>();
-            services.AddScoped<IEmailSender, EmailSender>();
-            services.AddScoped<IDiseaseRepository, DiseaseRepository>();
-            services.AddScoped<IInfectedSampleRepository, InfectedSampleRepository>();
-            services.AddScoped<ITaskTemplatesRepository, TaskTemplateRepository>();
-            services.AddScoped<ITaskTemplateDetailsRepository, TaskTemplateDetailRepository>();
-            services.AddScoped<IReportAttributeRepository, ReportAttributeRepository>();
-            services.AddScoped<IPdfReportGenerator, PdfReportGenerator>();
-            services.AddHostedService<Service.HostedService.ExperimentLogHostedService>();
             return services;
         }
     }

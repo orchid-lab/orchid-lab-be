@@ -32,8 +32,21 @@ namespace orchid_backend_net.Infrastructure.Repository
             "user-gmail",
             tokenResponse
             );
-
-            await creds.RefreshTokenAsync(CancellationToken.None);
+            try
+            {
+                await creds.RefreshTokenAsync(CancellationToken.None);
+            }
+            catch (TokenResponseException ex)
+            {
+                if (ex.Error.Error == "invalid_grant")
+                {
+                   throw new InvalidOperationException("The provided refresh token is invalid, please revoke the refresh token.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
             GmailService service = new(new BaseClientService.Initializer
             {
                 HttpClientInitializer = creds,

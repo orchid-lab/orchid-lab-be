@@ -5,7 +5,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 
 namespace orchid_backend_net.Infrastructure.Repository
 {
-    public class RoleRepository(OrchidDbContext context, IMapper mapper) : RepositoryBase<Role, Role, OrchidDbContext>(context, mapper), IRoleRepository
+    public class RoleRepository(OrchidDbContext context, IMapper mapper) : RepositoryBase<Roles, Roles, OrchidDbContext>(context, mapper), IRoleRepository
     {
     }
 }

@@ -7,16 +7,25 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
     {
         public static async Task SeedAsync(DbContext context)
         {
-            if (!await context.Set<Role>().AnyAsync())
+            if (!await context.Set<Roles>().AnyAsync())
             {
-                var roles = new List<Role>
+                var roles = new List<Roles>()
                 {
-                    new() { ID = 1, Name = "Admin", Description = "Administrator with full access", Status = true },
-                    new() { ID = 2, Name = "Researcher", Description = "Research staff with limited access", Status = true },
-                    new() { ID = 3, Name = "Technician", Description = "Lab technician with operational access", Status = true }
+                    new() {
+                        ID = 1,
+                        Name = "Admin"
+                    },
+                    new() {
+                        ID = 2,
+                        Name = "Researcher"
+                    },
+                    new() {
+                        ID = 3,
+                        Name = "Lab Technician"
+                    }
                 };
 
-                await context.Set<Role>().AddRangeAsync(roles);
+                await context.Set<Roles>().AddRangeAsync(roles);
                 await context.SaveChangesAsync();
             }
         }

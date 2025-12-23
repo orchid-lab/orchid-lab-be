@@ -3,17 +3,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class Stages : BaseGuidEntity
+    public class Stages : BaseIntEntity
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public int Step { get; set; } // Assuming Step is an integer representing the order of the stage
-        public string MethodID {  get; set; }
-        [ForeignKey(nameof(MethodID))]
+        public required int MethodId { get; set; }
+        [ForeignKey(nameof(MethodId))]
         public virtual Methods Method { get; set; }
-        public int DateOfProcessing { get; set; }
-        public bool Status {  get; set; }
-        public virtual ICollection<ElementInStage> ElementInStages { get; set; }
-        public virtual ICollection<TaskTemplates> TaskTemplates { get; set; }
+        public required string Name { get; set; }
+        public string? Description { get; set; }
+        public int Order { get; set; }
+        public virtual IEnumerable<StageMaterials> StageMaterials { get; set; } = [];
+        public virtual IEnumerable<StageChemicals> StageChemicals { get; set; } = [];
+        public virtual IEnumerable<SamplesRequirements> SamplesRequirements { get; set; } = [];
     }
 }

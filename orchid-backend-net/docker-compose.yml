@@ -25,7 +25,7 @@ services:
       - sep-orchid-lab-network
     restart: always
 
-  sep-orchid-redis:
+  orchid-redis:
     image: redis:latest
     command: redis-server --requirepass "0911861612Val@"
     volumes:

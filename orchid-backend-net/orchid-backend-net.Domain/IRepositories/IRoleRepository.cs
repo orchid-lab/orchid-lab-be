@@ -2,7 +2,7 @@
 
 namespace orchid_backend_net.Domain.IRepositories
 {
-    public interface IRoleRepository : IEFRepository<Role, Role>
+    public interface IRoleRepository : IEFRepository<Roles, Roles>
     {
     }
 }

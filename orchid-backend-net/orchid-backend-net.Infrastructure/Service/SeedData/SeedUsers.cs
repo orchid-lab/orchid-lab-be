@@ -19,7 +19,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                         Password = BCrypt.Net.BCrypt.HashPassword("admin1234"),
                         PhoneNumber = "1234567890",
                         RoleID = 1,
-                        Status = true
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = "System"
                     },
                     new()
                     {
@@ -29,7 +30,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                         Password = BCrypt.Net.BCrypt.HashPassword("tech1234"),
                         PhoneNumber = "213133311221",
                         RoleID = 3,
-                        Status = true
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = "System"
                     },
                     new()
                     {
@@ -39,7 +41,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                         Password = BCrypt.Net.BCrypt.HashPassword("research1234"),
                         PhoneNumber = "31312213132",
                         RoleID = 2,
-                        Status = true
+                        CreatedDate = DateTime.UtcNow,
+                        CreatedBy = "System"
                     }
                 };
 

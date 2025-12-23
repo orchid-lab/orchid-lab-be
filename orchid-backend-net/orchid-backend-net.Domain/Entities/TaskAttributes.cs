@@ -5,13 +5,16 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class TaskAttributes : BaseGuidEntity
     {
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string TaskID {  get; set; }
-        [ForeignKey(nameof(TaskID))]
-        public virtual Tasks Task {  get; set; }
-        public double Value {  get; set; }
-        public string MeasurementUnit { get; set; }
-        public bool Status {  get; set; }
+        public required int ChemicalId { get; set; }
+        public required int MaterialId { get; set; }
+        public required string TaskId { get; set; }
+        [ForeignKey(nameof(ChemicalId))]
+        public virtual Chemicals Chemicals { get; set; }
+        [ForeignKey(nameof(MaterialId))]
+        public virtual Materials Materials { get; set; }
+        [ForeignKey(nameof(TaskId))]
+        public virtual Tasks Tasks { get; set; }
+        public required string Unit { get; set; }
+        public required decimal Value { get; set; }
     }
 }

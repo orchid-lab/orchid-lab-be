@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
-using System.IO;
 
 namespace orchid_backend_net.Application.User.UpdateUserAvatar
 {
@@ -17,22 +17,17 @@ namespace orchid_backend_net.Application.User.UpdateUserAvatar
     {
         public async Task<string> Handle(UpdateUserAvatarCommand request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var imageUrl = await imageUploaderService.UpdloadImageAsync(request.FileStream, request.FileName, "user-avatar");
-                var user = await userRepository.FindAsync(x => x.ID.Equals(request.Id) && x.Status, cancellationToken);
-                user.AvatarUrl = imageUrl;
-                user.Update_date = DateTime.UtcNow;
-                user.Update_by = currentUserService.UserName;
-                userRepository.Update(user);
-                return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
-                    ? "Update user avatar successfully"
-                    : "Update user avatar failed";
-            }
-            catch(Exception ex)
-            {
-                throw new Exception("Error while updating user avatar", ex);
-            }
+            var imageUrl = await imageUploaderService.UpdloadImageAsync(request.FileStream, request.FileName, "user-avatar");
+            var user = await userRepository.FindAsync(x => x.ID.Equals(request.Id) && x.DeletedDate == null, cancellationToken);
+            if (user == null)
+                throw new NotFoundException("Người dùng không hợp lệ.");
+            user.AvatarUrl = imageUrl;
+            user.UpdatedDate = DateTime.UtcNow;
+            user.UpdatedBy = currentUserService.UserName;
+            userRepository.Update(user);
+            return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
+                ? "Đổi hình đại diện thành công."
+                : "Đổi hình đại diện thất bại.";
         }
     }
 }

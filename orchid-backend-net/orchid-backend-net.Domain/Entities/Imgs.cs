@@ -5,10 +5,9 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class Imgs : BaseGuidEntity
     {
-        public string Url {  get; set; }
-        public string ReportID {  get; set; }
-        [ForeignKey(nameof(ReportID))]
-        public virtual Reports Report { get; set; }
-        public bool Status {  get; set; }
+        public string MonitoringLogsId { get; set; }
+        [ForeignKey(nameof(MonitoringLogsId))]
+        public virtual MonitoringLogs MonitoringLogs { get; set; }
+        public required string Url { get; set; }
     }
 }

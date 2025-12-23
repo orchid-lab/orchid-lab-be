@@ -22,14 +22,6 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.GenerateRef
 
 
             var expiryDateInRedis = refreshToken.Expired - DateTime.UtcNow;
-            //tf am i doing?
-            //Check if the expiry date is valid
-            //Sometimes the expiry date can be in the past due to clock skew or other issues
-            if (expiryDateInRedis < TimeSpan.Zero)
-            {
-                throw new InvalidOperationException("Refresh token has already expired.");
-            }
-
             //Store the refresh token in Redis with a key based on the token value
             //best practice: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html#token-refresh
             var refreshTokenKey = refreshToken.Token.Trim().ToLowerInvariant();

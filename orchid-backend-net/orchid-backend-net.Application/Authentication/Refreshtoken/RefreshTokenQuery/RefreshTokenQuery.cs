@@ -13,8 +13,7 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.RefreshToke
     }
 
 
-    internal class RefreshTokenQueryHandler(IUserRepository userRepository, ICacheService cacheService,
-        ICurrentUserService currentUserService, ISender sender) : IRequestHandler<RefreshTokenQuery, LoginDTO>
+    internal class RefreshTokenQueryHandler(IUserRepository userRepository, ICacheService cacheService, ISender sender) : IRequestHandler<RefreshTokenQuery, LoginDTO>
     {
         public async Task<LoginDTO> Handle(RefreshTokenQuery request, CancellationToken cancellationToken)
         {
@@ -27,32 +26,30 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.RefreshToke
             //Check if the refresh token exists in Redis
             if (string.IsNullOrEmpty(userId))
             {
-                throw new UnauthorizedAccessException("Invalid refresh token.");
+                throw new UnauthorizedAccessException("Refresh Token không hợp lệ.");
             }
 
             //Check if the user exists in the database
             var user = await userRepository.FindAsync(x => x.ID.Equals(userId)
-                        && x.Status == true
+                        && x.DeletedDate == null
                         && x.RefreshTokenExpiryTime >= DateTime.UtcNow, cancellationToken);
 
-            //Fallback if the user is not found
-            user ??= await userRepository.FindAsync(x => x.RefreshToken!.Equals(request.RefreshToken.Trim())
-                        && x.Status == true
-                        && x.RefreshTokenExpiryTime >= DateTime.UtcNow, cancellationToken);
-
-            if(user is null)
-                throw new UnauthorizedAccessException("User not found or token expired");
+            if (user is null)
+                throw new UnauthorizedAccessException("Không tìm thấy người dùng hoặc token không hợp lệ.");
 
             //Token rotation
-            await cacheService.RemoveAsync(redisKey);
+            var isRemoveSuccess = await cacheService.RemoveAsync(redisKey);
+
+            if (!isRemoveSuccess)
+                throw new InvalidOperationException("Có lỗi xảy ra, vui lòng thử lại sau.");
 
             string role = "";
             role = user.RoleID switch
             {
-                0 => "Account does not have a role",
                 1 => "Admin",
                 2 => "Researcher",
                 3 => "Technician",
+                _ => throw new NotImplementedException("Tài khoản này chưa có vai trò xác định."),
             };
 
             //Generate new token
@@ -60,7 +57,7 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.RefreshToke
             user.RefreshToken = refresh.Token;
             user.RefreshTokenExpiryTime = refresh.Expired;
             await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
-            
+
             return LoginDTO.Create(user.ID, role, user.RefreshToken, user.Name);
         }
     }

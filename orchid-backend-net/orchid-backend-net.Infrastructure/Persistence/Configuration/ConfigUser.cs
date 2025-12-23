@@ -18,6 +18,16 @@ namespace orchid_backend_net.Infrastructure.Persistence.Configuration
 
             builder.HasIndex(u => u.PhoneNumber)
                 .IsUnique();
+            
+            builder.HasMany(x => x.TaskAssignments)
+                .WithOne(x => x.Technician)
+                .HasForeignKey(x => x.TechnicianId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(x => x.MonitoringLogs)
+                .WithOne(x => x.User)
+                .HasForeignKey(x => x.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -23,9 +23,7 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.5" />
 	<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.5" />
 	<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
-	<None Update="User\EmailTemplate.html">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	</None>
+	  <EmbeddedResource Include="Authentication\EmailTemplate.html"/>
   </ItemGroup>
 
 </Project>

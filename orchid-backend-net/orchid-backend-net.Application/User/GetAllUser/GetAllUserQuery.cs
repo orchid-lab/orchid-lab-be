@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using MediatR;
+﻿using MediatR;
+using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -7,7 +7,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.User.GetAllUser
 {
-    public class GetAllUserQuery : IRequest<PageResult<UserDTO>>, IQuery
+    public class GetAllUserQuery : IRequest<PageResult<UserDto>>, IQuery
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
@@ -19,20 +19,18 @@ namespace orchid_backend_net.Application.User.GetAllUser
         public GetAllUserQuery() { }
     }
 
-    internal class GetAllUserQueryHandler(IUserRepository userRepository, IMapper mapper) : IRequestHandler<GetAllUserQuery, PageResult<UserDTO>>
+    internal class GetAllUserQueryHandler(IUserRepository userRepository) : IRequestHandler<GetAllUserQuery, PageResult<UserDto>>
     {
 
-        public async Task<PageResult<UserDTO>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
+        public async Task<PageResult<UserDto>> Handle(GetAllUserQuery request, CancellationToken cancellationToken)
         {
-            var list = await userRepository.FindAllAsync(request.PageNumber, request.PageSize, cancellationToken); ;
-            if (list.Count() == 0)
-                throw new NotFoundException("there're no user in the system.");
-            return PageResult<UserDTO>.Create(totalCount: list.TotalCount,
-                pageCount: list.PageCount,
-                pageSize: list.PageSize,
-                pageNumber: list.PageNo,
-                data: list.MapToUserDTOList(mapper)
-                );
+            var list = await userRepository.FindAllProjectToAsync<UserDto>(
+                pageNo: request.PageNumber,
+                pageSize: request.PageSize,
+                cancellationToken: cancellationToken);
+            if (!list.Any())
+                throw new NotFoundException("Hệ thống chưa ghi nhận người dùng nào.");
+            return list.ToAppPageResult();
         }
     }
 }

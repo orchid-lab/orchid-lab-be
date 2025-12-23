@@ -25,106 +25,111 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Characteristics", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.AnalyticResults", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("SeedlingAttributeID")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("Anthracnose")
+                        .HasColumnType("numeric");
 
-                    b.Property<string>("SeedlingID")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<decimal>("BacterialWilt")
+                        .HasColumnType("numeric");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
+                    b.Property<decimal>("Blackrot")
+                        .HasColumnType("numeric");
 
-                    b.Property<decimal>("Value")
+                    b.Property<decimal>("Brownspots")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Healthy")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MoldBacterial")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MoldFungus")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Oxidation")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("SoftRot")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("StemRot")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("Virus")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("WitheredYellowRoot")
                         .HasColumnType("numeric");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("SeedlingAttributeID");
-
-                    b.HasIndex("SeedlingID");
-
-                    b.ToTable("Characteristic");
+                    b.ToTable("AnalyticResults");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Diseases", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Batches", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LabRoomId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("LabRoomId");
+
+                    b.ToTable("Batches");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Characteristic", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("InfectedRate")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Solution")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Diseases");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.ElementInStage", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ElementID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StageID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ElementID");
-
-                    b.HasIndex("StageID");
-
-                    b.ToTable("ElementInStage");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Elements", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
-                    b.ToTable("Elements");
+                    b.ToTable("Characteristics");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Chemicals", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcentrationUnit")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Chemicals");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>
@@ -132,31 +137,98 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("Create_by")
-                        .HasColumnType("text");
+                    b.Property<int>("BatchId")
+                        .HasColumnType("integer");
 
-                    b.Property<DateTime?>("Create_date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
 
-                    b.Property<string>("CurrentStageID")
+                    b.Property<string>("HybridzationId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Delete_by")
+                    b.Property<string>("HybridzationsID")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Delete_date")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<int>("MethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("BatchId");
+
+                    b.HasIndex("HybridzationsID");
+
+                    b.HasIndex("MethodId");
+
+                    b.ToTable("ExperimentLogs");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridzations", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParentAId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParentBId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ParentAId");
+
+                    b.HasIndex("ParentBId");
+
+                    b.ToTable("Hybridzations");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Imgs", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MonitoringLogsId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MonitoringLogsId");
+
+                    b.ToTable("Imgs");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.LabRooms", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("InfectedRateInReality")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("MethodID")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
@@ -166,165 +238,76 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("TissueCultureBatchID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Update_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Update_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("MethodID");
-
-                    b.HasIndex("TissueCultureBatchID");
-
-                    b.ToTable("ExperimentLogs");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridizations", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ExperimentLogID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ParentID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ExperimentLogID");
-
-                    b.HasIndex("ParentID");
-
-                    b.ToTable("Hybridization");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Imgs", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReportID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Url")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ReportID");
-
-                    b.ToTable("Imgs");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.InfectedSamples", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("DiseaseID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("SampleID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("DiseaseID");
-
-                    b.HasIndex("SampleID")
-                        .IsUnique();
-
-                    b.ToTable("InfectedSamples");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.LabRooms", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
                     b.HasKey("ID");
 
                     b.ToTable("LabRooms");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Linkeds", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.LogDetails", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("ExperimentLogID")
+                    b.Property<bool>("IsMatch")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("MeasuredValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("MonitoringLogsId")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("ProcessStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("SampleID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("StageID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("TaskID")
+                    b.Property<string>("RequirementId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ExperimentLogID");
+                    b.HasIndex("MonitoringLogsId");
 
-                    b.HasIndex("SampleID");
+                    b.HasIndex("RequirementId");
 
-                    b.HasIndex("TaskID");
-
-                    b.ToTable("Linkeds");
+                    b.ToTable("MonitoringLogDetails");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Methods", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Materials", b =>
                 {
-                    b.Property<string>("ID")
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Catetgory")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<string>("Type")
+                    b.HasKey("ID");
+
+                    b.ToTable("Materials");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Methods", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("DurationsDays")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -333,151 +316,75 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("Methods");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Referents", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.MonitoringLogs", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("MeasurementUnit")
+                    b.Property<string>("AnalyticResultId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("DeletedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SampleId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("StageID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("ValueFrom")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("ValueTo")
-                        .HasColumnType("numeric");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("StageID");
-
-                    b.ToTable("Referents");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.ReportAttributes", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReferentID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReportID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
+                    b.Property<int>("SampleStageOrder")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Value")
-                        .HasColumnType("numeric");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateOnly?>("UpdatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("ReferentID");
+                    b.HasIndex("AnalyticResultId")
+                        .IsUnique();
 
-                    b.HasIndex("ReportID");
+                    b.HasIndex("SampleId");
 
-                    b.ToTable("ReportAttributes");
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MonitoringLogs");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Reports", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Create_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Create_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Delete_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Delete_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsLatest")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ReviewReport")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SampleID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("StageId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("TechnicianID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Update_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Update_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("SampleID");
-
-                    b.HasIndex("TechnicianID");
-
-                    b.ToTable("Reports");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Role", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Roles", b =>
                 {
                     b.Property<int>("ID")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
                     b.HasKey("ID");
 
-                    b.ToTable("Role");
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
@@ -485,15 +392,21 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("Description")
+                    b.Property<int>("CurrentStageOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateOnly>("ExecutionDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ExperimentLogId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("Dob")
-                        .HasColumnType("date");
-
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("text");
 
                     b.Property<string>("Reason")
@@ -504,175 +417,34 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("ExperimentLogId");
+
                     b.ToTable("Samples");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SeedlingAttributes", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SamplesRequirements", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("SeedlingAttributes");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Create_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Create_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Delete_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Delete_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateOnly>("Dob")
-                        .HasColumnType("date");
-
-                    b.Property<string>("LocalName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Parent1")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Parent2")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ScientificName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Update_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Update_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Seedlings");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Stages", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<int>("DateOfProcessing")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MethodID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("Step")
-                        .HasColumnType("integer");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("MethodID");
-
-                    b.ToTable("Stage");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAttributes", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("MeasurementUnit")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TaskID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Value")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("TaskID");
-
-                    b.ToTable("TaskAttributes");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskTemplateDetails", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Element")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("ExpectedValue")
                         .HasColumnType("numeric");
 
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("boolean");
+                    b.Property<decimal>("MaxValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal>("MinValue")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TaskTemplateID")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("StageId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Unit")
                         .IsRequired()
@@ -680,36 +452,207 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("TaskTemplateID");
+                    b.HasIndex("StageId");
 
-                    b.ToTable("TaskTemplateDetails");
+                    b.ToTable("SamplesRequirements");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskTemplates", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LocalName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("ParentAId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ParentBId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ScientificName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Seedlings");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SeedlingsTraits", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("CharacteristicId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SeedlingId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("CharacteristicId");
+
+                    b.HasIndex("SeedlingId");
+
+                    b.ToTable("SeedlingsTraits");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageChemicals", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ChemicalId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StageId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChemicalId");
+
+                    b.HasIndex("StageId");
+
+                    b.ToTable("StageChemicals");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageMaterials", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<int>("MaterialId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StageId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("MaterialId");
+
+                    b.HasIndex("StageId");
+
+                    b.ToTable("StageMaterials");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Stages", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<int>("MethodId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("StageID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("StageID");
+                    b.HasIndex("MethodId");
 
-                    b.ToTable("TaskTemplates");
+                    b.ToTable("Stages");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAssignment", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SampleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TaskId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("TechnicianId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SampleId");
+
+                    b.HasIndex("TaskId");
+
+                    b.HasIndex("TechnicianId");
+
+                    b.ToTable("TaskAssignments");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAttributes", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<int>("ChemicalId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaterialId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaskId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Unit")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("ChemicalId");
+
+                    b.HasIndex("MaterialId");
+
+                    b.HasIndex("TaskId");
+
+                    b.ToTable("TaskAttributes");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Tasks", b =>
@@ -717,112 +660,35 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Create_at")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Create_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Create_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Delete_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Delete_date")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("End_date")
+                    b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsDaily")
-                        .HasColumnType("boolean");
+                    b.Property<DateTime>("ExpectedEndDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("ReportInformation")
+                    b.Property<string>("ResearcherId")
                         .HasColumnType("text");
 
-                    b.Property<string>("Researcher")
-                        .IsRequired()
+                    b.Property<string>("StageId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("Start_date")
+                    b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Update_by")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime?>("Update_date")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("text");
-
                     b.HasKey("ID");
 
                     b.ToTable("Tasks");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TasksAssign", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("TaskID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("TechnicianID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("TaskID");
-
-                    b.HasIndex("TechnicianID");
-
-                    b.ToTable("TaskAssigns");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TissueCultureBatches", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("LabRoomID")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("LabRoomID");
-
-                    b.ToTable("TissueCultureBatches");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Users", b =>
@@ -833,16 +699,19 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("AvatarUrl")
                         .HasColumnType("text");
 
-                    b.Property<string>("Create_by")
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Create_date")
+                    b.Property<DateTime?>("CreatedDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Delete_by")
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Delete_date")
+                    b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
@@ -870,13 +739,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("RoleID")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Update_by")
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("Update_date")
+                    b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ID");
@@ -892,262 +758,265 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Characteristics", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Batches", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.SeedlingAttributes", "SeedlingAttribute")
-                        .WithMany()
-                        .HasForeignKey("SeedlingAttributeID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("orchid_backend_net.Domain.Entities.LabRooms", "LabRoom")
+                        .WithMany("Batches")
+                        .HasForeignKey("LabRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "Seedling")
-                        .WithMany("Characteristics")
-                        .HasForeignKey("SeedlingID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Seedling");
-
-                    b.Navigation("SeedlingAttribute");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.ElementInStage", b =>
-                {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Elements", "Element")
-                        .WithMany("ElementInStages")
-                        .HasForeignKey("ElementID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("orchid_backend_net.Domain.Entities.Stages", "Stage")
-                        .WithMany("ElementInStages")
-                        .HasForeignKey("StageID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Element");
-
-                    b.Navigation("Stage");
+                    b.Navigation("LabRoom");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>
                 {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Batches", "Batch")
+                        .WithMany()
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.Hybridzations", "Hybridzations")
+                        .WithMany()
+                        .HasForeignKey("HybridzationsID");
+
                     b.HasOne("orchid_backend_net.Domain.Entities.Methods", "Method")
                         .WithMany("ExperimentLogs")
-                        .HasForeignKey("MethodID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("MethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.TissueCultureBatches", "TissueCultureBatch")
-                        .WithMany("ExperimentLogs")
-                        .HasForeignKey("TissueCultureBatchID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("Batch");
+
+                    b.Navigation("Hybridzations");
 
                     b.Navigation("Method");
-
-                    b.Navigation("TissueCultureBatch");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridizations", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridzations", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.ExperimentLogs", "ExperimentLog")
-                        .WithMany("Hybridizations")
-                        .HasForeignKey("ExperimentLogID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentA")
+                        .WithMany()
+                        .HasForeignKey("ParentAId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "Parent")
-                        .WithMany("Hybridizations")
-                        .HasForeignKey("ParentID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentB")
+                        .WithMany()
+                        .HasForeignKey("ParentBId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ExperimentLog");
+                    b.Navigation("ParentA");
 
-                    b.Navigation("Parent");
+                    b.Navigation("ParentB");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Imgs", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Reports", "Report")
-                        .WithMany("Imgs")
-                        .HasForeignKey("ReportID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                    b.HasOne("orchid_backend_net.Domain.Entities.MonitoringLogs", "MonitoringLogs")
+                        .WithMany()
+                        .HasForeignKey("MonitoringLogsId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Report");
+                    b.Navigation("MonitoringLogs");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.InfectedSamples", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.LogDetails", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Diseases", "Disease")
+                    b.HasOne("orchid_backend_net.Domain.Entities.MonitoringLogs", "MonitoringLogs")
+                        .WithMany("LogDetails")
+                        .HasForeignKey("MonitoringLogsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.SamplesRequirements", "Requirement")
                         .WithMany()
-                        .HasForeignKey("DiseaseID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("RequirementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("MonitoringLogs");
+
+                    b.Navigation("Requirement");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.MonitoringLogs", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.AnalyticResults", "AnalyticResult")
+                        .WithOne("MonitoringLog")
+                        .HasForeignKey("orchid_backend_net.Domain.Entities.MonitoringLogs", "AnalyticResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
-                        .WithOne("InfectedSamples")
-                        .HasForeignKey("orchid_backend_net.Domain.Entities.InfectedSamples", "SampleID")
+                        .WithMany()
+                        .HasForeignKey("SampleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.Users", "User")
+                        .WithMany("MonitoringLogs")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Disease");
+                    b.Navigation("AnalyticResult");
 
                     b.Navigation("Sample");
+
+                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Linkeds", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.ExperimentLogs", "ExperimentLog")
-                        .WithMany("Linkeds")
-                        .HasForeignKey("ExperimentLogID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
-                        .WithMany("Linkeds")
-                        .HasForeignKey("SampleID")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
-                        .WithMany("Linkeds")
-                        .HasForeignKey("TaskID")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .WithMany("Samples")
+                        .HasForeignKey("ExperimentLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("ExperimentLog");
-
-                    b.Navigation("Sample");
-
-                    b.Navigation("Task");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Referents", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SamplesRequirements", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Stages", "Stage")
-                        .WithMany()
-                        .HasForeignKey("StageID")
+                        .WithMany("SamplesRequirements")
+                        .HasForeignKey("StageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Stage");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.ReportAttributes", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SeedlingsTraits", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Referents", "Referent")
-                        .WithMany("ReportAttributes")
-                        .HasForeignKey("ReferentID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("orchid_backend_net.Domain.Entities.Reports", "Report")
-                        .WithMany("ReportAttributes")
-                        .HasForeignKey("ReportID")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Characteristic", "Charactersistics")
+                        .WithMany()
+                        .HasForeignKey("CharacteristicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Referent");
+                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "Seedling")
+                        .WithMany("SeedlingsTraits")
+                        .HasForeignKey("SeedlingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Report");
+                    b.Navigation("Charactersistics");
+
+                    b.Navigation("Seedling");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Reports", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageChemicals", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
-                        .WithMany("Reports")
-                        .HasForeignKey("SampleID")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Chemicals", "Chemical")
+                        .WithMany("StageChemicals")
+                        .HasForeignKey("ChemicalId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Users", "Technician")
-                        .WithMany()
-                        .HasForeignKey("TechnicianID")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Stages", "Stage")
+                        .WithMany("StageChemicals")
+                        .HasForeignKey("StageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Sample");
+                    b.Navigation("Chemical");
 
-                    b.Navigation("Technician");
+                    b.Navigation("Stage");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageMaterials", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Materials", "Material")
+                        .WithMany("StageMaterials")
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.Stages", "Stage")
+                        .WithMany("StageMaterials")
+                        .HasForeignKey("StageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Material");
+
+                    b.Navigation("Stage");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Stages", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Methods", "Method")
                         .WithMany("Stages")
-                        .HasForeignKey("MethodID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("MethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Method");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAttributes", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAssignment", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
-                        .WithMany("Attributes")
-                        .HasForeignKey("TaskID")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("SampleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Task");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskTemplateDetails", b =>
-                {
-                    b.HasOne("orchid_backend_net.Domain.Entities.TaskTemplates", "TaskTemplate")
-                        .WithMany("TemplateDetails")
-                        .HasForeignKey("TaskTemplateID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("TaskTemplate");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskTemplates", b =>
-                {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Stages", "Stage")
-                        .WithMany("TaskTemplates")
-                        .HasForeignKey("StageID")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Stage");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TasksAssign", b =>
-                {
                     b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
-                        .WithMany("Assigns")
-                        .HasForeignKey("TaskID")
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Users", "Technician")
-                        .WithMany("Assigns")
-                        .HasForeignKey("TechnicianID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithMany("TaskAssignments")
+                        .HasForeignKey("TechnicianId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Sample");
 
                     b.Navigation("Task");
 
                     b.Navigation("Technician");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TissueCultureBatches", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAttributes", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.LabRooms", "LabRoom")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Chemicals", "Chemicals")
                         .WithMany()
-                        .HasForeignKey("LabRoomID")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasForeignKey("ChemicalId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("LabRoom");
+                    b.HasOne("orchid_backend_net.Domain.Entities.Materials", "Materials")
+                        .WithMany()
+                        .HasForeignKey("MaterialId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Tasks")
+                        .WithMany("TaskAttributes")
+                        .HasForeignKey("TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Chemicals");
+
+                    b.Navigation("Materials");
+
+                    b.Navigation("Tasks");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Users", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Role", "Role")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Roles", "Role")
                         .WithMany()
                         .HasForeignKey("RoleID")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1156,16 +1025,30 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Elements", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.AnalyticResults", b =>
                 {
-                    b.Navigation("ElementInStages");
+                    b.Navigation("MonitoringLog")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Chemicals", b =>
+                {
+                    b.Navigation("StageChemicals");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>
                 {
-                    b.Navigation("Hybridizations");
+                    b.Navigation("Samples");
+                });
 
-                    b.Navigation("Linkeds");
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.LabRooms", b =>
+                {
+                    b.Navigation("Batches");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Materials", b =>
+                {
+                    b.Navigation("StageMaterials");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Methods", b =>
@@ -1175,64 +1058,42 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Stages");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Referents", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.MonitoringLogs", b =>
                 {
-                    b.Navigation("ReportAttributes");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Reports", b =>
-                {
-                    b.Navigation("Imgs");
-
-                    b.Navigation("ReportAttributes");
+                    b.Navigation("LogDetails");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
                 {
-                    b.Navigation("InfectedSamples")
-                        .IsRequired();
-
-                    b.Navigation("Linkeds");
-
-                    b.Navigation("Reports");
+                    b.Navigation("TaskAssignments");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
                 {
-                    b.Navigation("Characteristics");
-
-                    b.Navigation("Hybridizations");
+                    b.Navigation("SeedlingsTraits");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Stages", b =>
                 {
-                    b.Navigation("ElementInStages");
+                    b.Navigation("SamplesRequirements");
 
-                    b.Navigation("TaskTemplates");
-                });
+                    b.Navigation("StageChemicals");
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskTemplates", b =>
-                {
-                    b.Navigation("TemplateDetails");
+                    b.Navigation("StageMaterials");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Tasks", b =>
                 {
-                    b.Navigation("Assigns");
+                    b.Navigation("TaskAssignments");
 
-                    b.Navigation("Attributes");
-
-                    b.Navigation("Linkeds");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TissueCultureBatches", b =>
-                {
-                    b.Navigation("ExperimentLogs");
+                    b.Navigation("TaskAttributes");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Users", b =>
                 {
-                    b.Navigation("Assigns");
+                    b.Navigation("MonitoringLogs");
+
+                    b.Navigation("TaskAssignments");
                 });
 #pragma warning restore 612, 618
         }

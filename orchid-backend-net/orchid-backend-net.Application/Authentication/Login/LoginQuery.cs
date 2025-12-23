@@ -11,23 +11,27 @@ namespace orchid_backend_net.Application.Authentication.Login
         public string Email { get; set; } = Email;
         public string Password { get; set; } = Password;
     }
-    internal class LoginQueryHandler(IUserRepository _userRepository, ISender sender, ICacheService cacheService) : IRequestHandler<LoginQuery, LoginDTO>
+    internal class LoginQueryHandler(IUserRepository _userRepository, ISender sender) : IRequestHandler<LoginQuery, LoginDTO>
     {
         public async Task<LoginDTO> Handle(LoginQuery request, CancellationToken cancellationToken)
         {
-            var user = await _userRepository.FindAsync(_ => _.Email == request.Email && _.Status, cancellationToken) ?? throw new NotFoundException("User not found");
+            var user = await _userRepository.FindAsync(_ => _.Email == request.Email, cancellationToken) ?? throw new NotFoundException("Không tìm thấy người dùng.");
+            if(user.DeletedDate != null)
+            {
+                throw new NotFoundException("Tài khoản đã bị vô hiệu hóa.");
+            }
             var isTrue = _userRepository.VerifyPassword(request.Password, user.Password);
             if (!isTrue)
             {
-                throw new IncorrectPasswordException("Password is incorrect");
+                throw new IncorrectPasswordException("Sai mật khẩu.");
             }
             string Role = "";
             Role = user.RoleID switch
             {
-                0 => "Account does not have a role",
                 1 => "Admin",
                 2 => "Researcher",
                 3 => "Technician",
+                _ => throw new NotImplementedException("Tài khoản này chưa có vai trò xác định."),
             };
             var refresh = await sender.Send(new RefreshTokenCommand(user.ID), cancellationToken);
             user.RefreshToken = refresh.Token;

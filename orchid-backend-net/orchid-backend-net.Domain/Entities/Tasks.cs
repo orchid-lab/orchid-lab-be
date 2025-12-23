@@ -2,26 +2,22 @@
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class Tasks : BaseSoftDelete
+    public class Tasks : BaseGuidEntity
     {
-        public string Researcher { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public DateTime Start_date { get; set; }
-        public DateTime End_date { get; set; }
-        public DateTime Create_at { get; set; }
-        //public enum Status 
-        public int Status { get; set; } // 0:  Assign,
-                                        //1: Taken,
-                                        //2: InProcess,
-                                        //3: DoneInTime,
-                                        //4: DoneInLate,
-                                        //5: Cancel,
-        public string? Url { get; set; }
-        public string? ReportInformation { get; set; }
-        public bool IsDaily { get; set; } // true: Daily, false: Weekly
-        public virtual ICollection<TasksAssign> Assigns { get; set; }
-        public virtual ICollection<TaskAttributes> Attributes { get; set; }
-        public virtual ICollection<Linkeds> Linkeds { get; set; }
+        public string Name { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        //StageId để xác định là cái task này có phải là template hay không
+        public string? StageId { get; set; }
+        public string? ResearcherId { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public DateTime ExpectedEndDate { get; set; }
+        public int Status { get; set; }
+        //0 - Chưa nhận
+        //1 - Đang tiến hành
+        //3 - Đang chờ xác nhận đã hoàn thành từ Researcher
+        //4 - Đã hoàn thành
+        public virtual IEnumerable<TaskAssignment> TaskAssignments { get; set; } = [];
+        public virtual IEnumerable<TaskAttributes> TaskAttributes { get; set; } = [];
     }
 }

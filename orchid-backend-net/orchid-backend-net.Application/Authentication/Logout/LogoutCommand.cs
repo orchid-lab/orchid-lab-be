@@ -15,7 +15,7 @@ namespace orchid_backend_net.Application.Authentication.Logout
             try
             {
                 var cacheKey = $"auth:refresh_token:{request.refreshToken.Trim().ToLowerInvariant()}";
-                return await cacheService.RemoveAsync(cacheKey) ? "Logout uccessfully" : "Failed to logout";
+                return await cacheService.RemoveAsync(cacheKey) ? "Đăng xuất thành công." : "Đăng xuất thất bại.";
             }
             catch(Exception ex)
             {
@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.Authentication.Logout
                 //but do not throw it, because we want to logout the user anyway
                 //we don't want to give away information about whether the token was valid or not
                 //just log it and move on
-                throw new ArgumentException("An error occurred while logging out.", ex);
+                throw new ArgumentException("Có lỗi xảy ra.", ex);
             }
         }
     }

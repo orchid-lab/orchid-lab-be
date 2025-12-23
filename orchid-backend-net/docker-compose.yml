@@ -20,7 +20,7 @@ services:
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
     depends_on:
-      - sep-orchid-redis
+      - orchid-redis
     networks:
       - sep-orchid-lab-network
     restart: always

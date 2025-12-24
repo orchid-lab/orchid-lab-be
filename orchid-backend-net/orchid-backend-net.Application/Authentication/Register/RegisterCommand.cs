@@ -10,7 +10,6 @@ namespace orchid_backend_net.Application.Authentication.Register
         public string Name { get; set; } = name;
         public string Email { get; set; } = email;
         public string PhoneNumber { get; set; } = phoneNumber;
-        public string Password { get; set; } = password;
         public int RoleID { get; set; } = roleID;
     }
 
@@ -25,7 +24,7 @@ namespace orchid_backend_net.Application.Authentication.Register
                 Email = request.Email,
                 PhoneNumber = request.PhoneNumber,
                 RoleID = request.RoleID,
-                Password = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                Password = BCrypt.Net.BCrypt.HashPassword("123@123a"),
                 CreatedBy = currentUserService.UserId,
                 CreatedDate = DateTime.UtcNow.AddHours(7),
             };
@@ -34,7 +33,7 @@ namespace orchid_backend_net.Application.Authentication.Register
 
             emailBody = emailBody.Replace("{UserName}", user.Name)
                 .Replace("{UserEmail}", user.Email)
-                .Replace("{UserPassword}", request.Password);
+                .Replace("{UserPassword}", "123@123a");
             await emailSender.SendEmailAsync(user.Email, "Thông báo tài khoản hệ thống OrchidLab", emailBody);
             userRepository.Add(user);
             return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0

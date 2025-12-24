@@ -5,6 +5,7 @@ using orchid_backend_net.API.Service;
 using orchid_backend_net.Application.Authentication.Login;
 using orchid_backend_net.Application.Authentication.Logout;
 using orchid_backend_net.Application.Authentication.Refreshtoken.RefreshTokenQuery;
+using orchid_backend_net.Application.Authentication.Register;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
@@ -75,6 +76,28 @@ namespace orchid_backend_net.API.Controllers
                     token.AccessToken,
                     token.RefreshToken,
                 };
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing token refresh at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Refresh token thất bại.", Detail = ex.Message });
+            }
+        }
+
+        [HttpPost("register")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> Register(
+           [FromBody] RegisterCommand command, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request for token refresh at {Time}", DateTime.UtcNow);
+                var response = await this._sender.Send(command, cancellationToken);
                 return Ok(response);
             }
             catch (Exception ex)

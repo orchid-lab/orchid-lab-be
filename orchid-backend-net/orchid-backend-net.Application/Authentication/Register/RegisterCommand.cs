@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
@@ -26,7 +27,7 @@ namespace orchid_backend_net.Application.Authentication.Register
                 RoleID = request.RoleID,
                 Password = BCrypt.Net.BCrypt.HashPassword("123@123a"),
                 CreatedBy = currentUserService.UserId,
-                CreatedDate = DateTime.UtcNow.AddHours(7),
+                CreatedDate = TimeZoneEnum.VietnamTimeZone,
             };
 
             var emailBody = await LoadEmailTemplateAsync(cancellationToken);

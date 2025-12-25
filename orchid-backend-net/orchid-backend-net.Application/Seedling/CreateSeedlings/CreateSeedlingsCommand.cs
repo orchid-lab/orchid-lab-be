@@ -1,11 +1,20 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Constant;
+using orchid_backend_net.Application.Common.E;
+using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Seedling.CreateSeedlings
 {
-    public class CreateSeedlingsCommand(string localName, string scientificName, string? description, string? parentAId, string? parentBId, List<CreateSeedlingTraistDto> createSeedlingTraistDtos) : IRequest<string>
+    public class CreateSeedlingsCommand(
+        string localName, 
+        string scientificName, 
+        string? description,
+        string? parentAId, 
+        string? parentBId, 
+        List<CreateSeedlingTraistDto> createSeedlingTraistDtos) : IRequest<string>
     {
         public required string LocalName { get; set; } = localName;
         public required string ScientificName { get; set; } = scientificName;
@@ -34,7 +43,7 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
                 ParentAId = request.ParentAId,
                 ParentBId = request.ParentBId,
                 CreatedBy = currentUserService.UserId,
-                CreatedDate = DateTime.UtcNow,
+                CreatedDate = TimeZoneEnum.VietnamTimeZone,
             };
             seedlingRepository.Add(seedling);
 

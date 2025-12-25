@@ -26,9 +26,4 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Seedling\RemoveSeedlings\" />
-    <Folder Include="Seedling\UpdateSeedlings\" />
-  </ItemGroup>
-
 </Project>

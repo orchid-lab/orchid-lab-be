@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Entities.Base;
 using System.Security.Cryptography;
@@ -17,7 +18,7 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.GenerateRef
             var refreshToken = new RefreshToken
             {
                 Token = token,
-                Expired = DateTime.UtcNow.AddDays(7)
+                Expired = TimeZoneEnum.VietnamTimeZone
             };
 
 

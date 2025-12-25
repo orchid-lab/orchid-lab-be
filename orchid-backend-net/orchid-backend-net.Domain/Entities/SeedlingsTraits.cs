@@ -5,7 +5,7 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class SeedlingsTraits : BaseGuidEntity
     {
-        public required string SeedlingId { get; set; }
+        public string SeedlingId { get; set; }
         [ForeignKey(nameof(SeedlingId))]
         public virtual Seedlings Seedling { get; set; }
         public required string CharacteristicId { get; set; }

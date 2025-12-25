@@ -76,6 +76,11 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
             //Add repositories
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IRoleRepository, RoleRepository>();
+
+            services.AddScoped<ISeedlingRepository, SeedlingRepository>();
+            services.AddScoped<ISeedlingTraitRepository, SeedlingTraitRepository>();
+            services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
             return services;
         }
     }

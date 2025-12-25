@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
@@ -24,7 +25,7 @@ namespace orchid_backend_net.Application.User.DeleteUser
                 throw new NotFoundException("Không tìm thấy người dùng.");
             }
             user.DeletedBy = currentUserService.UserId;
-            user.DeletedDate = DateTime.UtcNow.AddHours(7);
+            user.DeletedDate = TimeZoneEnum.VietnamTimeZone;
             return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Xóa thành công." : "Xóa thất bại.";
         }
     }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
@@ -22,7 +23,7 @@ namespace orchid_backend_net.Application.User.UpdateUserAvatar
             if (user == null)
                 throw new NotFoundException("Người dùng không hợp lệ.");
             user.AvatarUrl = imageUrl;
-            user.UpdatedDate = DateTime.UtcNow;
+            user.UpdatedDate = TimeZoneEnum.VietnamTimeZone;
             user.UpdatedBy = currentUserService.UserName;
             userRepository.Update(user);
             return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0

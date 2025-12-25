@@ -41,6 +41,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
+                    Code = table.Column<string>(type: "text", nullable: false),
                     Unit = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -126,8 +127,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     LocalName = table.Column<string>(type: "text", nullable: false),
                     ScientificName = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    ParentAId = table.Column<string>(type: "text", nullable: false),
-                    ParentBId = table.Column<string>(type: "text", nullable: false),
+                    ParentAId = table.Column<string>(type: "text", nullable: true),
+                    ParentBId = table.Column<string>(type: "text", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
@@ -138,6 +139,16 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Seedlings", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Seedlings_Seedlings_ParentAId",
+                        column: x => x.ParentAId,
+                        principalTable: "Seedlings",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_Seedlings_Seedlings_ParentBId",
+                        column: x => x.ParentBId,
+                        principalTable: "Seedlings",
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(
@@ -321,6 +332,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     StageId = table.Column<int>(type: "integer", nullable: false),
+                    CharacteristicCode = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     MinValue = table.Column<decimal>(type: "numeric", nullable: false),
@@ -640,6 +652,16 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_SamplesRequirements_StageId",
                 table: "SamplesRequirements",
                 column: "StageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seedlings_ParentAId",
+                table: "Seedlings",
+                column: "ParentAId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Seedlings_ParentBId",
+                table: "Seedlings",
+                column: "ParentBId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SeedlingsTraits_CharacteristicId",

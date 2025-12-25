@@ -9,9 +9,9 @@ namespace orchid_backend_net.Application.Authentication.Register
         private readonly IRoleRepository _roleRepository;
         public RegisterCommandValidator(IUserRepository userRepository, IRoleRepository roleRepository)
         {
-            Configuration();
             _userRepository = userRepository;
             _roleRepository = roleRepository;
+            Configuration();
         }
         void Configuration()
         {

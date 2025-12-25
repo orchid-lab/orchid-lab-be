@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20251223102847_v1")]
+    [Migration("20251224163357_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -92,6 +92,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Characteristic", b =>
                 {
                     b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
@@ -430,6 +434,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<string>("CharacteristicCode")
+                        .HasColumnType("text");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
@@ -485,11 +492,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ParentAId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ParentBId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ScientificName")
@@ -503,6 +508,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("ID");
+
+                    b.HasIndex("ParentAId");
+
+                    b.HasIndex("ParentBId");
 
                     b.ToTable("Seedlings");
                 });
@@ -895,9 +904,24 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Stage");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentA")
+                        .WithMany()
+                        .HasForeignKey("ParentAId");
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentB")
+                        .WithMany()
+                        .HasForeignKey("ParentBId");
+
+                    b.Navigation("ParentA");
+
+                    b.Navigation("ParentB");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SeedlingsTraits", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Characteristic", "Charactersistics")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Characteristic", "Characteristics")
                         .WithMany()
                         .HasForeignKey("CharacteristicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -909,7 +933,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Charactersistics");
+                    b.Navigation("Characteristics");
 
                     b.Navigation("Seedling");
                 });

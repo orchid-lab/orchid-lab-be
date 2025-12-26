@@ -19,6 +19,15 @@ namespace orchid_backend_net.Application.Authentication.Register
     {
         public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
+            if(request.RoleID == 1) // Admin role
+            {
+                var isCurrentUserAdmin = await currentUserService.IsInRoleAsync("Admin");
+                if (!isCurrentUserAdmin)
+                {
+                    return "Bạn không có quyền tạo tài khoản Admin.";
+                }
+            }
+
             Users user = new()
             {
                 Name = request.Name,

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.User;
@@ -6,6 +7,7 @@ using orchid_backend_net.Application.User.DeleteUser;
 using orchid_backend_net.Application.User.GetAllUser;
 using orchid_backend_net.Application.User.GetUserId;
 using orchid_backend_net.Application.User.UpdateUser;
+using orchid_backend_net.Application.User.UpdateUserAvatar;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
@@ -86,7 +88,8 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        [HttpPost]
+        [HttpPut]
+        [Authorize(Roles = "Admin,Researcher,Technician")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
@@ -109,6 +112,46 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
+        /// using for user want to update avatar
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="userId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut("images")]
+        [Authorize(Roles = "Admin,Researcher,Technician")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateAvatar(
+            IFormFile image,
+            [FromForm] string userId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                _logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                if (string.IsNullOrEmpty(userId))
+                    return BadRequest("User ID is required.");
+                if (image == null || image.Length == 0)
+                    return BadRequest("Image file is required.");
+                using var stream = image.OpenReadStream();
+                stream.Position = 0;
+                var command = new UpdateUserAvatarCommand(userId, image.FileName, stream);
+                var result = await this._sender.Send(command, cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "User update failed", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// using for delete user
         /// </summary>
         /// <param name="command"></param>
@@ -116,6 +159,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]

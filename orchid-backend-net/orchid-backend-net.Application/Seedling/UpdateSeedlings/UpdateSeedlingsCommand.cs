@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
@@ -76,24 +77,6 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
             return await seedlingRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? "Cập nhật cây giống thành công." : "Cập nhật cây giống thất bại.";
         }
-    }
-
-    /// <summary>
-    /// using for creating new SeedlingTrait when updating Seedling
-    /// </summary>
-    public class CreateSeedlingTraistDto
-    {
-        public required string CharacteristicId { get; set; }
-        public required decimal Value { get; set; }
-    }
-
-    /// <summary>
-    /// using for updating existing SeedlingTrait when updating Seedling
-    /// </summary>
-    public class UpdateSeedlingsTraitsDto
-    {
-        public required string Id { get; set; }
-        public required decimal Value { get; set; }
     }
 
     /// <summary>

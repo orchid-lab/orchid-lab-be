@@ -1,17 +1,18 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Enum;
 using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Seedling.CreateSeedlings
 {
     public class CreateSeedlingsCommand(
-        string localName, 
-        string scientificName, 
+        string localName,
+        string scientificName,
         string? description,
-        string? parentAId, 
-        string? parentBId, 
+        string? parentAId,
+        string? parentBId,
         List<CreateSeedlingTraistDto> createSeedlingTraistDtos) : IRequest<string>
     {
         public required string LocalName { get; set; } = localName;
@@ -21,14 +22,8 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
         public string? ParentBId { get; set; } = parentBId;
         public required List<CreateSeedlingTraistDto> SeedlingsTraits { get; set; } = createSeedlingTraistDtos;
     }
-    public class CreateSeedlingTraistDto
-    {
-        public required string CharacteristicId { get; set; }
-        public required decimal Value { get; set; }
-    }
 
     internal class CreateSeedlingsCommandHandler(ISeedlingRepository seedlingRepository,
-        ISeedlingTraitRepository seedlingTraitRepository, 
         ICurrentUserService currentUserService) : IRequestHandler<CreateSeedlingsCommand, string>
     {
         public async Task<string> Handle(CreateSeedlingsCommand request, CancellationToken cancellationToken)
@@ -43,16 +38,15 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
                 CreatedBy = currentUserService.UserId,
                 CreatedDate = TimeZoneEnum.VietnamTimeZone,
             };
+
+            request.SeedlingsTraits.ForEach(traitDto =>
+            {
+                seedling.AddTrait(traitDto.CharacteristicId, traitDto.Value);
+            });
+
             seedlingRepository.Add(seedling);
 
-            var seedlingTraits = request.SeedlingsTraits.Select(trait => new SeedlingsTraits
-            {
-                SeedlingId = seedling.ID,
-                CharacteristicId = trait.CharacteristicId,
-                Value = trait.Value,
-            }).ToList();
 
-            seedlingTraitRepository.AddRange(seedlingTraits);
             return await seedlingRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Tạo cây giống thành công" : "Tạo cây giống thất bại";
         }
     }

@@ -27,8 +27,8 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
     {
         public async Task<string> Handle(UpdateSeedlingsCommand request, CancellationToken cancellationToken)
         {
-            List<SeedlingsTraits> traitsToAdd = new List<SeedlingsTraits>();
-            List<SeedlingsTraits> traitToUpdate = new List<SeedlingsTraits>();
+            List<SeedlingsTraits> traitsToAdd = [];
+            List<SeedlingsTraits> traitToUpdate = [];
             var seedlings = await seedlingRepository.FindAsync(x => x.ID.Equals(request.Id), cancellationToken)
                 ?? throw new NotFoundException("Cây giống không tồn tại.");
 

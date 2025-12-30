@@ -5,9 +5,10 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class TaskAssignment : BaseGuidEntity
     {
-        public required string TaskId { get; set; }
+        public string TaskId { get; set; }
         public required string TechnicianId { get; set; } 
-        public required string SampleId { get; set; } 
+        public string? SampleId { get; set; } 
+        public bool IsForWholeExperimentLog { get; set; }   
 
         [ForeignKey(nameof(TechnicianId))]
         public virtual Users Technician { get; set; } 

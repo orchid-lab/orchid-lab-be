@@ -21,14 +21,10 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
     }
 
     internal class UpdateSeedlingCommandHandler(ISeedlingRepository seedlingRepository,
-        ISeedlingTraitRepository seedlingTraitRepository,
-        ICharacteristicRepository characteristicRepository,
         ICurrentUserService currentUserService) : IRequestHandler<UpdateSeedlingsCommand, string>
     {
         public async Task<string> Handle(UpdateSeedlingsCommand request, CancellationToken cancellationToken)
         {
-            List<SeedlingsTraits> traitsToAdd = [];
-            List<SeedlingsTraits> traitToUpdate = [];
             var seedlings = await seedlingRepository.FindAsync(x => x.ID.Equals(request.Id), cancellationToken)
                 ?? throw new NotFoundException("Cây giống không tồn tại.");
 
@@ -41,39 +37,17 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
             seedlings.UpdatedBy = currentUserService.UserId;
 
 
-            request.UpdateSeedlingsTraits?.ForEach(async x =>
-             {
-                 var seedlingTrait = await seedlingTraitRepository.FindAsync(st => st.ID.Equals(x.Id), cancellationToken);
-                 if (seedlingTrait is not null)
-                 {
-                     seedlingTrait.Value = x.Value;
-                     traitToUpdate.Add(seedlingTrait);
-                 }
-             });
-
-            request.CreateSeedlingsTraits?.ForEach(async x =>
+            request.UpdateSeedlingsTraits?.ForEach(x =>
             {
-                var characteristic = await characteristicRepository.FindAsync(c => c.ID.Equals(x.CharacteristicId), cancellationToken);
-                if (characteristic is null)
-                    throw new NotFoundException($"Đặc điểm với ID {x.CharacteristicId} không tồn tại.");
+                seedlings.UpdateTrait(x.Id, x.Value);
+            });
 
-                var isSeedlingsTraitDuplicated = await seedlingTraitRepository.AnyAsync(t => t.CharacteristicId.Equals(x.CharacteristicId) && t.SeedlingId.Equals(seedlings.ID));
-
-                if (isSeedlingsTraitDuplicated)
-                    throw new DuplicateException($"Đặc điểm với ID {x.CharacteristicId} đã tồn tại trong cây giống này.");
-
-                var newSeedlingTrait = new SeedlingsTraits()
-                {
-                    CharacteristicId = x.CharacteristicId,
-                    SeedlingId = seedlings.ID,
-                    Value = x.Value
-                };
-                traitsToAdd.Add(newSeedlingTrait);
+            request.CreateSeedlingsTraits?.ForEach(x =>
+            {
+                seedlings.AddTrait(x.CharacteristicId, x.Value);
             });
 
             seedlingRepository.Update(seedlings);
-            seedlingTraitRepository.UpdateRange(traitToUpdate);
-            seedlingTraitRepository.AddRange(traitsToAdd);
             return await seedlingRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? "Cập nhật cây giống thành công." : "Cập nhật cây giống thất bại.";
         }

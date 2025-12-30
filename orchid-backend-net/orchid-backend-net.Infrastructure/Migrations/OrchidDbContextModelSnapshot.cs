@@ -608,8 +608,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsForWholeExperimentLog")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("SampleId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TaskId")
@@ -988,9 +990,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
                         .WithMany("TaskAssignments")
-                        .HasForeignKey("SampleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SampleId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
                         .WithMany("TaskAssignments")

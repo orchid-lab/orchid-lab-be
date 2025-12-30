@@ -511,7 +511,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     TaskId = table.Column<string>(type: "text", nullable: false),
                     TechnicianId = table.Column<string>(type: "text", nullable: false),
-                    SampleId = table.Column<string>(type: "text", nullable: false)
+                    SampleId = table.Column<string>(type: "text", nullable: true),
+                    IsForWholeExperimentLog = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -520,8 +521,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_TaskAssignments_Samples_SampleId",
                         column: x => x.SampleId,
                         principalTable: "Samples",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_TaskAssignments_Tasks_TaskId",
                         column: x => x.TaskId,

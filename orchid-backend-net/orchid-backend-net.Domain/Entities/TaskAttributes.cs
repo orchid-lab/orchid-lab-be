@@ -5,9 +5,9 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class TaskAttributes : BaseGuidEntity
     {
-        public required int ChemicalId { get; set; }
-        public required int MaterialId { get; set; }
-        public required string TaskId { get; set; }
+        public int? ChemicalId { get; set; }
+        public int? MaterialId { get; set; }
+        public string TaskId { get; set; }
         [ForeignKey(nameof(ChemicalId))]
         public virtual Chemicals Chemicals { get; set; }
         [ForeignKey(nameof(MaterialId))]

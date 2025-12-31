@@ -56,7 +56,12 @@ namespace orchid_backend_net.API.Controllers
             }
         }
 
-        //using for refresh token
+        /// <summary>
+        /// using for refresh jwt token
+        /// </summary>
+        /// <param name="refreshToken"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost("refresh-token")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -88,6 +93,7 @@ namespace orchid_backend_net.API.Controllers
 
         /// <summary>
         /// using for create user in system
+        /// only using by admin role
         /// </summary>
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>

@@ -1,4 +1,5 @@
-﻿using orchid_backend_net.Domain.Entities.Base;
+﻿using orchid_backend_net.Domain.Common.Exceptions;
+using orchid_backend_net.Domain.Entities.Base;
 
 namespace orchid_backend_net.Domain.Entities
 {
@@ -17,7 +18,64 @@ namespace orchid_backend_net.Domain.Entities
         //1 - Đang tiến hành
         //3 - Đang chờ xác nhận đã hoàn thành từ Researcher
         //4 - Đã hoàn thành
-        public virtual IEnumerable<TaskAssignment> TaskAssignments { get; set; } = [];
-        public virtual IEnumerable<TaskAttributes> TaskAttributes { get; set; } = [];
+        public virtual List<TaskAssignment> TaskAssignments { get; set; } = [];
+        public virtual List<TaskAttributes> TaskAttributes { get; set; } = [];
+
+        public void AddTaskAssignment(string technicianId, string? sampleId, bool isForWholeExperimentLog)
+        {
+            var taskAssignment = new TaskAssignment
+            {
+                TaskId = this.ID,
+                TechnicianId = technicianId,
+                SampleId = sampleId,
+                IsForWholeExperimentLog = isForWholeExperimentLog
+            };
+            TaskAssignments.Add(taskAssignment);
+        }
+
+        public void UpdateTaskAssignment(string taskAssignmentId, string technicianId, string? sampleId, bool isForWholeExperimentLog)
+        {
+            var taskAssignment = TaskAssignments.FirstOrDefault(ta => ta.ID == taskAssignmentId);
+            if (taskAssignment != null)
+            {
+                taskAssignment.TechnicianId = technicianId;
+                taskAssignment.SampleId = sampleId;
+                taskAssignment.IsForWholeExperimentLog = isForWholeExperimentLog;
+            }
+        }
+
+        public void AddTaskAttribute(int? chemicalId, int? materialId, string unit, decimal value)
+        {
+            var isDuplicatedAttributes = TaskAttributes.Any(x => x.ChemicalId.Equals(chemicalId) && x.MaterialId.Equals(materialId));
+            if (isDuplicatedAttributes)
+            {
+                throw new DuplicateException("Bị trùng attributes.");
+            }
+            if (chemicalId is not null && materialId is not null)
+                throw new InvalidCastException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
+            var taskAttribute = new TaskAttributes
+            {
+                ChemicalId = chemicalId,
+                MaterialId = materialId,
+                Unit = unit,
+                Value = value
+            };
+            TaskAttributes.Add(taskAttribute);
+        }
+
+        public void UpdateTaskAttributes(string taskAttributesId, string unit, decimal value, int? chemicalId, int? materialId)
+        {
+            var taskAttribute = TaskAttributes.FirstOrDefault(ta => ta.ID == taskAttributesId);
+            if(taskAttribute is null) 
+                throw new NotFoundException("Không tìm thấy task attribute.");
+            if(chemicalId is not null && materialId is not null)
+            {
+                throw new InvalidCastException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
+            }
+            taskAttribute.MaterialId = materialId;
+            taskAttribute.ChemicalId = chemicalId;
+            taskAttribute.Unit = unit;
+            taskAttribute.Value = value;
+        }
     }
 }

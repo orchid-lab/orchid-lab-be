@@ -28,8 +28,6 @@ namespace orchid_backend_net.Application.User.GetAllUser
                 pageNo: request.PageNumber,
                 pageSize: request.PageSize,
                 cancellationToken: cancellationToken);
-            if (!list.Any())
-                throw new NotFoundException("Hệ thống chưa ghi nhận người dùng nào.");
             return list.ToAppPageResult();
         }
     }

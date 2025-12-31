@@ -2,7 +2,7 @@
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Domain.Entities;
 
-namespace orchid_backend_net.Application.Seedling
+namespace orchid_backend_net.Application.Seedling.Dto
 {
     public class SeedlingsDto : IMapFrom<Seedlings>
     {

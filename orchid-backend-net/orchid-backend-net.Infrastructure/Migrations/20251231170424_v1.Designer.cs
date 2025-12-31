@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20251224163357_v1")]
+    [Migration("20251231170424_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -611,8 +611,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsForWholeExperimentLog")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("SampleId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("TaskId")
@@ -639,10 +641,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<int>("ChemicalId")
+                    b.Property<int?>("ChemicalId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("MaterialId")
+                    b.Property<int?>("MaterialId")
                         .HasColumnType("integer");
 
                     b.Property<string>("TaskId")
@@ -991,9 +993,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
                         .WithMany("TaskAssignments")
-                        .HasForeignKey("SampleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SampleId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
                         .WithMany("TaskAssignments")
@@ -1018,15 +1018,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Chemicals", "Chemicals")
                         .WithMany()
-                        .HasForeignKey("ChemicalId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ChemicalId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Materials", "Materials")
                         .WithMany()
-                        .HasForeignKey("MaterialId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("MaterialId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Tasks")
                         .WithMany("TaskAttributes")

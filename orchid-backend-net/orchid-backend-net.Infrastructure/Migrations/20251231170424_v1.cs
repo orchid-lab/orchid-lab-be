@@ -297,8 +297,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 columns: table => new
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
-                    ChemicalId = table.Column<int>(type: "integer", nullable: false),
-                    MaterialId = table.Column<int>(type: "integer", nullable: false),
+                    ChemicalId = table.Column<int>(type: "integer", nullable: true),
+                    MaterialId = table.Column<int>(type: "integer", nullable: true),
                     TaskId = table.Column<string>(type: "text", nullable: false),
                     Unit = table.Column<string>(type: "text", nullable: false),
                     Value = table.Column<decimal>(type: "numeric", nullable: false)
@@ -310,14 +310,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_TaskAttributes_Chemicals_ChemicalId",
                         column: x => x.ChemicalId,
                         principalTable: "Chemicals",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_TaskAttributes_Materials_MaterialId",
                         column: x => x.MaterialId,
                         principalTable: "Materials",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_TaskAttributes_Tasks_TaskId",
                         column: x => x.TaskId,

@@ -61,14 +61,14 @@ namespace orchid_backend_net.Infrastructure
 
 
             //Seed data generation and check migration
-            //using (var scope = services.BuildServiceProvider().CreateScope())
-            //{
-            //    var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
-            //    dbContext.Database.Migrate();
-            //    SeedDataGenerator.SeedAsync(dbContext)
-            //                     .GetAwaiter()
-            //                     .GetResult();
-            //}
+            using (var scope = services.BuildServiceProvider().CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
+                dbContext.Database.Migrate();
+                SeedDataGenerator.SeedAsync(dbContext)
+                                 .GetAwaiter()
+                                 .GetResult();
+            }
 
             //service
             services.AddScoped<IEmailSender, EmailSender>();

@@ -16,7 +16,7 @@ namespace orchid_backend_net.Application.Tasks.Dto
         {
             profile.CreateMap<Domain.Entities.Tasks, TaskDto>()
                 .ForMember(dest => dest.TaskAttributes, opt => opt.MapFrom(src => src.TaskAttributes))
-                .ForMember(dest => dest.Status.ToLower(), opt => opt.MapFrom(src =>
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
                     src.Status == 0 ? "chưa nhận" :
                     src.Status == 1 ? "đang tiến hành" :
                     src.Status == 3 ? "đang chờ xác nhận đã hoàn thành từ Researcher" :

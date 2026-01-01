@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Common.Mappings;
+using orchid_backend_net.Application.Common.Extension;
 
 namespace orchid_backend_net.Application.Tasks.Dto
 {
@@ -12,15 +13,13 @@ namespace orchid_backend_net.Application.Tasks.Dto
         public DateTime EndDate { get; set; }
         public string Status { get; set; }
         public List<TaskAttributesDto> TaskAttributes { get; set; }
+        public List<TaskAssignmentDto> TaskAssignments { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.Tasks, TaskDto>()
                 .ForMember(dest => dest.TaskAttributes, opt => opt.MapFrom(src => src.TaskAttributes))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src =>
-                    src.Status == 0 ? "chưa nhận" :
-                    src.Status == 1 ? "đang tiến hành" :
-                    src.Status == 3 ? "đang chờ xác nhận đã hoàn thành từ Researcher" :
-                    src.Status == 4 ? "đã hoàn thành" : "không xác định"));
+                .ForMember(dest => dest.TaskAssignments, opt => opt.MapFrom(src => src.TaskAssignments))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToDisplayText()));
         }
     }
 }

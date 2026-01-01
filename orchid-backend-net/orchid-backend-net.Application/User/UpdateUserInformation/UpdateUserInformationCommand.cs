@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Enum;
+using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
@@ -34,7 +34,7 @@ namespace orchid_backend_net.Application.User.UpdateUser
             user.Email = request.Email ?? user.Email;
             user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
             user.UpdatedBy = currentUserService.UserId;
-            user.UpdatedDate = TimeZoneEnum.VietnamTimeZone;
+            user.UpdatedDate = TimeZoneHelper.VietnamTimeNow;
             userRepository.Update(user);
             return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Sửa đổi thành công" : "Sửa đổi thất bại";
         }

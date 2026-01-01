@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20251231170424_v1")]
+    [Migration("20260101180625_v1")]
     partial class v1
     {
         /// <inheritdoc />

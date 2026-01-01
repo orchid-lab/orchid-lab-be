@@ -26,4 +26,8 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Tasks\UpdateTask\" />
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,6 @@
-﻿namespace orchid_backend_net.Application.Tasks.CreateTask
+﻿namespace orchid_backend_net.Application.Tasks.Dto
 {
-    public class CreateTaskParameter
+    public class CreateTaskDto
     {
         public required string Name { get; set; }
         public string? Description { get; set; }

@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Tasks\UpdateTask\" />
+    <Folder Include="Tasks\ConvertTaskTemplateToTodoTask\" />
   </ItemGroup>
 
 </Project>

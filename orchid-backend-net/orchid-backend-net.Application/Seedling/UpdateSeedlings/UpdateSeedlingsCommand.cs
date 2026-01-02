@@ -7,7 +7,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
 {
-    public class UpdateSeedlingsCommand(UpdateSeedlingCommandParameter parameter) : IRequest<string>
+    public class UpdateSeedlingsCommand(UpdateSeedlingCommandDto parameter) : IRequest<string>
     {
         public required string Id { get; set; } = parameter.Id;
         public string? LocalName { get; set; } = parameter.LocalName;

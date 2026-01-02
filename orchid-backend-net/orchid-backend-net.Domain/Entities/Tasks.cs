@@ -33,7 +33,7 @@ namespace orchid_backend_net.Domain.Entities
             TaskAssignments.Add(taskAssignment);
         }
 
-        public void UpdateTaskAssignment(string taskAssignmentId, string technicianId, string? sampleId, bool isForWholeExperimentLog)
+        public void UpdateTaskAssignment(string taskAssignmentId, string? sampleId, bool isForWholeExperimentLog)
         {
             var taskAssignment = TaskAssignments.FirstOrDefault(ta => ta.ID == taskAssignmentId);
             if (isForWholeExperimentLog && !string.IsNullOrWhiteSpace(sampleId))
@@ -42,7 +42,6 @@ namespace orchid_backend_net.Domain.Entities
             }
             if (taskAssignment != null)
             {
-                taskAssignment.TechnicianId = technicianId;
                 taskAssignment.SampleId = sampleId;
                 taskAssignment.IsForWholeExperimentLog = isForWholeExperimentLog;
             }
@@ -51,8 +50,8 @@ namespace orchid_backend_net.Domain.Entities
         public void AddTaskAttribute(int? chemicalId, int? materialId, string unit, decimal value)
         {
             var isDuplicatedAttributes = TaskAttributes.Any(x =>
-            (chemicalId != null && x.ChemicalId.Equals(chemicalId)) ||
-            (materialId != null && x.MaterialId.Equals(materialId)));
+            (chemicalId != null && x.ChemicalId == chemicalId) ||
+            (materialId != null && x.MaterialId == materialId));
             if (isDuplicatedAttributes)
             {
                 throw new DuplicateException("Bị trùng attributes.");
@@ -76,7 +75,7 @@ namespace orchid_backend_net.Domain.Entities
                 throw new NotFoundException("Không tìm thấy task attribute.");
             if (chemicalId is not null && materialId is not null)
             {
-                throw new InvalidCastException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
+                throw new DomainException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
             }
             taskAttribute.MaterialId = materialId;
             taskAttribute.ChemicalId = chemicalId;

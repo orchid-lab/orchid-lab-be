@@ -26,8 +26,4 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Tasks\ConvertTaskTemplateToTodoTask\" />
-  </ItemGroup>
-
 </Project>

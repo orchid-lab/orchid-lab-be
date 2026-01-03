@@ -10,14 +10,17 @@ namespace orchid_backend_net.Domain.Entities
         //StageId để xác định là cái task này có phải là template hay không
         public string? StageId { get; set; }
         public string? ResearcherId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime ExpectedEndDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? DeletedDate { get; set; }
+        public string? DeletedBy { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }
         public virtual List<TaskAssignment> TaskAssignments { get; set; } = [];
         public virtual List<TaskAttributes> TaskAttributes { get; set; } = [];
 
-        public void AddTaskAssignment(string technicianId, string? sampleId, bool isForWholeExperimentLog)
+        public void AddTaskAssignment(string technicianId, string? sampleId, bool isForWholeExperimentLog, DateTime expectedEndDate, DateTime startDate)
         {
             if (isForWholeExperimentLog && !string.IsNullOrWhiteSpace(sampleId))
             {
@@ -28,12 +31,14 @@ namespace orchid_backend_net.Domain.Entities
                 TaskId = this.ID,
                 TechnicianId = technicianId,
                 SampleId = sampleId,
-                IsForWholeExperimentLog = isForWholeExperimentLog
+                IsForWholeExperimentLog = isForWholeExperimentLog,
+                StartDate = startDate,
+                ExpectedEndDate = expectedEndDate
             };
             TaskAssignments.Add(taskAssignment);
         }
 
-        public void UpdateTaskAssignment(string taskAssignmentId, string? sampleId, bool isForWholeExperimentLog)
+        public void UpdateTaskAssignment(string taskAssignmentId, string? sampleId, bool isForWholeExperimentLog, DateTime? expectedEndDate, DateTime? endDate)
         {
             var taskAssignment = TaskAssignments.FirstOrDefault(ta => ta.ID == taskAssignmentId);
             if (isForWholeExperimentLog && !string.IsNullOrWhiteSpace(sampleId))
@@ -44,6 +49,8 @@ namespace orchid_backend_net.Domain.Entities
             {
                 taskAssignment.SampleId = sampleId;
                 taskAssignment.IsForWholeExperimentLog = isForWholeExperimentLog;
+                taskAssignment.ExpectedEndDate = expectedEndDate ?? taskAssignment.ExpectedEndDate;
+                taskAssignment.EndDate = endDate;
             }
         }
 

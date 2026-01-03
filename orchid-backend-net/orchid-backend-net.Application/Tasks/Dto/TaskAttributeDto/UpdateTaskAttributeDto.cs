@@ -1,4 +1,4 @@
-﻿namespace orchid_backend_net.Application.Tasks.Dto
+﻿namespace orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto
 {
     public class UpdateTaskAttributeDto
     {

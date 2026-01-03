@@ -15,10 +15,10 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("Tên task không được để trống.");
-            RuleFor(x => x.ExpectedEndDate)
+            RuleFor(x => x.CreateTaskAssignment.ExpectedEndDate)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("Ngày kết thúc không được để trống.");
+                .WithMessage("Ngày dự kiến kết thúc không được để trống.");
         }
     }
 }

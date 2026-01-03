@@ -1,8 +1,10 @@
-﻿namespace orchid_backend_net.Application.Tasks.Helper
+﻿using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
+
+namespace orchid_backend_net.Application.Tasks.Helper
 {
     public static class TaskAttributeHelper
     {
-        public static void AddAttributesToTask(Domain.Entities.Tasks task, List<Dto.CreateTaskAttributeDto>? createTaskAttributes)
+        public static void AddAttributesToTask(Domain.Entities.Tasks task, List<CreateTaskAttributeDto>? createTaskAttributes)
         {
             if (createTaskAttributes is null)
                 return;
@@ -13,7 +15,7 @@
             }
         }
 
-        public static void UpdateAttributesOfTask(Domain.Entities.Tasks task, List<Dto.UpdateTaskAttributeDto>? updateTaskAttributes)
+        public static void UpdateAttributesOfTask(Domain.Entities.Tasks task, List<UpdateTaskAttributeDto>? updateTaskAttributes)
         {
             if (updateTaskAttributes is null)
                 return;

@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Application.Common.Extension;
+using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
+using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 
 namespace orchid_backend_net.Application.Tasks.Dto
 {
@@ -13,7 +15,7 @@ namespace orchid_backend_net.Application.Tasks.Dto
         public DateTime EndDate { get; set; }
         public string Status { get; set; }
         public List<TaskAttributesDto> TaskAttributes { get; set; }
-        public List<TaskAssignmentDto> TaskAssignments { get; set; }
+        public List<TaskAssignmentsDto> TaskAssignments { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.Tasks, TaskDto>()

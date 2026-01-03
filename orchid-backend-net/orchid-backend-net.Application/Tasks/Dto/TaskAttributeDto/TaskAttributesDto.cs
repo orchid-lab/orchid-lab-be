@@ -2,7 +2,7 @@
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Domain.Entities;
 
-namespace orchid_backend_net.Application.Tasks.Dto
+namespace orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto
 {
     public class TaskAttributesDto : IMapFrom<TaskAttributes>
     {

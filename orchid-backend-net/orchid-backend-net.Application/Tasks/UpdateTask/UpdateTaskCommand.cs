@@ -1,5 +1,9 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Helper;
+using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Tasks.Dto;
+using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
+using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
 using orchid_backend_net.Application.Tasks.Helper;
 using orchid_backend_net.Application.Tasks.Policy;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -7,22 +11,28 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.UpdateTask
 {
-    public class UpdateTaskCommand(UpdateTaskDto parameter, List<CreateTaskAttributeDto>? createTaskAttributes,  List<UpdateTaskAttributeDto>? updateTaskAttributes) : IRequest<string>
+    /// <summary>
+    /// only for update information. Not for complete task
+    /// </summary>
+    /// <param name="parameter"></param>
+    /// <param name="createTaskAttributes"></param>
+    /// <param name="updateTaskAttributes"></param>
+    public class UpdateTaskCommand(
+        UpdateTaskDto parameter, 
+        List<CreateTaskAttributeDto>? createTaskAttributes,  
+        List<UpdateTaskAttributeDto>? updateTaskAttributes,
+        UpdateTaskAssignmentDto updateTaskAssignment) : IRequest<string>
     {
         public required string TaskId { get; set; } = parameter.TaskId;
-        public string? TaskAssignmentId { get; set; } = parameter.TaskAssignmentId;
         public string? StageId { get; set; } = parameter.StageId;
-        public string? SampleId { get; set; } = parameter.SampleId;
         public string? Name { get; set; } = parameter.Name;
         public string? Description { get; set; } = parameter.Description;
-        public string? Status { get; set; } = parameter.Status;
-        public DateTime? ExpectedEndDate { get; set; } = parameter.ExpectedEndDate;
-        public bool IsForWholeExperimentLog { get; set; } = parameter.IsForWholeExperimentLog;
         public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
         public List<UpdateTaskAttributeDto>? UpdateTaskAttribute { get; set; } = updateTaskAttributes;
+        public UpdateTaskAssignmentDto? UpdateTaskAssignment { get; set; }
     }
 
-    internal class UpdateTaskCommandHandler(ITaskRepository taskRepository) : IRequestHandler<UpdateTaskCommand, string>
+    internal class UpdateTaskCommandHandler(ITaskRepository taskRepository, ICurrentUserService currentUserService) : IRequestHandler<UpdateTaskCommand, string>
     {
         public async Task<string> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
@@ -30,27 +40,28 @@ namespace orchid_backend_net.Application.Tasks.UpdateTask
 
             TaskPolicy.ValidateTaskUpdate(tasks, request);
 
-            //status validation
-            if (!string.IsNullOrWhiteSpace(request.Status))
-            {
-                if (!Enum.TryParse<Domain.Common.Enum.TaskStatus>(request.Status, out var status))
-                {
-                    throw new InvalidOperationException("Trạng thái task không hợp lệ.");
-                }
-                tasks.Status = status;
-            }
-
             //update basic info
             tasks.Name = request.Name ?? tasks.Name;
             tasks.Description = request.Description ?? tasks.Description;
-            tasks.ExpectedEndDate = request.ExpectedEndDate ?? tasks.ExpectedEndDate;
-
+            tasks.UpdatedDate = TimeZoneHelper.VietnamTimeNow;
+            tasks.UpdatedBy = currentUserService.UserId;
             //create and update task attributes
             TaskAttributeHelper.AddAttributesToTask(tasks, request.CreateTaskAttribute);
             TaskAttributeHelper.UpdateAttributesOfTask(tasks, request.UpdateTaskAttribute);
 
             //only update sample and scope; do not change assigned technician
-            TaskAssignmentHelper.UpdateTaskAssignmentOfTask(tasks, request.TaskAssignmentId, request.SampleId, request.IsForWholeExperimentLog);
+            if (request.UpdateTaskAssignment is not null &&
+                !string.IsNullOrWhiteSpace(request.UpdateTaskAssignment.TaskAssignmentId))
+            {
+                TaskAssignmentHelper.UpdateTaskAssignmentOfTask(
+                    tasks,
+                    request.UpdateTaskAssignment.TaskAssignmentId!,
+                    request.UpdateTaskAssignment.SampleId,
+                    request.UpdateTaskAssignment.IsForWholeExperimentLog,
+                    request.UpdateTaskAssignment.ExpectedEndDate,
+                    null
+                );
+            }
 
             taskRepository.Update(tasks);
             return await taskRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0

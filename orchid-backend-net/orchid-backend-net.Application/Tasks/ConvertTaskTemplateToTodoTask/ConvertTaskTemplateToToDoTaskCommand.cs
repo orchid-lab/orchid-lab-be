@@ -26,7 +26,6 @@ namespace orchid_backend_net.Application.Tasks.ConvertTaskTemplateToTodoTask
             if (taskTemplate is null)
                 throw new NotFoundException("Không tìm thấy task template này.");
 
-            var currentTime = TimeZoneHelper.VietnamTimeNow;
             TaskPolicy.ValidateTaskWorkingHour(request.CreateTaskAssignment.ExpectedEndDate);
 
             Domain.Entities.Tasks taskToDo = new()
@@ -34,7 +33,7 @@ namespace orchid_backend_net.Application.Tasks.ConvertTaskTemplateToTodoTask
                 Name = taskTemplate.Name,
                 Description = taskTemplate.Description,
                 ResearcherId = currentUserService.UserId,
-                CreatedDate = currentTime,
+                CreatedDate = DateTime.UtcNow,
                 CreatedBy = currentUserService.UserId
             };
 
@@ -60,7 +59,7 @@ namespace orchid_backend_net.Application.Tasks.ConvertTaskTemplateToTodoTask
                 request.CreateTaskAssignment.SampleId,
                 request.CreateTaskAssignment.IsForWholeExperimentLog,
                 request.CreateTaskAssignment.ExpectedEndDate,
-                currentTime);
+                DateTime.UtcNow);
 
             //add task attribute
             TaskAttributeHelper.AddAttributesToTask(

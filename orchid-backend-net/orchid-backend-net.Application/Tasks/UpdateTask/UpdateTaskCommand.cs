@@ -43,7 +43,7 @@ namespace orchid_backend_net.Application.Tasks.UpdateTask
             //update basic info
             tasks.Name = request.Name ?? tasks.Name;
             tasks.Description = request.Description ?? tasks.Description;
-            tasks.UpdatedDate = TimeZoneHelper.VietnamTimeNow;
+            tasks.UpdatedDate = DateTime.UtcNow;
             tasks.UpdatedBy = currentUserService.UserId;
             //create and update task attributes
             TaskAttributeHelper.AddAttributesToTask(tasks, request.CreateTaskAttribute);

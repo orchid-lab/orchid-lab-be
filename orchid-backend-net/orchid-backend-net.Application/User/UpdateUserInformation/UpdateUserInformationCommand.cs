@@ -34,7 +34,7 @@ namespace orchid_backend_net.Application.User.UpdateUser
             user.Email = request.Email ?? user.Email;
             user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
             user.UpdatedBy = currentUserService.UserId;
-            user.UpdatedDate = TimeZoneHelper.VietnamTimeNow;
+            user.UpdatedDate = DateTime.UtcNow;
             userRepository.Update(user);
             return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Sửa đổi thành công" : "Sửa đổi thất bại";
         }

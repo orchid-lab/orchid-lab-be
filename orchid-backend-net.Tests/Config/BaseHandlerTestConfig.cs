@@ -9,6 +9,7 @@ namespace orchid_backend_net.Application.Tests.Config;
 public abstract class BaseHandlerTestConfig
 {
     protected Mock<IUserRepository> UserRepositoryMock = null!;
+    protected Mock<ITaskRepository> TaskRepositoryMock = null!;
     protected Mock<ISender> SenderMock = null!;
     protected Mock<IUnitOfWork> UnitOfWorkMock = null!;
     protected Mock<ICacheService> CacheServiceMock = null!;
@@ -23,5 +24,6 @@ public abstract class BaseHandlerTestConfig
         CacheServiceMock = new Mock<ICacheService>();
         CurrentUserServiceMock = new Mock<ICurrentUserService>();
         EmailSenderMock = new Mock<IEmailSender>();
+        TaskRepositoryMock = new Mock<ITaskRepository>();
     }
 }

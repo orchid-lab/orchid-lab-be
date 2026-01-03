@@ -12,13 +12,13 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
 {
     public class CreateTaskCommand(CreateTaskDto parameter, List<CreateTaskAttributeDto>? createTaskAttributes, CreateTaskAssignmentDto createTaskAssignment) : IRequest<string>
     {
-        public required string Name { get; set; } = parameter.Name;
+        public string Name { get; set; } = parameter.Name;
         public string? Description { get; set; } = parameter.Description;
 
         /// <summary>
         /// depends on whether the task is a to-do task or a template task
         /// </summary>
-        public required CreateTaskAssignmentDto CreateTaskAssignment { get; set; } = createTaskAssignment;
+        public CreateTaskAssignmentDto? CreateTaskAssignment { get; set; } = createTaskAssignment;
         /// <summary>
         /// if stage id is null => the task is a to-do task
         /// if stage is not null => the task is a template task
@@ -32,7 +32,6 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
         public async Task<string> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
             //use case rules validation
-            DateTime currentTime = TimeZoneHelper.VietnamTimeNow;
             TaskPolicy.ValidateTaskCreate(request);
             var tasks = new Domain.Entities.Tasks
             {
@@ -40,7 +39,9 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
                 Description = request.Description ?? string.Empty,
                 StageId = request.StageId,
                 ResearcherId = currentUserService.UserId,
-                Status = Domain.Common.Enum.TaskStatus.Created
+                Status = Domain.Common.Enum.TaskStatus.Created,
+                CreatedDate = DateTime.UtcNow,
+                CreatedBy = currentUserService.UserId,
             };
 
             TaskAttributeHelper.AddAttributesToTask(tasks, request.CreateTaskAttribute);
@@ -50,7 +51,7 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
                 request.CreateTaskAssignment.SampleId,
                 request.CreateTaskAssignment.IsForWholeExperimentLog, 
                 request.CreateTaskAssignment.ExpectedEndDate,
-                currentTime);
+                DateTime.UtcNow);
             taskRepository.Add(tasks);
             return await taskRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? "Tạo task thành công" : "Tạo task thất bại";

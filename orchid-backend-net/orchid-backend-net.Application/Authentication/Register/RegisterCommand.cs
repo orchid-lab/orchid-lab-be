@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Enum;
+using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Authentication.Register
 {
-    public class RegisterCommand(string name, string email, string phoneNumber, int roleID, string password) : IRequest<string>
+    public class RegisterCommand(string name, string email, string phoneNumber, int roleID) : IRequest<string>
     {
         public string Name { get; set; } = name;
         public string Email { get; set; } = email;
@@ -36,7 +36,7 @@ namespace orchid_backend_net.Application.Authentication.Register
                 RoleID = request.RoleID,
                 Password = BCrypt.Net.BCrypt.HashPassword("123@123a"),
                 CreatedBy = currentUserService.UserId,
-                CreatedDate = TimeZoneEnum.VietnamTimeZone,
+                CreatedDate = TimeZoneHelper.VietnamTimeNow,
             };
 
             var emailBody = await LoadEmailTemplateAsync(cancellationToken);

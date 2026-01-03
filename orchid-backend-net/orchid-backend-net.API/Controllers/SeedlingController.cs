@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Seedling.CreateSeedlings;
@@ -13,6 +12,11 @@ using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
 {
+    /// <summary>
+    /// seedling contrller 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="logger"></param>
     [Route("api/seedlings")]
     [ApiController]
     public class SeedlingController(ISender sender, ILogger<SeedlingController> logger) : BaseController(sender)

@@ -4,5 +4,6 @@ namespace orchid_backend_net.Domain.IRepositories
 {
     public interface ITaskRepository : IEFRepository<Tasks, Tasks>
     {
+        Task<Tasks?> GetTemplateForConversionAsync(string templateId, CancellationToken cancellationToken);
     }
 }

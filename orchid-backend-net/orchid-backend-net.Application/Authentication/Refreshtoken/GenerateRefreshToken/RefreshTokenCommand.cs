@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Enum;
+using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Entities.Base;
 using System.Security.Cryptography;
@@ -18,11 +18,11 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.GenerateRef
             var refreshToken = new RefreshToken
             {
                 Token = token,
-                Expired = TimeZoneEnum.VietnamTimeZone
+                Expired = TimeZoneHelper.VietnamTimeNow.AddDays(7)
             };
 
 
-            var expiryDateInRedis = refreshToken.Expired - DateTime.UtcNow;
+            var expiryDateInRedis = refreshToken.Expired - TimeZoneHelper.VietnamTimeNow;
             //Store the refresh token in Redis with a key based on the token value
             //best practice: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html#token-refresh
             var refreshTokenKey = refreshToken.Token.Trim().ToLowerInvariant();

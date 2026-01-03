@@ -160,9 +160,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     Description = table.Column<string>(type: "text", nullable: false),
                     StageId = table.Column<string>(type: "text", nullable: true),
                     ResearcherId = table.Column<string>(type: "text", nullable: true),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ExpectedEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedBy = table.Column<string>(type: "text", nullable: true),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -510,7 +513,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     TaskId = table.Column<string>(type: "text", nullable: false),
                     TechnicianId = table.Column<string>(type: "text", nullable: false),
                     SampleId = table.Column<string>(type: "text", nullable: true),
-                    IsForWholeExperimentLog = table.Column<bool>(type: "boolean", nullable: false)
+                    IsForWholeExperimentLog = table.Column<bool>(type: "boolean", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ExpectedEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

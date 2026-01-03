@@ -10,49 +10,61 @@ namespace orchid_backend_net.Domain.Entities
         //StageId để xác định là cái task này có phải là template hay không
         public string? StageId { get; set; }
         public string? ResearcherId { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
-        public DateTime ExpectedEndDate { get; set; }
-        public int Status { get; set; }
-        //0 - Chưa nhận
-        //1 - Đang tiến hành
-        //3 - Đang chờ xác nhận đã hoàn thành từ Researcher
-        //4 - Đã hoàn thành
+        public DateTime? CreatedDate { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? DeletedDate { get; set; }
+        public string? DeletedBy { get; set; }
+        public Domain.Common.Enum.TaskStatus Status { get; set; }
         public virtual List<TaskAssignment> TaskAssignments { get; set; } = [];
         public virtual List<TaskAttributes> TaskAttributes { get; set; } = [];
 
-        public void AddTaskAssignment(string technicianId, string? sampleId, bool isForWholeExperimentLog)
+        public void AddTaskAssignment(string technicianId, string? sampleId, bool isForWholeExperimentLog, DateTime expectedEndDate, DateTime startDate)
         {
+            if (isForWholeExperimentLog && !string.IsNullOrWhiteSpace(sampleId))
+            {
+                throw new DomainException("Không thể vừa chọn giao việc cho toàn bộ experiment log vừa chọn sample cụ thể.");
+            }
             var taskAssignment = new TaskAssignment
             {
                 TaskId = this.ID,
                 TechnicianId = technicianId,
                 SampleId = sampleId,
-                IsForWholeExperimentLog = isForWholeExperimentLog
+                IsForWholeExperimentLog = isForWholeExperimentLog,
+                StartDate = startDate,
+                ExpectedEndDate = expectedEndDate
             };
             TaskAssignments.Add(taskAssignment);
         }
 
-        public void UpdateTaskAssignment(string taskAssignmentId, string technicianId, string? sampleId, bool isForWholeExperimentLog)
+        public void UpdateTaskAssignment(string taskAssignmentId, string? sampleId, bool isForWholeExperimentLog, DateTime? expectedEndDate, DateTime? endDate)
         {
             var taskAssignment = TaskAssignments.FirstOrDefault(ta => ta.ID == taskAssignmentId);
+            if (isForWholeExperimentLog && !string.IsNullOrWhiteSpace(sampleId))
+            {
+                throw new DomainException("Không thể vừa chọn giao việc cho toàn bộ experiment log vừa chọn sample cụ thể.");
+            }
             if (taskAssignment != null)
             {
-                taskAssignment.TechnicianId = technicianId;
                 taskAssignment.SampleId = sampleId;
                 taskAssignment.IsForWholeExperimentLog = isForWholeExperimentLog;
+                taskAssignment.ExpectedEndDate = expectedEndDate ?? taskAssignment.ExpectedEndDate;
+                taskAssignment.EndDate = endDate;
             }
         }
 
         public void AddTaskAttribute(int? chemicalId, int? materialId, string unit, decimal value)
         {
-            var isDuplicatedAttributes = TaskAttributes.Any(x => x.ChemicalId.Equals(chemicalId) && x.MaterialId.Equals(materialId));
+            var isDuplicatedAttributes = TaskAttributes.Any(x =>
+            (chemicalId != null && x.ChemicalId == chemicalId) ||
+            (materialId != null && x.MaterialId == materialId));
             if (isDuplicatedAttributes)
             {
                 throw new DuplicateException("Bị trùng attributes.");
             }
             if (chemicalId is not null && materialId is not null)
-                throw new InvalidCastException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
+                throw new DomainException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
             var taskAttribute = new TaskAttributes
             {
                 ChemicalId = chemicalId,
@@ -66,11 +78,11 @@ namespace orchid_backend_net.Domain.Entities
         public void UpdateTaskAttributes(string taskAttributesId, string unit, decimal value, int? chemicalId, int? materialId)
         {
             var taskAttribute = TaskAttributes.FirstOrDefault(ta => ta.ID == taskAttributesId);
-            if(taskAttribute is null) 
+            if (taskAttribute is null)
                 throw new NotFoundException("Không tìm thấy task attribute.");
-            if(chemicalId is not null && materialId is not null)
+            if (chemicalId is not null && materialId is not null)
             {
-                throw new InvalidCastException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
+                throw new DomainException("Không thể cùng lúc thêm cả chemical và material cho một attribute.");
             }
             taskAttribute.MaterialId = materialId;
             taskAttribute.ChemicalId = chemicalId;

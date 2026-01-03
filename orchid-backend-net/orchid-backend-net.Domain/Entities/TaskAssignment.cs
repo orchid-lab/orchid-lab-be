@@ -16,5 +16,17 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Tasks Task { get; set; } 
         [ForeignKey(nameof(SampleId))]
         public virtual Samples Sample { get; set; }
+        /// <summary>
+        /// the created date of the task
+        /// </summary>
+        public DateTime StartDate { get; set; }
+        /// <summary>
+        /// the actual end date of the task
+        /// </summary>
+        public DateTime? EndDate { get; set; }
+        /// <summary>
+        /// the expected end date of the task
+        /// </summary>
+        public DateTime ExpectedEndDate { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Enum;
+using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Entities;
@@ -36,7 +36,7 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
                 ParentAId = request.ParentAId,
                 ParentBId = request.ParentBId,
                 CreatedBy = currentUserService.UserId,
-                CreatedDate = TimeZoneEnum.VietnamTimeZone,
+                CreatedDate = TimeZoneHelper.VietnamTimeNow,
             };
 
             request.SeedlingsTraits.ForEach(traitDto =>

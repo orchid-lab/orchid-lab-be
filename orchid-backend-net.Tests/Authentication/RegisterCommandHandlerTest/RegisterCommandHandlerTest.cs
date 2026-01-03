@@ -36,8 +36,7 @@ internal class RegisterCommandHandlerTest : AuthenticationHandlerTestConfig
             user.Name,
             user.Email,
             user.PhoneNumber,
-            user.RoleID,
-            "PlainTextPassword123!"
+            user.RoleID
         );
 
         //Act

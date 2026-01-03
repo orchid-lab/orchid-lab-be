@@ -1,14 +1,13 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Enum;
+using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Common.Exceptions;
-using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
 {
-    public class UpdateSeedlingsCommand(UpdateSeedlingCommandParameter parameter) : IRequest<string>
+    public class UpdateSeedlingsCommand(UpdateSeedlingCommandDto parameter) : IRequest<string>
     {
         public required string Id { get; set; } = parameter.Id;
         public string? LocalName { get; set; } = parameter.LocalName;
@@ -33,7 +32,7 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
             seedlings.Description = request.Description ?? seedlings.Description;
             seedlings.ParentAId = request.ParentAId ?? seedlings.ParentAId;
             seedlings.ParentBId = request.ParentBId ?? seedlings.ParentBId;
-            seedlings.UpdatedDate = TimeZoneEnum.VietnamTimeZone;
+            seedlings.UpdatedDate = TimeZoneHelper.VietnamTimeNow;
             seedlings.UpdatedBy = currentUserService.UserId;
 
 
@@ -51,20 +50,5 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
             return await seedlingRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? "Cập nhật cây giống thành công." : "Cập nhật cây giống thất bại.";
         }
-    }
-
-    /// <summary>
-    /// parameter object for constructor of UpdateSeedlingsCommand
-    /// </summary>
-    public class UpdateSeedlingCommandParameter
-    {
-        public required string Id { get; set; }
-        public string? LocalName { get; set; }
-        public string? ScientificName { get; set; }
-        public string? Description { get; set; }
-        public string? ParentAId { get; set; }
-        public string? ParentBId { get; set; }
-        public List<CreateSeedlingTraistDto>? CreateSeedlingsTraits { get; set; }
-        public List<UpdateSeedlingsTraitsDto>? UpdateSeedlingsTraits { get; set; }
     }
 }

@@ -36,7 +36,7 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
                 ParentAId = request.ParentAId,
                 ParentBId = request.ParentBId,
                 CreatedBy = currentUserService.UserId,
-                CreatedDate = TimeZoneHelper.VietnamTimeNow,
+                CreatedDate = DateTime.UtcNow,
             };
 
             request.SeedlingsTraits.ForEach(traitDto =>

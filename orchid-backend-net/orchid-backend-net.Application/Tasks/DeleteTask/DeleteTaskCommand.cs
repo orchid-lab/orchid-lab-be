@@ -21,7 +21,7 @@ namespace orchid_backend_net.Application.Tasks.DeleteTask
                 throw new NotFoundException("Không tìm thấy task.");
             }
             task.Status = Domain.Common.Enum.TaskStatus.Deleted;
-            task.DeletedDate = TimeZoneHelper.VietnamTimeNow;
+            task.DeletedDate = DateTime.UtcNow;
             task.DeletedBy = currentUserService.UserId;
             taskRepository.Update(task);
             return await taskRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Xóa thành công." : "Xóa thất bại.";

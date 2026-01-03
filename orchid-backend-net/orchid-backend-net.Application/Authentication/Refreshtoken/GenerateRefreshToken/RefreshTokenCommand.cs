@@ -18,11 +18,11 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.GenerateRef
             var refreshToken = new RefreshToken
             {
                 Token = token,
-                Expired = TimeZoneHelper.VietnamTimeNow.AddDays(7)
+                Expired = DateTime.UtcNow.AddDays(7)
             };
 
 
-            var expiryDateInRedis = refreshToken.Expired - TimeZoneHelper.VietnamTimeNow;
+            var expiryDateInRedis = refreshToken.Expired - DateTime.UtcNow;
             //Store the refresh token in Redis with a key based on the token value
             //best practice: https://cheatsheetseries.owasp.org/cheatsheets/JSON_Web_Token_for_Java_Cheat_Sheet.html#token-refresh
             var refreshTokenKey = refreshToken.Token.Trim().ToLowerInvariant();

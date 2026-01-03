@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
@@ -20,7 +19,7 @@ namespace orchid_backend_net.Application.Seedling.RemoveSeedlings
             {
                 throw new NotFoundException("Cây giống không tồn tại.");
             }
-            seedling.DeletedDate = TimeZoneHelper.VietnamTimeNow;
+            seedling.DeletedDate = DateTime.UtcNow;
             seedling.DeletedBy = currentUserService.UserId;
             seedlingRepository.Update(seedling);
             return await seedlingRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Xóa cây giống thành công." : "Xóa cây giống thất bại.";

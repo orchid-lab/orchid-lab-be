@@ -36,7 +36,7 @@ namespace orchid_backend_net.Application.Authentication.Register
                 RoleID = request.RoleID,
                 Password = BCrypt.Net.BCrypt.HashPassword("123@123a"),
                 CreatedBy = currentUserService.UserId,
-                CreatedDate = TimeZoneHelper.VietnamTimeNow,
+                CreatedDate = DateTime.UtcNow,
             };
 
             var emailBody = await LoadEmailTemplateAsync(cancellationToken);

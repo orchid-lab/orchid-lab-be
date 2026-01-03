@@ -25,7 +25,7 @@ namespace orchid_backend_net.Application.User.DeleteUser
                 throw new NotFoundException("Không tìm thấy người dùng.");
             }
             user.DeletedBy = currentUserService.UserId;
-            user.DeletedDate = TimeZoneHelper.VietnamTimeNow;
+            user.DeletedDate = DateTime.UtcNow;
             return await userRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Xóa thành công." : "Xóa thất bại.";
         }
     }

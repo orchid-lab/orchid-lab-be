@@ -32,7 +32,7 @@ namespace orchid_backend_net.Application.Seedling.UpdateSeedlings
             seedlings.Description = request.Description ?? seedlings.Description;
             seedlings.ParentAId = request.ParentAId ?? seedlings.ParentAId;
             seedlings.ParentBId = request.ParentBId ?? seedlings.ParentBId;
-            seedlings.UpdatedDate = TimeZoneHelper.VietnamTimeNow;
+            seedlings.UpdatedDate = DateTime.UtcNow;
             seedlings.UpdatedBy = currentUserService.UserId;
 
 

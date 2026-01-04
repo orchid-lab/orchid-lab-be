@@ -39,7 +39,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
-                var loginDTO = await this._sender.Send(new LoginQuery(query.Email, query.Password), cancellationToken);
+                var loginDTO = await Sender.Send(new LoginQuery(query.Email, query.Password), cancellationToken);
                 var token = jwtService.CreateToken(loginDTO.Id, loginDTO.Role, loginDTO.RefreshToken, loginDTO.Name);
                 var response = new
                 {
@@ -74,7 +74,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received POST request for token refresh at {Time}", DateTime.UtcNow);
-                var loginDTO = await this._sender.Send(new RefreshTokenQuery(refreshToken), cancellationToken);
+                var loginDTO = await Sender.Send(new RefreshTokenQuery(refreshToken), cancellationToken);
                 var token = jwtService.CreateToken(loginDTO.Id, loginDTO.Role, loginDTO.RefreshToken, loginDTO.Name);
                 var response = new
                 {
@@ -111,7 +111,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received POST request for token refresh at {Time}", DateTime.UtcNow);
-                var response = await this._sender.Send(command, cancellationToken);
+                var response = await Sender.Send(command, cancellationToken);
                 return Ok(response);
             }
             catch (Exception ex)
@@ -138,7 +138,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received POST request for logout at {Time}", DateTime.UtcNow);
-                var result = await _sender.Send(logoutCommand, cancellationToken);
+                var result = await Sender.Send(logoutCommand, cancellationToken);
                 return Ok(new JsonResponse<string>(result));
             }
             catch (Exception ex)

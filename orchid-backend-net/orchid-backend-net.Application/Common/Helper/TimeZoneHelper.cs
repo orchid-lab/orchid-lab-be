@@ -4,6 +4,9 @@
     {
         private static readonly TimeZoneInfo VietnamTimeZoneInfo =
             TimeZoneInfo.FindSystemTimeZoneById("SE Asia Standard Time");
+        /// <summary>
+        /// only for using in business check, not using for storing in database
+        /// </summary>
         public static DateTime VietnamTimeNow
         {
             get

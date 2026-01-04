@@ -102,7 +102,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                var result = await _sender.Send(updateUserCommand, cancellationToken);
+                var result = await Sender.Send(updateUserCommand, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -142,7 +142,7 @@ namespace orchid_backend_net.API.Controllers
                 using var stream = image.OpenReadStream();
                 stream.Position = 0;
                 var command = new UpdateUserAvatarCommand(userId, image.FileName, stream);
-                var result = await this._sender.Send(command, cancellationToken);
+                var result = await Sender.Send(command, cancellationToken);
                 return Ok(new JsonResponse<string>(result));
             }
             catch (Exception ex)
@@ -173,7 +173,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(command, cancellationToken);
+                var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

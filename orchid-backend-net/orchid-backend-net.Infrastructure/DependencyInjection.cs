@@ -7,6 +7,7 @@ using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.IRepositories;
 using orchid_backend_net.Infrastructure.Persistence;
+using orchid_backend_net.Infrastructure.Provider;
 using orchid_backend_net.Infrastructure.Repository;
 using orchid_backend_net.Infrastructure.Service;
 using orchid_backend_net.Infrastructure.Service.CloudinarySettings;
@@ -74,6 +75,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
+            services.AddScoped<IDateTimeProvider, VietNamDateTimeProvider>();
             //Add repositories
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();

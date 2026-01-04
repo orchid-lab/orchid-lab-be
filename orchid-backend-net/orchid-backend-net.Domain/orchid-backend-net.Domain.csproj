@@ -5,6 +5,7 @@
     <RootNamespace>orchid_backend_net.Domain</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
 </Project>

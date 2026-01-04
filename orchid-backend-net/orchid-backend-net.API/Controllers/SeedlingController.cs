@@ -41,7 +41,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(query, cancellationToken);
+                var result = await Sender.Send(query, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -71,7 +71,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(new GetSeedlingsByIdQuery() { Id = id }, cancellationToken);
+                var result = await Sender.Send(new GetSeedlingsByIdQuery() { Id = id }, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(command, cancellationToken);
+                var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -133,7 +133,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received Put request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(command, cancellationToken);
+                var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -163,7 +163,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(command, cancellationToken);
+                var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

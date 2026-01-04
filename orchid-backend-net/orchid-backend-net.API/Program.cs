@@ -66,12 +66,12 @@ if (app.Environment.IsProduction())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<RateLimitingMiddleware>();
 
 app.UseHttpsRedirection();
-
 app.UseCorsPolicy();
+app.UseMiddleware<RateLimitingMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

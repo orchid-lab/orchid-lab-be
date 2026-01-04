@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Tasks.Dto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
@@ -18,8 +17,8 @@ namespace orchid_backend_net.Application.Tasks.UpdateTask
     /// <param name="createTaskAttributes"></param>
     /// <param name="updateTaskAttributes"></param>
     public class UpdateTaskCommand(
-        UpdateTaskDto parameter, 
-        List<CreateTaskAttributeDto>? createTaskAttributes,  
+        UpdateTaskDto parameter,
+        List<CreateTaskAttributeDto>? createTaskAttributes,
         List<UpdateTaskAttributeDto>? updateTaskAttributes,
         UpdateTaskAssignmentDto updateTaskAssignment) : IRequest<string>
     {
@@ -29,16 +28,19 @@ namespace orchid_backend_net.Application.Tasks.UpdateTask
         public string? Description { get; set; } = parameter.Description;
         public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
         public List<UpdateTaskAttributeDto>? UpdateTaskAttribute { get; set; } = updateTaskAttributes;
-        public UpdateTaskAssignmentDto? UpdateTaskAssignment { get; set; }
+        public UpdateTaskAssignmentDto? UpdateTaskAssignment { get; set; } = updateTaskAssignment;
     }
 
-    internal class UpdateTaskCommandHandler(ITaskRepository taskRepository, ICurrentUserService currentUserService) : IRequestHandler<UpdateTaskCommand, string>
+    internal class UpdateTaskCommandHandler(
+        ITaskRepository taskRepository,
+        ICurrentUserService currentUserService,
+        IDateTimeProvider dateTimeProvider) : IRequestHandler<UpdateTaskCommand, string>
     {
         public async Task<string> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
             var tasks = await taskRepository.FindAsync(t => t.ID.Equals(request.TaskId), cancellationToken) ?? throw new NotFoundException("Không tìm thấy task.");
 
-            TaskPolicy.ValidateTaskUpdate(tasks, request);
+            TaskPolicy.ValidateTaskUpdate(tasks, request, dateTimeProvider);
 
             //update basic info
             tasks.Name = request.Name ?? tasks.Name;

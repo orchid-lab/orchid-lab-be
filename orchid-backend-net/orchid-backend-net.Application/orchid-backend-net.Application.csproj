@@ -5,6 +5,8 @@
     <RootNamespace>orchid_backend_net.Application</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<PlatformTarget>x64</PlatformTarget>
+	<NoWarn>$(NoWarn);MSB3270</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

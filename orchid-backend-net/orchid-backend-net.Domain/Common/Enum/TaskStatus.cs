@@ -10,7 +10,8 @@
         WaitingForApproval,
         //researcher đã approve task
         //nếu researcher không approve thì task sẽ trở về trạng thái InProgress
-        Completed,
+        CompletedInTime,
+        CompletedOutTime,
         //researcher xóa task do lỗi hoặc không cần thiết
         Deleted
     }

@@ -15,6 +15,7 @@ public abstract class BaseHandlerTestConfig
     protected Mock<ICacheService> CacheServiceMock = null!;
     protected Mock<ICurrentUserService> CurrentUserServiceMock = null!;
     protected Mock<IEmailSender> EmailSenderMock = null!;
+    protected Mock<IDateTimeProvider> TimeProviderMock = null!;
     [SetUp]
     public virtual void BaseSetup()
     {
@@ -25,5 +26,6 @@ public abstract class BaseHandlerTestConfig
         CurrentUserServiceMock = new Mock<ICurrentUserService>();
         EmailSenderMock = new Mock<IEmailSender>();
         TaskRepositoryMock = new Mock<ITaskRepository>();
+        TimeProviderMock = new Mock<IDateTimeProvider>();
     }
 }

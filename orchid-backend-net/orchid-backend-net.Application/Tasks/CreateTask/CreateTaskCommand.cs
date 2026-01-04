@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Tasks.Dto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
@@ -27,12 +26,15 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
         public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
     }
 
-    internal class CreateTaskCommandHandler(ITaskRepository taskRepository, ICurrentUserService currentUserService) : IRequestHandler<CreateTaskCommand, string>
+    internal class CreateTaskCommandHandler(
+        ITaskRepository taskRepository,
+        ICurrentUserService currentUserService,
+        IDateTimeProvider dateTimeProvider) : IRequestHandler<CreateTaskCommand, string>
     {
         public async Task<string> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
             //use case rules validation
-            TaskPolicy.ValidateTaskCreate(request);
+            TaskPolicy.ValidateTaskCreate(request, dateTimeProvider);
             var tasks = new Domain.Entities.Tasks
             {
                 Name = request.Name,
@@ -46,10 +48,10 @@ namespace orchid_backend_net.Application.Tasks.CreateTask
 
             TaskAttributeHelper.AddAttributesToTask(tasks, request.CreateTaskAttribute);
             TaskAssignmentHelper.AddTaskAssignmentToTask(
-                tasks, 
-                request.CreateTaskAssignment.TechnicianId, 
+                tasks,
+                request.CreateTaskAssignment.TechnicianId,
                 request.CreateTaskAssignment.SampleId,
-                request.CreateTaskAssignment.IsForWholeExperimentLog, 
+                request.CreateTaskAssignment.IsForWholeExperimentLog,
                 request.CreateTaskAssignment.ExpectedEndDate,
                 DateTime.UtcNow);
             taskRepository.Add(tasks);

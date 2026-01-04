@@ -12,7 +12,8 @@ namespace orchid_backend_net.Application.Tests.Config.TaskConfig
         {
             CreateCommandHandler = new CreateTaskCommandHandler(
                 TaskRepositoryMock.Object,
-                CurrentUserServiceMock.Object);
+                CurrentUserServiceMock.Object,
+                TimeProviderMock.Object);
         }
     }
 }

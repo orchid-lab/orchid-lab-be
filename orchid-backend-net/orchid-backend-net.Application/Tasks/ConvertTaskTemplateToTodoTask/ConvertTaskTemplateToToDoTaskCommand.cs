@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
@@ -16,7 +15,10 @@ namespace orchid_backend_net.Application.Tasks.ConvertTaskTemplateToTodoTask
         public CreateTaskAssignmentDto CreateTaskAssignment { get; set; } = createTaskAssignment;
     }
 
-    internal class ConvertTaskTemplateToToDoTaskCommandHandler(ITaskRepository taskRepository, ICurrentUserService currentUserService) : IRequestHandler<ConvertTaskTemplateToToDoTaskCommand, string>
+    internal class ConvertTaskTemplateToToDoTaskCommandHandler(
+        ITaskRepository taskRepository,
+        ICurrentUserService currentUserService,
+        IDateTimeProvider dateTimeProvider) : IRequestHandler<ConvertTaskTemplateToToDoTaskCommand, string>
     {
         public async Task<string> Handle(ConvertTaskTemplateToToDoTaskCommand request, CancellationToken cancellationToken)
         {
@@ -26,7 +28,7 @@ namespace orchid_backend_net.Application.Tasks.ConvertTaskTemplateToTodoTask
             if (taskTemplate is null)
                 throw new NotFoundException("Không tìm thấy task template này.");
 
-            TaskPolicy.ValidateTaskWorkingHour(request.CreateTaskAssignment.ExpectedEndDate);
+            TaskPolicy.ValidateTaskWorkingHour(request.CreateTaskAssignment.ExpectedEndDate, dateTimeProvider);
 
             Domain.Entities.Tasks taskToDo = new()
             {

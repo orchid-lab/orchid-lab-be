@@ -7,21 +7,17 @@ namespace orchid_backend_net.API.Controllers.ResponseTypes
     /// Base controller inherit controller base 
     /// only for injecting ISender from MediatR to all controllers
     /// </summary>
+    /// <remarks>
+    /// Base controller constructor
+    /// </remarks>
+    /// <param name="sender"></param>
     [Route("api/v{apiVersion:apiVersion}/[controller]")]
     [ApiController]
-    public class BaseController : ControllerBase
+    public class BaseController(ISender sender) : ControllerBase
     {
         /// <summary>
         /// sender is used to send commands and queries to MediatR handlers
         /// </summary>
-        protected readonly ISender _sender;
-        /// <summary>
-        /// Base controller constructor
-        /// </summary>
-        /// <param name="sender"></param>
-        public BaseController(ISender sender)
-        {
-            this._sender = sender;
-        }
+        protected readonly ISender Sender = sender;
     }
 }

@@ -19,6 +19,5 @@ namespace orchid_backend_net.Domain.Entities
         //3 - Bị hủy 
         [ForeignKey(nameof(ExperimentLogId))]
         public virtual ExperimentLogs ExperimentLog { get; set; } = null!;
-        public virtual IEnumerable<TaskAssignment> TaskAssignments { get; set; } = [ ];
     }
 }

@@ -636,14 +636,15 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<DateTime>("ExpectedEndDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsForWholeExperimentLog")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SampleId")
-                        .HasColumnType("text");
-
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("TargetId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("TaskId")
                         .IsRequired()
@@ -655,9 +656,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.HasIndex("SampleId");
-
-                    b.HasIndex("TaskId");
+                    b.HasIndex("TaskId")
+                        .IsUnique();
 
                     b.HasIndex("TechnicianId");
 
@@ -1034,13 +1034,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAssignment", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
-                        .WithMany("TaskAssignments")
-                        .HasForeignKey("SampleId");
-
                     b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
-                        .WithMany("TaskAssignments")
-                        .HasForeignKey("TaskId")
+                        .WithOne("TaskAssignment")
+                        .HasForeignKey("orchid_backend_net.Domain.Entities.TaskAssignment", "TaskId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1049,8 +1045,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasForeignKey("TechnicianId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("Sample");
 
                     b.Navigation("Task");
 
@@ -1134,11 +1128,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("LogDetails");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
-                {
-                    b.Navigation("TaskAssignments");
-                });
-
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
                 {
                     b.Navigation("SeedlingsTraits");
@@ -1155,7 +1144,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Tasks", b =>
                 {
-                    b.Navigation("TaskAssignments");
+                    b.Navigation("TaskAssignment")
+                        .IsRequired();
 
                     b.Navigation("TaskAttributes");
                 });

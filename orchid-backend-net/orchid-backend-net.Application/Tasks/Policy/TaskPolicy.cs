@@ -1,6 +1,7 @@
 ﻿using orchid_backend_net.Application.Common.Interfaces;
-using orchid_backend_net.Application.Tasks.CreateTask;
-using orchid_backend_net.Application.Tasks.UpdateTask;
+using orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus;
+using orchid_backend_net.Application.Tasks.UseCase.CreateTask;
+using orchid_backend_net.Application.Tasks.UseCase.UpdateTask;
 
 namespace orchid_backend_net.Application.Tasks.Policy
 {
@@ -12,60 +13,95 @@ namespace orchid_backend_net.Application.Tasks.Policy
             Domain.Common.Enum.TaskStatus.WaitingForApproval,
             Domain.Common.Enum.TaskStatus.CompletedInTime,
             Domain.Common.Enum.TaskStatus.CompletedOutTime,
+            Domain.Common.Enum.TaskStatus.ReworkRequired,
+            Domain.Common.Enum.TaskStatus.DeclinedByTechnician,
         ];
 
-        public static void ValidateTaskUpdate(Domain.Entities.Tasks task, UpdateTaskCommand request, IDateTimeProvider dateTimeProvider)
+        public static void ValidateTaskUpdate(
+            Domain.Entities.Tasks task,
+            UpdateTaskCommand request,
+            IDateTimeProvider dateTimeProvider)
         {
-            var assignment = request.UpdateTaskAssignment;
-
             bool taskIsTemplate = !string.IsNullOrWhiteSpace(task.StageId);
-            bool taskHasAssignment = task.TaskAssignments.Count != 0;
+            bool taskIsToDo = task.TaskAssignment != null;
 
-            bool wantToBeToDo =
-                assignment is not null &&
-                !string.IsNullOrWhiteSpace(assignment.SampleId);
+            bool requestHasAssignmentUpdate = request.UpdateTaskAssignment is not null;
+            bool requestHasStageUpdate = !string.IsNullOrWhiteSpace(request.StageId);
 
-            bool wantToBeTemplate =
-                !string.IsNullOrWhiteSpace(request.StageId);
-
-            // Template → To-do (KHÔNG cho phép)
-            if (taskIsTemplate && wantToBeToDo)
+            // RULE 1: Invariant
+            if (taskIsTemplate == taskIsToDo)
                 throw new InvalidOperationException(
-                    "Task hiện tại đang là template task, không được chuyển thành to-do task.");
+                    "Task đang ở trạng thái không hợp lệ (vừa template vừa to-do hoặc không cái nào).");
 
-            // Đã có technician → KHÔNG cho về template
-            if (taskHasAssignment && wantToBeTemplate)
+            // RULE 2: Template → To-do (forbidden)
+            if (taskIsTemplate && requestHasAssignmentUpdate)
                 throw new InvalidOperationException(
-                    "Task hiện tại đang có technician được giao, không thể chuyển thành template task.");
+                    "Không thể thêm task assignment vào template task.");
 
-            // Working hour + expected date
-            ValidateTaskWorkingHour(assignment?.ExpectedEndDate, dateTimeProvider);
+            // RULE 3: To-do → Template (forbidden)
+            if (taskIsToDo && requestHasStageUpdate)
+                throw new InvalidOperationException(
+                    "Không thể gán Stage cho to-do task.");
+
+            // RULE 4: Validate assignment data ONLY if updated
+            if (requestHasAssignmentUpdate)
+            {
+                ValidateTaskWorkingHour(
+                    request.UpdateTaskAssignment!.ExpectedEndDate,
+                    dateTimeProvider);
+            }
         }
+
 
         public static void ValidateTaskCreate(CreateTaskCommand request, IDateTimeProvider dateTimeProvider)
         {
             bool isTemplateTask = !string.IsNullOrWhiteSpace(request.StageId);
-            bool isToDoTask = !string.IsNullOrWhiteSpace(request.CreateTaskAssignment.TechnicianId);
+            bool isToDoTask = request.CreateTaskAssignment is not null;
 
-            //use case rules validation
-            ValidateTaskWorkingHour(request.CreateTaskAssignment.ExpectedEndDate, dateTimeProvider);
+            //rule 1: task must be template or to-do task
+            if (isTemplateTask == isToDoTask)
+                throw new InvalidOperationException(
+                    "Task phải là Template hoặc To-do, không được đồng thời hoặc không cái nào.");
 
-            if (isTemplateTask && isToDoTask)
-                throw new InvalidOperationException("Task không thể vừa là Template vừa là To-do.");
-
-            if (!isTemplateTask && !isToDoTask)
-                throw new InvalidOperationException("Task phải là Template hoặc To-do.");
+            // Rule 2: to-do task => must have assignment
+            if (isToDoTask)
+            {
+                ValidateTaskWorkingHour(
+                    request.CreateTaskAssignment!.ExpectedEndDate,
+                    dateTimeProvider);
+            }
         }
 
-        public static Domain.Common.Enum.TaskStatus ValidateTaskStatusChange(string status, IDateTimeProvider dateTimeProvider)
+        public static Domain.Common.Enum.TaskStatus ValidateTaskStatusChange(Domain.Entities.Tasks tasks, ChangeTaskStatusCommand request, IDateTimeProvider dateTimeProvider)
         {
             ValidateTaskWorkingHour(null, dateTimeProvider);
+            bool IsToDoTask = tasks.TaskAssignment != null;
+            //only to-do task can change status
+            if (!IsToDoTask)
+                throw new InvalidOperationException("Chỉ có to-do task mới có thể thay đổi trạng thái");
 
-            if (!Enum.TryParse<Domain.Common.Enum.TaskStatus>(status, out var parsedStatus))
+            if (!Enum.TryParse<Domain.Common.Enum.TaskStatus>(request.Status, out var parsedStatus))
                 throw new InvalidOperationException("Trạng thái task không hợp lệ.");
 
             if (!AllowedNextStatuses.Contains(parsedStatus))
                 throw new InvalidOperationException("Không thể chuyển trạng thái về lại mới tạo hoặc xóa.");
+
+            // If completed → must specify assignment
+            if (IsCompletedStatus(parsedStatus) &&
+                string.IsNullOrWhiteSpace(request.TaskAssignmentId))
+                throw new InvalidOperationException(
+                    "Thiếu TaskAssignmentId khi hoàn thành task.");
+
+            if (IsCompletedStatus(parsedStatus) &&
+                request.EndDate == null)
+                throw new InvalidOperationException(
+                    "Thiếu ngày kết thúc.");
+
+            // Validate working hour only when completing
+            if (IsCompletedStatus(parsedStatus))
+            {
+                ValidateTaskWorkingHour(request.EndDate, dateTimeProvider);
+            }
 
             return parsedStatus;
         }
@@ -80,5 +116,8 @@ namespace orchid_backend_net.Application.Tasks.Policy
             if (expectedEndDate is not null && expectedEndDate <= currentTime)
                 throw new InvalidOperationException("Ngày dự kiến kết thúc phải sau thời điểm hiện tại.");
         }
+
+        public static bool IsCompletedStatus(Domain.Common.Enum.TaskStatus status)
+            => status is Domain.Common.Enum.TaskStatus.CompletedInTime or Domain.Common.Enum.TaskStatus.CompletedOutTime;
     }
 }

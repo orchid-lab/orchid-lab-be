@@ -1,4 +1,6 @@
-﻿namespace orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto
+﻿using orchid_backend_net.Domain.Common.Enum;
+
+namespace orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto
 {
     public class CreateTaskAssignmentDto
     {
@@ -10,8 +12,8 @@
         /// if null, the task is for all experimentLog
         /// if not null, the task is for specific sample
         /// </summary>
-        public string? SampleId { get; set; }
-        public bool IsForWholeExperimentLog { get; set; }
+        public TaskTargetType TargetType { get; set; }
+        public required string TargetId { get; set; }
         /// <summary>
         /// Expected end date of the task - set by the creator of the task
         /// </summary>

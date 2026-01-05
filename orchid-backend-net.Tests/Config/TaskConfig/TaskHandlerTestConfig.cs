@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using orchid_backend_net.Application.Tasks.CreateTask;
+using orchid_backend_net.Application.Tasks.UseCase.CreateTask;
 
 namespace orchid_backend_net.Application.Tests.Config.TaskConfig
 {

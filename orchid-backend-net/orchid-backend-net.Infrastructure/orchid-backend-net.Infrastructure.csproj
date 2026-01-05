@@ -24,6 +24,7 @@
 	<PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
 	<PackageReference Include="Google.Apis.Gmail.v1" Version="1.70.0.3833" />
 	<PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.3.0" />
+	<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
 	<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.5">
 	  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -42,7 +43,7 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.7" />
     <PackageReference Include="MimeKit" Version="4.13.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="PuppeteerSharp" Version="20.2.2" />
     <PackageReference Include="Scriban" Version="6.2.1" />

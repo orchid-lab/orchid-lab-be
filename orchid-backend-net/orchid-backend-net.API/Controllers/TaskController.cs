@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Common.Pagination;
-using orchid_backend_net.Application.Tasks.ChangeTaskStatus;
-using orchid_backend_net.Application.Tasks.ConvertTaskTemplateToTodoTask;
-using orchid_backend_net.Application.Tasks.CreateTask;
-using orchid_backend_net.Application.Tasks.DeleteTask;
-using orchid_backend_net.Application.Tasks.Dto;
-using orchid_backend_net.Application.Tasks.GetAllTask;
-using orchid_backend_net.Application.Tasks.GetTaskById;
-using orchid_backend_net.Application.Tasks.UpdateTask;
+using orchid_backend_net.Application.Tasks.Dto.Task;
+using orchid_backend_net.Application.Tasks.UseCase.GetTaskById;
+using orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus;
+using orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodoTask;
+using orchid_backend_net.Application.Tasks.UseCase.CreateTask;
+using orchid_backend_net.Application.Tasks.UseCase.DeleteTask;
+using orchid_backend_net.Application.Tasks.UseCase.GetAllTask;
+using orchid_backend_net.Application.Tasks.UseCase.UpdateTask;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers

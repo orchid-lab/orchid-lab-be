@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Domain.Entities;
 
@@ -8,8 +9,8 @@ namespace orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto
     {
         public string TaskId { get; set; }
         public string TechnicianName { get; set; }
-        public string? SampleName { get; set; }
-        public bool IsForWholeExperimentLog { get; set; }
+        public string TargetType { get; set; }
+        public string TargetName { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime ExpectedEndDate { get; set; }
@@ -18,7 +19,7 @@ namespace orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto
         {
             profile.CreateMap<TaskAssignment, TaskAssignmentsDto>()
                 .ForMember(dest => dest.TechnicianName, opt => opt.MapFrom(src => src.Technician.Name))
-                .ForMember(dest => dest.SampleName, opt => opt.MapFrom(src => src.Sample != null ? src.Sample.Name : null));
+                .ForMember(dest => dest.TargetType, opt => opt.MapFrom(src => src.TargetType.ToDisplayText()));
         }
     }
 }

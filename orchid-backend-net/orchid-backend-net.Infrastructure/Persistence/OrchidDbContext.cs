@@ -2,11 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
+using orchid_backend_net.Domain.Entities.Base;
 using orchid_backend_net.Infrastructure.Persistence.Configuration;
 
 namespace orchid_backend_net.Infrastructure.Persistence
 {
-    public class OrchidDbContext(DbContextOptions<OrchidDbContext> options) : DbContext(options), IUnitOfWork
+    public class OrchidDbContext(DbContextOptions<OrchidDbContext> options, IDomainEventDispatcher dispatcher) : DbContext(options), IUnitOfWork
     {
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
@@ -38,6 +39,26 @@ namespace orchid_backend_net.Infrastructure.Persistence
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(OrchidDbContext).Assembly);
             modelBuilder.ApplyConfiguration(new ConfigUser());
+        }
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            var domainEntities = ChangeTracker
+                .Entries<BaseEntity<Guid>>()
+                .Where(e => e.Entity.DomainEvents.Count != 0)
+                .ToList();
+
+            var domainEvents = domainEntities
+                .SelectMany(e => e.Entity.DomainEvents)
+                .ToList();
+
+            var result = await base.SaveChangesAsync(cancellationToken);
+
+            await dispatcher.DispatchAsync(domainEvents);
+
+            domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+
+            return result;
         }
     }
 }

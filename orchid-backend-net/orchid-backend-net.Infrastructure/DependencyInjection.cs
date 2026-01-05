@@ -21,6 +21,9 @@ namespace orchid_backend_net.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             //database context
+            //event dispatcher for db context
+            services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+            //db context connection string
             services.AddDbContext<OrchidDbContext>(options =>
             {
                 options.UseNpgsql(configuration.GetConnectionString("Server"), b =>
@@ -79,17 +82,30 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
             services.AddScoped<IDateTimeProvider, VietNamDateTimeProvider>();
+            services.AddScoped<IHubnotificationService, HubNotificationService>();
+            
             //Add repositories
+
+            //for notification module
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+            
+            //for user module
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
-
+            
+            //for seedling module
             services.AddScoped<ISeedlingRepository, SeedlingRepository>();
             services.AddScoped<ISeedlingTraitRepository, SeedlingTraitRepository>();
             services.AddScoped<ICharacteristicRepository, CharacteristicRepository>();
 
+            //for task module
             services.AddScoped<ITaskRepository, TaskRepository>();
 
+            //for method and experiment log module
             services.AddScoped<IStageRepository, StageRepository>();
+
+            //signalR
+            services.AddSignalR();
             return services;
         }
     }

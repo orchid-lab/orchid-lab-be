@@ -1,4 +1,5 @@
-﻿using orchid_backend_net.Domain.Entities.Base;
+﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
@@ -7,15 +8,13 @@ namespace orchid_backend_net.Domain.Entities
     {
         public string TaskId { get; set; }
         public required string TechnicianId { get; set; } 
-        public string? SampleId { get; set; } 
-        public bool IsForWholeExperimentLog { get; set; }   
 
         [ForeignKey(nameof(TechnicianId))]
         public virtual Users Technician { get; set; } 
         [ForeignKey(nameof(TaskId))]
         public virtual Tasks Task { get; set; } 
-        [ForeignKey(nameof(SampleId))]
-        public virtual Samples Sample { get; set; }
+        public TaskTargetType TargetType { get; set; }
+        public string TargetId { get; set; }
         /// <summary>
         /// the created date of the task
         /// </summary>

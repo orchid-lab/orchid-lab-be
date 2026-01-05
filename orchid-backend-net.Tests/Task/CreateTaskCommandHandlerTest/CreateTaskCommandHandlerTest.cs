@@ -1,11 +1,11 @@
 ﻿using FluentAssertions;
 using Moq;
-using orchid_backend_net.Application.Tasks.CreateTask;
+using orchid_backend_net.Application.Tasks.UseCase.CreateTask;
 using orchid_backend_net.Application.Tasks.Dto;
+using orchid_backend_net.Application.Tasks.Dto.Task;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
 using orchid_backend_net.Application.Tests.Config.TaskConfig;
-using orchid_backend_net.Domain.Common.Exceptions;
 
 namespace orchid_backend_net.Application.Tests.Tasks.CreateTaskCommandHandlerTest;
 
@@ -56,8 +56,8 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             createTaskAssignment: new CreateTaskAssignmentDto
             {
                 TechnicianId = "tech-1",
-                SampleId = "sample-1",
-                IsForWholeExperimentLog = false,
+                TargetId = "sample-1",
+                TargetType = Domain.Common.Enum.TaskTargetType.Sample,
                 ExpectedEndDate = DateTime.UtcNow.AddDays(3)
             });
 
@@ -68,12 +68,12 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
         result.Should().Be("Tạo task thành công");
 
         savedTask.Should().NotBeNull();
-        savedTask!.TaskAssignments.Should().HaveCount(1);
+        savedTask!.TaskAssignment.Should().NotBeNull();
 
-        var assignment = savedTask.TaskAssignments.First();
+        var assignment = savedTask.TaskAssignment;
         assignment.TechnicianId.Should().Be("tech-1");
-        assignment.SampleId.Should().Be("sample-1");
-
+        assignment.TargetId.Should().Be("sample-1");
+        assignment.TargetType.Should().Be(Domain.Common.Enum.TaskTargetType.Sample);
         savedTask.TaskAttributes.Should().BeEmpty();
     }
 
@@ -127,13 +127,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                     Unit = "mg/L"
                 }
             ],
-            createTaskAssignment: new CreateTaskAssignmentDto
-            {
-                TechnicianId = null,
-                SampleId = null,
-                IsForWholeExperimentLog = true,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(5)
-            });
+            null);
 
         // Act
         var result = await CreateCommandHandler.Handle(command, CancellationToken.None);
@@ -144,7 +138,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
         savedTask.Should().NotBeNull();
         savedTask!.StageId.Should().Be("stage-1");
 
-        savedTask.TaskAssignments.Should().BeEmpty();
+        savedTask.TaskAssignment.Should().BeNull();
 
         savedTask.TaskAttributes.Should().HaveCount(1);
         var attr = savedTask.TaskAttributes.First();
@@ -191,7 +185,9 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             null,
             new CreateTaskAssignmentDto
             {
+                TargetId = "target-1",
                 TechnicianId = "tech-1",
+                TargetType = Domain.Common.Enum.TaskTargetType.Sample,
                 ExpectedEndDate = DateTime.UtcNow.AddDays(1)
             });
 
@@ -213,7 +209,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
 
         TimeProviderMock
             .Setup(x => x.IsInWorkingHour(It.IsAny<DateTime>()))
-            .Returns(true);
+            .Returns(false);
 
         var command = new CreateTaskCommand(
             new CreateTaskDto
@@ -224,7 +220,9 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             null,
             new CreateTaskAssignmentDto
             {
+                TargetId = null!,
                 TechnicianId = null!, // invalid
+                TargetType = Domain.Common.Enum.TaskTargetType.Sample,
                 ExpectedEndDate = DateTime.UtcNow.AddDays(-1)
             });
 

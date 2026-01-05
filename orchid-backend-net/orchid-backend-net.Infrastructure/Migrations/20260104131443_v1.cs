@@ -65,6 +65,19 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Disease",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Disease", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LabRooms",
                 columns: table => new
                 {
@@ -416,7 +429,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<string>(type: "text", nullable: false)
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -472,6 +485,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     UserId = table.Column<string>(type: "text", nullable: false),
                     AnalyticResultId = table.Column<string>(type: "text", nullable: false),
                     SampleId = table.Column<string>(type: "text", nullable: false),
+                    DiseaseId = table.Column<int>(type: "integer", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     SampleStageOrder = table.Column<int>(type: "integer", nullable: false),
                     Status = table.Column<string>(type: "text", nullable: false),
@@ -491,6 +505,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalTable: "AnalyticResults",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MonitoringLogs_Disease_DiseaseId",
+                        column: x => x.DiseaseId,
+                        principalTable: "Disease",
+                        principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_MonitoringLogs_Samples_SampleId",
                         column: x => x.SampleId,
@@ -636,6 +655,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 table: "MonitoringLogs",
                 column: "AnalyticResultId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MonitoringLogs_DiseaseId",
+                table: "MonitoringLogs",
+                column: "DiseaseId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MonitoringLogs_SampleId",
@@ -794,6 +818,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "AnalyticResults");
+
+            migrationBuilder.DropTable(
+                name: "Disease");
 
             migrationBuilder.DropTable(
                 name: "Samples");

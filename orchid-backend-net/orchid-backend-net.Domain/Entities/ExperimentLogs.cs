@@ -1,4 +1,5 @@
-﻿using orchid_backend_net.Domain.Entities.Base;
+﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
@@ -18,7 +19,7 @@ namespace orchid_backend_net.Domain.Entities
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
-        public required string Status { get; set; }
+        public ExperimentLogStatus Status { get; set; }
         //0 - Mới tạo - chưa nhận
         //1 - đang tiến hành - diễn ra khi technician nhận experiment log
         //2 - Hoàn thành

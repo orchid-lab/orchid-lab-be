@@ -14,6 +14,9 @@ namespace orchid_backend_net.Domain.Entities
         public required string SampleId { get; set; }
         [ForeignKey(nameof(SampleId))]
         public virtual Samples Sample { get; set; }
+        public int? DiseaseId { get; set; }
+        [ForeignKey(nameof(DiseaseId))]
+        public virtual Disease? Disease { get; set; }
         public string? Notes { get; set; }
         public required int SampleStageOrder { get; set; }
         public required string Status { get; set; }

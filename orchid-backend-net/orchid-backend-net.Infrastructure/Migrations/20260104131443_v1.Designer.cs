@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260103085133_v1")]
+    [Migration("20260104131443_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -139,6 +139,24 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("Chemicals");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Disease", b =>
+                {
+                    b.Property<int>("ID")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Disease");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>
                 {
                     b.Property<string>("ID")
@@ -173,9 +191,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
@@ -344,6 +361,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<DateOnly?>("DeletedDate")
                         .HasColumnType("date");
 
+                    b.Property<int?>("DiseaseId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
@@ -372,6 +392,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasIndex("AnalyticResultId")
                         .IsUnique();
+
+                    b.HasIndex("DiseaseId");
 
                     b.HasIndex("SampleId");
 
@@ -883,6 +905,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("orchid_backend_net.Domain.Entities.Disease", "Disease")
+                        .WithMany("MonitoringLogs")
+                        .HasForeignKey("DiseaseId");
+
                     b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
                         .WithMany()
                         .HasForeignKey("SampleId")
@@ -896,6 +922,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("AnalyticResult");
+
+                    b.Navigation("Disease");
 
                     b.Navigation("Sample");
 
@@ -1075,6 +1103,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Chemicals", b =>
                 {
                     b.Navigation("StageChemicals");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Disease", b =>
+                {
+                    b.Navigation("MonitoringLogs");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>

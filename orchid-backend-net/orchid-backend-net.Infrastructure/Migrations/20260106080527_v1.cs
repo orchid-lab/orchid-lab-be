@@ -97,7 +97,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Catetgory = table.Column<string>(type: "text", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Unit = table.Column<string>(type: "text", nullable: false)
                 },

@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260105192743_v1")]
+    [Migration("20260106080527_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -300,7 +300,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("ID")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Catetgory")
+                    b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("text");
 

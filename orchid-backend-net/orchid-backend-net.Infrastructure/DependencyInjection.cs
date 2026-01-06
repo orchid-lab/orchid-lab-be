@@ -92,7 +92,8 @@ namespace orchid_backend_net.Infrastructure
             //for user module
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IRoleRepository, RoleRepository>();
-            
+            services.AddScoped<IMaterialRepository, MaterialRepository>();
+
             //for seedling module
             services.AddScoped<ISeedlingRepository, SeedlingRepository>();
             services.AddScoped<ISeedlingTraitRepository, SeedlingTraitRepository>();
@@ -100,6 +101,7 @@ namespace orchid_backend_net.Infrastructure
 
             //for task module
             services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<IChemicalsRepository, ChemicalRepository>();
 
             //for method and experiment log module
             services.AddScoped<IStageRepository, StageRepository>();

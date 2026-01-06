@@ -297,7 +297,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("ID")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Catetgory")
+                    b.Property<string>("Category")
                         .IsRequired()
                         .HasColumnType("text");
 

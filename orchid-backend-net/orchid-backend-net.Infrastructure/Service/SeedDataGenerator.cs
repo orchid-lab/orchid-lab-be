@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Infrastructure.Service.SeedData;
 
 namespace orchid_backend_net.Infrastructure.Service
@@ -10,6 +9,9 @@ namespace orchid_backend_net.Infrastructure.Service
         {
             await SeedRoles.SeedAsync(context);
             await SeedUsers.SeedAsync(context);
+
+            await SeedChemicals.SeedAsync(context);
+            await SeedMaterials.SeedAsync(context);
         }
     }
 }

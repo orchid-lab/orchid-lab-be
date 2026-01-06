@@ -1,14 +1,8 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
-using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.Events;
 using orchid_backend_net.Domain.IRepositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace orchid_backend_net.Application.Tasks.Event.TaskRedoRequestedNotification
 {
@@ -26,7 +20,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskRedoRequestedNotificati
             var task = await taskRepository.FindAsync(t => t.ID == evt.DomainEvent.TaskId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy task.");
 
-            Notification noti = new()
+            Domain.Entities.Notification noti = new()
             {
                 UserId = evt.DomainEvent.TechnicianId,
                 Title = "Task đã yêu cầu làm lại",

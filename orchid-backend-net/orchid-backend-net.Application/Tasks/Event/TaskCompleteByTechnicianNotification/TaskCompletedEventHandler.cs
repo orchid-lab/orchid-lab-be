@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
-using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.Events;
 using orchid_backend_net.Domain.IRepositories;
 
@@ -16,11 +15,11 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskCompletedByTechnicianNo
     {
         public async Task Handle(TaskCompletedNotification evt, CancellationToken cancellationToken)
         {
-            var researcher = await userRepository.FindAsync(u => u.ID == evt.DomainEvent.ResearcherId, cancellationToken) 
+            var researcher = await userRepository.FindAsync(u => u.ID == evt.DomainEvent.ResearcherId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy technician.");
             var task = await taskRepository.FindAsync(t => t.ID == evt.DomainEvent.TaskId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy task.");
-            Notification noti = new()
+            Domain.Entities.Notification noti = new()
             {
                 UserId = evt.DomainEvent.TechnicianId,
                 Title = "Task đã hoàn thành",

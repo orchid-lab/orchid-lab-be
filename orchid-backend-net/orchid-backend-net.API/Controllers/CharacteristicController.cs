@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Characteristics.Dto;
-using orchid_backend_net.Application.Characteristics.GetAllCharacteristic;
-using orchid_backend_net.Application.Characteristics.GetCharacteristicById;
+using orchid_backend_net.Application.Characteristics.UseCase.GetAllCharacteristic;
+using orchid_backend_net.Application.Characteristics.UseCase.GetCharacteristicById;
 using orchid_backend_net.Application.Common.Pagination;
 
 namespace orchid_backend_net.API.Controllers

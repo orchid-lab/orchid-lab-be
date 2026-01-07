@@ -5,7 +5,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.UseCase.GetTaskById
 {
-    public class GetTaskByIdQuery : IRequest<TaskDto>
+    public class GetTaskByIdQuery : IRequest<TaskDetailDto>
     {
         public required string Id { get; set; }
         public GetTaskByIdQuery() { }
@@ -15,11 +15,11 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetTaskById
         }
     }
 
-    internal class GetTaskByIdQueryHandler(ITaskRepository taskRepository) : IRequestHandler<GetTaskByIdQuery, TaskDto>
+    internal class GetTaskByIdQueryHandler(ITaskRepository taskRepository) : IRequestHandler<GetTaskByIdQuery, TaskDetailDto>
     {
-        public async Task<TaskDto> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
+        public async Task<TaskDetailDto> Handle(GetTaskByIdQuery request, CancellationToken cancellationToken)
         {
-            var task = await taskRepository.FindProjectToAsync<TaskDto>(
+            var task = await taskRepository.FindProjectToAsync<TaskDetailDto>(
                 queryOptions: query => query.Where(t => t.ID.Equals(request.Id)),
                 cancellationToken: cancellationToken);
             if (task is null)

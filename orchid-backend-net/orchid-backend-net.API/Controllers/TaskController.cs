@@ -59,8 +59,8 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [Produces(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(JsonResponse<TaskDto>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(JsonResponse<TaskDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<TaskDetailDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(JsonResponse<TaskDetailDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

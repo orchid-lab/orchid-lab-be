@@ -4,10 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Seedling.CreateSeedlings;
 using orchid_backend_net.Application.Seedling.Dto;
-using orchid_backend_net.Application.Seedling.GetAllSeedlings;
-using orchid_backend_net.Application.Seedling.GetSeedlingsById;
-using orchid_backend_net.Application.Seedling.RemoveSeedlings;
-using orchid_backend_net.Application.Seedling.UpdateSeedlings;
+using orchid_backend_net.Application.Seedling.UseCase.GetSeedlingsById;
+using orchid_backend_net.Application.Seedling.UseCase.GetAllSeedlings;
+using orchid_backend_net.Application.Seedling.UseCase.RemoveSeedlings;
+using orchid_backend_net.Application.Seedling.UseCase.UpdateSeedlings;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
@@ -30,8 +30,8 @@ namespace orchid_backend_net.API.Controllers
         /// <exception cref="InvalidOperationException"></exception>
         [HttpGet]
         [Produces(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(JsonResponse<SeedlingsDto>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(JsonResponse<SeedlingsDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<SeedlingDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(JsonResponse<SeedlingDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -60,8 +60,8 @@ namespace orchid_backend_net.API.Controllers
         /// <exception cref="InvalidOperationException"></exception>
         [HttpGet("{id}")]
         [Produces(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(JsonResponse<SeedlingsDto>), StatusCodes.Status201Created)]
-        [ProducesResponseType(typeof(JsonResponse<SeedlingsDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(JsonResponse<SeedlingsDetailDto>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(JsonResponse<SeedlingsDetailDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -112,8 +112,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    DurationsDays = table.Column<int>(type: "integer", nullable: false)
+                    Description = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -165,13 +164,26 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "StageDefinition",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_StageDefinition", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tasks",
                 columns: table => new
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    StageId = table.Column<string>(type: "text", nullable: true),
+                    StageId = table.Column<int>(type: "integer", nullable: true),
                     ResearcherId = table.Column<string>(type: "text", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     CreatedBy = table.Column<string>(type: "text", nullable: true),
@@ -200,27 +212,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_Batches_LabRooms_LabRoomId",
                         column: x => x.LabRoomId,
                         principalTable: "LabRooms",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Stages",
-                columns: table => new
-                {
-                    ID = table.Column<int>(type: "integer", nullable: false),
-                    MethodId = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
-                    Order = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Stages", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Stages_Methods_MethodId",
-                        column: x => x.MethodId,
-                        principalTable: "Methods",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -309,6 +300,35 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Stages",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "integer", nullable: false),
+                    MethodId = table.Column<int>(type: "integer", nullable: false),
+                    StageDefinitionId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    DurationsDays = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Order = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stages", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_Stages_Methods_MethodId",
+                        column: x => x.MethodId,
+                        principalTable: "Methods",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Stages_StageDefinition_StageDefinitionId",
+                        column: x => x.StageDefinitionId,
+                        principalTable: "StageDefinition",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "TaskAttributes",
                 columns: table => new
                 {
@@ -336,6 +356,74 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_TaskAttributes_Tasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Tasks",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskAssignments",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    TaskId = table.Column<string>(type: "text", nullable: false),
+                    TechnicianId = table.Column<string>(type: "text", nullable: false),
+                    TargetType = table.Column<int>(type: "integer", nullable: false),
+                    TargetId = table.Column<string>(type: "text", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    ExpectedEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskAssignments", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignments_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TaskAssignments_Users_TechnicianId",
+                        column: x => x.TechnicianId,
+                        principalTable: "Users",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExperimentLogs",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    HybridzationId = table.Column<string>(type: "text", nullable: false),
+                    HybridzationsID = table.Column<string>(type: "text", nullable: true),
+                    MethodId = table.Column<int>(type: "integer", nullable: false),
+                    BatchId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    Notes = table.Column<string>(type: "text", nullable: true),
+                    Reason = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExperimentLogs", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ExperimentLogs_Batches_BatchId",
+                        column: x => x.BatchId,
+                        principalTable: "Batches",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExperimentLogs_Hybridzations_HybridzationsID",
+                        column: x => x.HybridzationsID,
+                        principalTable: "Hybridzations",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_ExperimentLogs_Methods_MethodId",
+                        column: x => x.MethodId,
+                        principalTable: "Methods",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -411,74 +499,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_StageMaterials_Stages_StageId",
                         column: x => x.StageId,
                         principalTable: "Stages",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TaskAssignments",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    TaskId = table.Column<string>(type: "text", nullable: false),
-                    TechnicianId = table.Column<string>(type: "text", nullable: false),
-                    TargetType = table.Column<int>(type: "integer", nullable: false),
-                    TargetId = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    ExpectedEndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TaskAssignments", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_TaskAssignments_Tasks_TaskId",
-                        column: x => x.TaskId,
-                        principalTable: "Tasks",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_TaskAssignments_Users_TechnicianId",
-                        column: x => x.TechnicianId,
-                        principalTable: "Users",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExperimentLogs",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    HybridzationId = table.Column<string>(type: "text", nullable: false),
-                    HybridzationsID = table.Column<string>(type: "text", nullable: true),
-                    MethodId = table.Column<int>(type: "integer", nullable: false),
-                    BatchId = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    Notes = table.Column<string>(type: "text", nullable: true),
-                    Reason = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExperimentLogs", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ExperimentLogs_Batches_BatchId",
-                        column: x => x.BatchId,
-                        principalTable: "Batches",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExperimentLogs_Hybridzations_HybridzationsID",
-                        column: x => x.HybridzationsID,
-                        principalTable: "Hybridzations",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_ExperimentLogs_Methods_MethodId",
-                        column: x => x.MethodId,
-                        principalTable: "Methods",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -722,6 +742,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "MethodId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Stages_StageDefinitionId",
+                table: "Stages",
+                column: "StageDefinitionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TaskAssignments_TaskId",
                 table: "TaskAssignments",
                 column: "TaskId",
@@ -827,6 +852,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "StageDefinition");
 
             migrationBuilder.DropTable(
                 name: "Batches");

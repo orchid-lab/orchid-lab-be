@@ -2,7 +2,7 @@
 
 namespace orchid_backend_net.Domain.IRepositories
 {
-    public interface IStageRepository : IEFRepository<Stages, Stages>
+    public interface IStageDefinitionRepository : IEFRepository<StageDefinition, StageDefinition>
     {
     }
 }

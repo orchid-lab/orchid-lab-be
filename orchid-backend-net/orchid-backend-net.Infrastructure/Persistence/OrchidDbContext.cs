@@ -25,7 +25,7 @@ namespace orchid_backend_net.Infrastructure.Persistence
         public virtual DbSet<Characteristic> Characteristics { get; set; }
         public virtual DbSet<StageChemicals> StageChemicals { get; set; }
         public virtual DbSet<StageMaterials> StageMaterials { get; set; }
-        public virtual DbSet<Stages> Stages { get; set; }
+        public virtual DbSet<MethodStages> Stages { get; set; }
         public virtual DbSet<Methods> Methods { get; set; }
         public virtual DbSet<Materials> Materials { get; set; }
         public virtual DbSet<Chemicals> Chemicals { get; set; }

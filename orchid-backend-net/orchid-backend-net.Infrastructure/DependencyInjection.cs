@@ -102,9 +102,11 @@ namespace orchid_backend_net.Infrastructure
             //for task module
             services.AddScoped<ITaskRepository, TaskRepository>();
             services.AddScoped<IChemicalsRepository, ChemicalRepository>();
+            services.AddScoped<IMaterialRepository, MaterialRepository>();
+            services.AddScoped<IStageDefinitionRepository, StageDefinitionRepository>();
 
             //for method and experiment log module
-            services.AddScoped<IStageRepository, StageRepository>();
+            services.AddScoped<IMethodRepository, MethodRepository>();
 
             //signalR
             services.AddSignalR();

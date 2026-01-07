@@ -16,6 +16,7 @@ public abstract class BaseHandlerTestConfig
     protected Mock<ICurrentUserService> CurrentUserServiceMock = null!;
     protected Mock<IEmailSender> EmailSenderMock = null!;
     protected Mock<IDateTimeProvider> TimeProviderMock = null!;
+    protected Mock<IStageDefinitionRepository> StageDefinitionRepositoryMock = null!;
     [SetUp]
     public virtual void BaseSetup()
     {
@@ -27,5 +28,6 @@ public abstract class BaseHandlerTestConfig
         EmailSenderMock = new Mock<IEmailSender>();
         TaskRepositoryMock = new Mock<ITaskRepository>();
         TimeProviderMock = new Mock<IDateTimeProvider>();
+        StageDefinitionRepositoryMock = new Mock<IStageDefinitionRepository>();
     }
 }

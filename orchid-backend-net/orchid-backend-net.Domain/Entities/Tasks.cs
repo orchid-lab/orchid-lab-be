@@ -10,7 +10,7 @@ namespace orchid_backend_net.Domain.Entities
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         //StageId để xác định là cái task này có phải là template hay không
-        public string? StageId { get; set; }
+        public int? StageId { get; set; }
         public string? ResearcherId { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
@@ -19,7 +19,7 @@ namespace orchid_backend_net.Domain.Entities
         public DateTime? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }
-        public virtual TaskAssignment TaskAssignment { get; set; }
+        public virtual TaskAssignment TaskAssignment { get; set; } = null!;
         public virtual List<TaskAttributes> TaskAttributes { get; set; } = [];
 
         public void AddTaskAssignment(
@@ -161,7 +161,7 @@ namespace orchid_backend_net.Domain.Entities
             DateTime? endDate)
         {
 
-            bool IsTemplate = string.IsNullOrWhiteSpace(StageId);
+            bool IsTemplate = StageId is not null;
             bool WantToChangeToToDoTask = string.IsNullOrWhiteSpace(newTargetId);
             if (TaskAssignment == null)
                 throw new DomainException("Task chưa được assign, vui lòng hãy tạo task trước khi assign như thế này.");

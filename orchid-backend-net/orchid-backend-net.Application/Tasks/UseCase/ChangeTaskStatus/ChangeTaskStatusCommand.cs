@@ -42,8 +42,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus
 
             //task assignment
             if (TaskPolicy.IsCompletedStatus(parsedStatus) && request.EndDate != null)
-            {
-                
+            {   
                 task.TaskAssignment.EndDate = request.EndDate;
             }
 

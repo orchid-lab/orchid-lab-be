@@ -116,7 +116,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             {
                 Name = "Add hormone",
                 Description = "Add BAP",
-                StageId = "stage-1" // template
+                StageId = 1 // template
             },
             createTaskAttributes:
             [
@@ -136,7 +136,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
         result.Should().Be("Tạo task thành công");
 
         savedTask.Should().NotBeNull();
-        savedTask!.StageId.Should().Be("stage-1");
+        savedTask!.StageId.Should().Be(1);
 
         savedTask.TaskAssignment.Should().BeNull();
 

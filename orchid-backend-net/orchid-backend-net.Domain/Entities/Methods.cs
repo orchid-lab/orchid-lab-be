@@ -6,8 +6,7 @@ namespace orchid_backend_net.Domain.Entities
     {
         public required string Name { get; set; }
         public string? Description { get; set; }
-        public int DurationsDays { get; set; }
         public virtual IEnumerable<ExperimentLogs> ExperimentLogs { get; set; } = [];
-        public virtual IEnumerable<Stages> Stages { get; set; } = [];
+        public virtual IEnumerable<MethodStages> Stages { get; set; } = [];
     }
 }

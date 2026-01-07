@@ -10,6 +10,6 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Materials Material { get; set; }
         public int StageId { get; set; }
         [ForeignKey(nameof(StageId))]
-        public virtual Stages Stage { get; set; }
+        public virtual MethodStages Stage { get; set; }
     }
 }

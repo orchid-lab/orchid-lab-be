@@ -12,6 +12,8 @@ namespace orchid_backend_net.Infrastructure.Service
 
             await SeedChemicals.SeedAsync(context);
             await SeedMaterials.SeedAsync(context);
+
+            await SeedStageDefinition.SeedAsync(context);
         }
     }
 }

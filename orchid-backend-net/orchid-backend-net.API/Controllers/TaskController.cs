@@ -81,7 +81,9 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
-        /// create template/to-do task, only researcher can be used
+        /// create template/to-do task, only researcher can be used,
+        /// CreateTaskAssignmentDto can be null in case want to create task template
+        /// Task attribute can be null in case you need to create task like observation
         /// </summary>
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>
@@ -142,6 +144,9 @@ namespace orchid_backend_net.API.Controllers
 
         /// <summary>
         /// researcher using this api to update task information, not re-assign technician
+        /// update task attribute can be null
+        /// update task assignment can be null
+        /// create task attribute can be null
         /// </summary>
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>

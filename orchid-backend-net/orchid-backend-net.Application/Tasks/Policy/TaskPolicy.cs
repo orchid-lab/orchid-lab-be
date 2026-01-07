@@ -2,6 +2,7 @@
 using orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus;
 using orchid_backend_net.Application.Tasks.UseCase.CreateTask;
 using orchid_backend_net.Application.Tasks.UseCase.UpdateTask;
+using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.Policy
 {
@@ -17,16 +18,18 @@ namespace orchid_backend_net.Application.Tasks.Policy
             Domain.Common.Enum.TaskStatus.DeclinedByTechnician,
         ];
 
-        public static void ValidateTaskUpdate(
+        public async static Task ValidateTaskUpdate(
             Domain.Entities.Tasks task,
             UpdateTaskCommand request,
-            IDateTimeProvider dateTimeProvider)
+            IDateTimeProvider dateTimeProvider,
+            IStageDefinitionRepository stageDefinitionRepository)
         {
-            bool taskIsTemplate = !string.IsNullOrWhiteSpace(task.StageId);
+            bool taskIsTemplate = task.StageId is not null;
             bool taskIsToDo = task.TaskAssignment != null;
 
             bool requestHasAssignmentUpdate = request.UpdateTaskAssignment is not null;
-            bool requestHasStageUpdate = !string.IsNullOrWhiteSpace(request.StageId);
+            bool requestHasStageUpdate = request.StageId is not null 
+                && await stageDefinitionRepository.AnyAsync(s => request.StageId == s.ID);
 
             // RULE 1: Invariant
             if (taskIsTemplate == taskIsToDo)
@@ -53,15 +56,22 @@ namespace orchid_backend_net.Application.Tasks.Policy
         }
 
 
-        public static void ValidateTaskCreate(CreateTaskCommand request, IDateTimeProvider dateTimeProvider)
+        public static async Task ValidateTaskCreate(CreateTaskCommand request, IDateTimeProvider dateTimeProvider, IStageDefinitionRepository stageDefinitionRepository)
         {
-            bool isTemplateTask = !string.IsNullOrWhiteSpace(request.StageId);
+            bool isTemplateTask = request.StageId is not null;
             bool isToDoTask = request.CreateTaskAssignment is not null;
+            bool isStageExist = await stageDefinitionRepository.AnyAsync(s => request.StageId == s.ID);
 
             //rule 1: task must be template or to-do task
             if (isTemplateTask == isToDoTask)
                 throw new InvalidOperationException(
                     "Task phải là Template hoặc To-do, không được đồng thời hoặc không cái nào.");
+
+            //rule 2: if task template => stage must exist
+            if (isStageExist != isTemplateTask)
+            {
+                throw new InvalidOperationException("Không tìm thấy stage id.");
+            }
 
             // Rule 2: to-do task => must have assignment
             if (isToDoTask)

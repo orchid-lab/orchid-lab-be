@@ -22,19 +22,20 @@ namespace orchid_backend_net.Application.Tasks.UseCase.CreateTask
         /// if stage id is null => the task is a to-do task
         /// if stage is not null => the task is a template task
         /// </summary>
-        public string? StageId { get; set; } = parameter.StageId;
+        public int? StageId { get; set; } = parameter.StageId;
         public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
     }
 
     internal class CreateTaskCommandHandler(
         ITaskRepository taskRepository,
         ICurrentUserService currentUserService,
-        IDateTimeProvider dateTimeProvider) : IRequestHandler<CreateTaskCommand, string>
+        IDateTimeProvider dateTimeProvider,
+        IStageDefinitionRepository stageDefinitionRepository) : IRequestHandler<CreateTaskCommand, string>
     {
         public async Task<string> Handle(CreateTaskCommand request, CancellationToken cancellationToken)
         {
             //use case rules validation
-            TaskPolicy.ValidateTaskCreate(request, dateTimeProvider);
+            await TaskPolicy.ValidateTaskCreate(request, dateTimeProvider, stageDefinitionRepository);
 
             var tasks = new Domain.Entities.Tasks
             {

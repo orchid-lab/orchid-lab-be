@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.UpdateTask
         UpdateTaskAssignmentDto updateTaskAssignment) : IRequest<string>
     {
         public required string TaskId { get; set; } = parameter.TaskId;
-        public string? StageId { get; set; } = parameter.StageId;
+        public int? StageId { get; set; } = parameter.StageId;
         public string? Name { get; set; } = parameter.Name;
         public string? Description { get; set; } = parameter.Description;
         public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
@@ -34,13 +34,14 @@ namespace orchid_backend_net.Application.Tasks.UseCase.UpdateTask
     internal class UpdateTaskCommandHandler(
         ITaskRepository taskRepository,
         ICurrentUserService currentUserService,
-        IDateTimeProvider dateTimeProvider) : IRequestHandler<UpdateTaskCommand, string>
+        IDateTimeProvider dateTimeProvider,
+        IStageDefinitionRepository stageDefinitionRepository) : IRequestHandler<UpdateTaskCommand, string>
     {
         public async Task<string> Handle(UpdateTaskCommand request, CancellationToken cancellationToken)
         {
             var tasks = await taskRepository.FindAsync(t => t.ID.Equals(request.TaskId), cancellationToken) ?? throw new NotFoundException("Không tìm thấy task.");
 
-            TaskPolicy.ValidateTaskUpdate(tasks, request, dateTimeProvider);
+           await TaskPolicy.ValidateTaskUpdate(tasks, request, dateTimeProvider, stageDefinitionRepository);
 
             //update basic info
             tasks.Name = request.Name ?? tasks.Name;

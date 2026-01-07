@@ -13,7 +13,7 @@
         /// if stage id is null => the task is a to-do task
         /// if stage is not null => the task is a template task
         /// </summary>
-        public string? StageId { get; set; }
+        public int? StageId { get; set; }
         /// <summary>
         /// if null, the task is for all experimentLog
         /// if not null, the task is for specific sample

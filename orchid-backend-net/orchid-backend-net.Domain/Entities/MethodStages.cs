@@ -33,7 +33,7 @@ namespace orchid_backend_net.Domain.Entities
         public void RemoveMaterial(int materialId)
         {
             var stageMaterial = StageMaterials.SingleOrDefault(m => m.MaterialId == materialId)
-                ?? throw new DomainException("Material này vốn dĩ đã tồn tại trong stage rồi");
+                ?? throw new DomainException("Material này không tồn tại");
             StageMaterials.Remove(stageMaterial);
         }
 
@@ -60,7 +60,7 @@ namespace orchid_backend_net.Domain.Entities
         public void RemoveChemical(int chemicalId)
         {
             var stageChemical = StageChemicals.SingleOrDefault(m => m.ChemicalId == chemicalId)
-                ?? throw new DomainException("Chemical này vốn dĩ đã tồn tại trong stage rồi");
+                ?? throw new DomainException("Chemical này không tồn tại");
             StageChemicals.Remove(stageChemical);
         }
 

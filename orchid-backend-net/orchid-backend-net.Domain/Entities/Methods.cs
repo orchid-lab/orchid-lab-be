@@ -10,29 +10,40 @@ namespace orchid_backend_net.Domain.Entities
         public virtual IEnumerable<ExperimentLogs> ExperimentLogs { get; set; } = [];
         public virtual List<MethodStages> MethodStages { get; set; } = [];
 
-        public void AddMethodStageToMethod(int stageDefinitionId, int order, int durationDays)
+        public MethodStages AddMethodStage(
+            int stageDefinitionId,
+            int order,
+            int durationDays)
         {
             if (MethodStages.Any(ms => ms.StageDefinitionId == stageDefinitionId))
                 throw new DuplicateException("Đã tồn tại stage này trong method này rồi.");
-            MethodStages.Add(new MethodStages
+
+            var stage = new MethodStages
             {
                 MethodId = this.ID,
                 StageDefinitionId = stageDefinitionId,
                 DurationsDays = durationDays,
                 Order = order
-            });
+            };
+
+            MethodStages.Add(stage);
+            return stage;
         }
 
-        public void AddMaterialToStage(int methodStageId, int materialId)
-        {
-            var stage = GetStageOrThrow(methodStageId);
-            stage.AddMaterial(materialId);
-        }
 
-        public void AddChemicalToStage(int methodStageId, int chemicalId)
+        public void AddMethodStageWithResource(
+            int stageDefinitionId,
+            int order,
+            int durationDays,
+            IEnumerable<int>? materials,
+            IEnumerable<int>? chemicals,
+            IEnumerable<CreateSampleRequirementSpec>? sampleRequirements)
         {
-            var stage = GetStageOrThrow(methodStageId);
-            stage.AddChemical(chemicalId);
+            var stage = AddMethodStage(stageDefinitionId, order, durationDays);
+
+            materials?.ToList().ForEach(stage.AddMaterial);
+            chemicals?.ToList().ForEach(stage.AddChemical);
+            sampleRequirements?.ToList().ForEach(stage.AddSampleRequirement);
         }
 
         public void RemoveMaterialFromStage(int methodStageId, int materialId)
@@ -57,12 +68,6 @@ namespace orchid_backend_net.Domain.Entities
         {
             var stage = GetStageOrThrow(methodStageId);
             stage.UpdateChemical(stageChemicalId, chemicalId);
-        }
-
-        public void AddSampleRequirementToStage(int methodStageId, CreateSampleRequirementSpec spec)
-        {
-            var stage = GetStageOrThrow(methodStageId);
-            stage.AddSampleRequirement(spec);
         }
 
         public void RemoveSampleRequirementFromStage(int methodStageId, string sampleRequirementId)

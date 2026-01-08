@@ -1,7 +1,12 @@
-﻿namespace orchid_backend_net.Application.Method.Dto.Method
+﻿using orchid_backend_net.Domain.Entities;
+
+namespace orchid_backend_net.Application.Method.Dto.Method
 {
     public record CreateMethodDto(
-        string Name, 
-        string? Description, 
-        List<int> CreateMaterial);
+        int StageDefinitionId,
+        int Order,
+        int DurationDays,
+        List<int> CreateMaterial,
+        List<int> CreateChemical,
+        List<CreateSampleRequirementSpec> CreateSampleRequirement);
 }

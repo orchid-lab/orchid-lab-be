@@ -16,7 +16,7 @@ namespace orchid_backend_net.Domain.Entities
         public int Order { get; set; }
         public virtual List<StageMaterials> StageMaterials { get; set; } = [];
         public virtual List<StageChemicals> StageChemicals { get; set; } = [];
-        public virtual List<SamplesRequirements> SamplesRequirements { get; set; } = [];
+        public virtual List<MethodStageSampleRequirement> SamplesRequirements { get; set; } = [];
 
         public void AddMaterial(int materialId)
         {
@@ -77,19 +77,15 @@ namespace orchid_backend_net.Domain.Entities
         {
             ValidateRange(spec.MinValue, spec.MaxValue, spec.ExpectedValue);
 
-            if (SamplesRequirements.Any(x => x.CharacteristicCode == spec.CharacteristicCode))
+            if (SamplesRequirements.Any(x => x.SampleRequirementId == spec.SampleRequirementId))
                 throw new DuplicateException("Requirement cho characteristic này đã tồn tại.");
 
-            SamplesRequirements.Add(new SamplesRequirements
+            SamplesRequirements.Add(new MethodStageSampleRequirement
             {
-                StageId = this.ID,
-                CharacteristicCode = spec.CharacteristicCode,
-                Name = spec.Name,
-                Description = spec.Description,
+                SampleRequirementId = spec.SampleRequirementId,
                 MinValue = spec.MinValue,
                 MaxValue = spec.MaxValue,
                 ExpectedValue = spec.ExpectedValue,
-                Unit = spec.Unit
             });
         }
 
@@ -109,28 +105,14 @@ namespace orchid_backend_net.Domain.Entities
             var max = spec.MaxValue ?? sampleReq.MaxValue;
             var expected = spec.ExpectedValue ?? sampleReq.ExpectedValue;
 
-            var hasNewCharacteristicCode = !string.IsNullOrWhiteSpace(spec.CharacteristicCode);
-            var isCharacteristicDuplicated = SamplesRequirements.Any(x => 
-            x.CharacteristicCode == spec.CharacteristicCode 
-            && x.ID != sampleRequirementId);
             ValidateRange(min, max, expected);
 
-            if (hasNewCharacteristicCode
-                && isCharacteristicDuplicated)
-            {
-                throw new DuplicateException("Requirement cho characteristic này đã tồn tại.");
-            }
-
-            sampleReq.CharacteristicCode = spec.CharacteristicCode ?? sampleReq.CharacteristicCode;
-            sampleReq.Name = spec.Name ?? sampleReq.Name;
-            sampleReq.MinValue = spec.MinValue ?? sampleReq.MinValue;
-            sampleReq.MaxValue = spec.MaxValue ?? sampleReq.MaxValue;
-            sampleReq.ExpectedValue = spec.ExpectedValue ?? sampleReq.ExpectedValue;
-            sampleReq.Unit = spec.Unit ?? sampleReq.Unit;
-            sampleReq.Description = spec.Description ?? sampleReq.Description;
+            sampleReq.MinValue = min;
+            sampleReq.MaxValue = max;
+            sampleReq.ExpectedValue = expected;
         }
 
-        private SamplesRequirements GetSampleRequirementOrThrow(string id)
+        private MethodStageSampleRequirement GetSampleRequirementOrThrow(string id)
             => SamplesRequirements.SingleOrDefault(x => x.ID == id)
                 ?? throw new DomainException("Sample Requirement không tồn tại");
 
@@ -146,23 +128,16 @@ namespace orchid_backend_net.Domain.Entities
 
     public sealed class UpdateSampleRequirementSpec
     {
-        public string? CharacteristicCode { get; init; }
-        public string? Name { get; init; }
         public decimal? MinValue { get; init; }
         public decimal? MaxValue { get; init; }
         public decimal? ExpectedValue { get; init; }
-        public string? Unit { get; init; }
-        public string? Description { get; init; }
     }
 
     public sealed class CreateSampleRequirementSpec
     {
-        public string? CharacteristicCode { get; init; }
-        public required string Name { get; init; }
+        public required string SampleRequirementId { get; init; }
         public required decimal MinValue { get; init; }
         public required decimal MaxValue { get; init; }
         public required decimal ExpectedValue { get; init; }
-        public required string Unit { get; init; }
-        public string? Description { get; init; }
     }
 }

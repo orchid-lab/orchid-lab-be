@@ -12,6 +12,16 @@ namespace orchid_backend_net.Application.Method.UseCase.GetAllMethod
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public string? SearchTerm { get; set; }
+
+        public GetAllMethodQuery(int pageNumber, int pageSize, string? searchTerm)
+        {
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+            SearchTerm = searchTerm;
+        }
+        public GetAllMethodQuery()
+        {
+        }
     }
 
     internal class GetAllMethodQueryHandler(IMethodRepository methodRepository) : IRequestHandler<GetAllMethodQuery, PageResult<MethodDto>>

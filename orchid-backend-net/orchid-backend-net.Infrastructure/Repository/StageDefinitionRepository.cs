@@ -5,7 +5,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 
 namespace orchid_backend_net.Infrastructure.Repository
 {
-    internal class StageDefinitionRepository(OrchidDbContext dbContext, IMapper mapper) : RepositoryBase<StageDefinition, StageDefinition, OrchidDbContext>(dbContext, mapper), IStageDefinitionRepository
+    public class StageDefinitionRepository(OrchidDbContext dbContext, IMapper mapper) : RepositoryBase<StageDefinition, StageDefinition, OrchidDbContext>(dbContext, mapper), IStageDefinitionRepository
     {
     }
 }

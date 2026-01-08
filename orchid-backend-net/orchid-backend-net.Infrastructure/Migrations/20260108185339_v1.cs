@@ -65,7 +65,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Disease",
+                name: "Diseases",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "integer", nullable: false),
@@ -74,7 +74,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Disease", x => x.ID);
+                    table.PrimaryKey("PK_Diseases", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -120,6 +120,22 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    IsRead = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Roles",
                 columns: table => new
                 {
@@ -129,6 +145,21 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SamplesRequirements",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    CharacteristicCode = table.Column<string>(type: "text", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    Unit = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SamplesRequirements", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -300,28 +331,26 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stages",
+                name: "MethodStages",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "integer", nullable: false),
                     MethodId = table.Column<int>(type: "integer", nullable: false),
                     StageDefinitionId = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
                     DurationsDays = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
                     Order = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stages", x => x.ID);
+                    table.PrimaryKey("PK_MethodStages", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_Stages_Methods_MethodId",
+                        name: "FK_MethodStages_Methods_MethodId",
                         column: x => x.MethodId,
                         principalTable: "Methods",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Stages_StageDefinition_StageDefinitionId",
+                        name: "FK_MethodStages_StageDefinition_StageDefinitionId",
                         column: x => x.StageDefinitionId,
                         principalTable: "StageDefinition",
                         principalColumn: "ID",
@@ -400,6 +429,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     MethodId = table.Column<int>(type: "integer", nullable: false),
                     BatchId = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    AssignedTo = table.Column<string>(type: "text", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: false),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
@@ -429,26 +460,29 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SamplesRequirements",
+                name: "MethodStageSampleRequirement",
                 columns: table => new
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
-                    StageId = table.Column<int>(type: "integer", nullable: false),
-                    CharacteristicCode = table.Column<string>(type: "text", nullable: true),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: true),
+                    MethodStageId = table.Column<int>(type: "integer", nullable: false),
+                    SampleRequirementId = table.Column<string>(type: "text", nullable: false),
                     MinValue = table.Column<decimal>(type: "numeric", nullable: false),
                     MaxValue = table.Column<decimal>(type: "numeric", nullable: false),
-                    ExpectedValue = table.Column<decimal>(type: "numeric", nullable: false),
-                    Unit = table.Column<string>(type: "text", nullable: false)
+                    ExpectedValue = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SamplesRequirements", x => x.ID);
+                    table.PrimaryKey("PK_MethodStageSampleRequirement", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_SamplesRequirements_Stages_StageId",
-                        column: x => x.StageId,
-                        principalTable: "Stages",
+                        name: "FK_MethodStageSampleRequirement_MethodStages_MethodStageId",
+                        column: x => x.MethodStageId,
+                        principalTable: "MethodStages",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MethodStageSampleRequirement_SamplesRequirements_SampleRequ~",
+                        column: x => x.SampleRequirementId,
+                        principalTable: "SamplesRequirements",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -471,9 +505,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StageChemicals_Stages_StageId",
+                        name: "FK_StageChemicals_MethodStages_StageId",
                         column: x => x.StageId,
-                        principalTable: "Stages",
+                        principalTable: "MethodStages",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -496,9 +530,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_StageMaterials_Stages_StageId",
+                        name: "FK_StageMaterials_MethodStages_StageId",
                         column: x => x.StageId,
-                        principalTable: "Stages",
+                        principalTable: "MethodStages",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -556,9 +590,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MonitoringLogs_Disease_DiseaseId",
+                        name: "FK_MonitoringLogs_Diseases_DiseaseId",
                         column: x => x.DiseaseId,
-                        principalTable: "Disease",
+                        principalTable: "Diseases",
                         principalColumn: "ID");
                     table.ForeignKey(
                         name: "FK_MonitoringLogs_Samples_SampleId",
@@ -607,15 +641,15 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_MonitoringLogDetails", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_MonitoringLogDetails_MonitoringLogs_MonitoringLogsId",
-                        column: x => x.MonitoringLogsId,
-                        principalTable: "MonitoringLogs",
+                        name: "FK_MonitoringLogDetails_MethodStageSampleRequirement_Requireme~",
+                        column: x => x.RequirementId,
+                        principalTable: "MethodStageSampleRequirement",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MonitoringLogDetails_SamplesRequirements_RequirementId",
-                        column: x => x.RequirementId,
-                        principalTable: "SamplesRequirements",
+                        name: "FK_MonitoringLogDetails_MonitoringLogs_MonitoringLogsId",
+                        column: x => x.MonitoringLogsId,
+                        principalTable: "MonitoringLogs",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -656,6 +690,26 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "MonitoringLogsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MethodStages_MethodId",
+                table: "MethodStages",
+                column: "MethodId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MethodStages_StageDefinitionId",
+                table: "MethodStages",
+                column: "StageDefinitionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MethodStageSampleRequirement_MethodStageId",
+                table: "MethodStageSampleRequirement",
+                column: "MethodStageId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MethodStageSampleRequirement_SampleRequirementId",
+                table: "MethodStageSampleRequirement",
+                column: "SampleRequirementId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MonitoringLogDetails_MonitoringLogsId",
                 table: "MonitoringLogDetails",
                 column: "MonitoringLogsId");
@@ -690,11 +744,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_Samples_ExperimentLogId",
                 table: "Samples",
                 column: "ExperimentLogId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SamplesRequirements_StageId",
-                table: "SamplesRequirements",
-                column: "StageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Seedlings_ParentAId",
@@ -735,16 +784,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_StageMaterials_StageId",
                 table: "StageMaterials",
                 column: "StageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stages_MethodId",
-                table: "Stages",
-                column: "MethodId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Stages_StageDefinitionId",
-                table: "Stages",
-                column: "StageDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TaskAssignments_TaskId",
@@ -800,6 +839,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "MonitoringLogDetails");
 
             migrationBuilder.DropTable(
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
                 name: "SeedlingsTraits");
 
             migrationBuilder.DropTable(
@@ -815,10 +857,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "TaskAttributes");
 
             migrationBuilder.DropTable(
-                name: "MonitoringLogs");
+                name: "MethodStageSampleRequirement");
 
             migrationBuilder.DropTable(
-                name: "SamplesRequirements");
+                name: "MonitoringLogs");
 
             migrationBuilder.DropTable(
                 name: "Characteristics");
@@ -833,10 +875,16 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Tasks");
 
             migrationBuilder.DropTable(
+                name: "MethodStages");
+
+            migrationBuilder.DropTable(
+                name: "SamplesRequirements");
+
+            migrationBuilder.DropTable(
                 name: "AnalyticResults");
 
             migrationBuilder.DropTable(
-                name: "Disease");
+                name: "Diseases");
 
             migrationBuilder.DropTable(
                 name: "Samples");
@@ -845,16 +893,13 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Stages");
+                name: "StageDefinition");
 
             migrationBuilder.DropTable(
                 name: "ExperimentLogs");
 
             migrationBuilder.DropTable(
                 name: "Roles");
-
-            migrationBuilder.DropTable(
-                name: "StageDefinition");
 
             migrationBuilder.DropTable(
                 name: "Batches");

@@ -8,6 +8,12 @@ namespace orchid_backend_net.Application.Method.UseCase.GetMethodById
     public class GetMethodByIdQuery : IRequest<MethodDetailDto>
     {
         public required int Id { get; set; }
+        public GetMethodByIdQuery() { }
+
+        public GetMethodByIdQuery(int id)
+        {
+            Id = id;
+        }
     }
 
     internal class GetMethodByIdQueryHandler(IMethodRepository methodRepository) : IRequestHandler<GetMethodByIdQuery, MethodDetailDto>

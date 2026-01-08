@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Chemicals.Dto;
-using orchid_backend_net.Application.Chemicals.GetAllChemicals;
-using orchid_backend_net.Application.Chemicals.GetChemicalById;
+using orchid_backend_net.Application.Chemicals.UseCase.GetChemicalById;
+using orchid_backend_net.Application.Chemicals.UseCase.GetAllChemicals;
 using orchid_backend_net.Application.Common.Pagination;
 
 namespace orchid_backend_net.API.Controllers

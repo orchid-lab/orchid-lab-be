@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.Materials.Dto;
-using orchid_backend_net.Application.Materials.GetAllMaterials;
-using orchid_backend_net.Application.Materials.GetMaterialById;
+using orchid_backend_net.Application.Materials.UseCase.GetMaterialById;
+using orchid_backend_net.Application.Materials.UseCase.GetAllMaterials;
 
 namespace orchid_backend_net.API.Controllers
 {

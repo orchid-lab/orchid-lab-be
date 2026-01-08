@@ -15,6 +15,8 @@ namespace orchid_backend_net.Domain.Entities
         [ForeignKey(nameof(BatchId))]
         public virtual Batches Batch { get; set; }
         public required string Name { get; set; }
+        public required string CreatedBy { get; set; }
+        public required string AssignedTo { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }

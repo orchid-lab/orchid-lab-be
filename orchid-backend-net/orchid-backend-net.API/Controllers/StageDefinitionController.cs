@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.StageDefinitiones.Dto;
-using orchid_backend_net.Application.StageDefinitiones.GetAllStageDefinition;
-using orchid_backend_net.Application.StageDefinitiones.GetStageDefinitionById;
+using orchid_backend_net.Application.StageDefinitiones.UseCase.GetStageDefinitionById;
+using orchid_backend_net.Application.StageDefinitiones.UseCase.GetAllStageDefinition;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers

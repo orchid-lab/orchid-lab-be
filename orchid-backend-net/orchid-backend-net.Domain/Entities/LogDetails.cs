@@ -6,7 +6,7 @@ namespace orchid_backend_net.Domain.Entities
     public class LogDetails : BaseGuidEntity
     {
         public required string RequirementId { get; set; }
-        public virtual SamplesRequirements Requirement { get; set; }
+        public virtual MethodStageSampleRequirement Requirement { get; set; }
         public string MonitoringLogsId { get; set; }
         [ForeignKey(nameof(MonitoringLogsId))]
         public virtual MonitoringLogs MonitoringLogs { get; set; }

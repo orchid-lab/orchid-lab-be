@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using orchid_backend_net.Application.Chemicals.Dto;
 using orchid_backend_net.Application.Common.Mappings;
-using orchid_backend_net.Application.Materials.Dto;
 using orchid_backend_net.Application.Method.Dto.SampleRequirement;
+using orchid_backend_net.Application.Method.Dto.StageChemical;
+using orchid_backend_net.Application.Method.Dto.StageMaterial;
 using orchid_backend_net.Application.StageDefinitiones.Dto;
 using orchid_backend_net.Domain.Entities;
 
@@ -14,16 +14,16 @@ namespace orchid_backend_net.Application.Method.Dto.MethodStage
         public required int DurationsDays { get; set; }
         public required int Order { get; set; }
         public required StageDefinitionDto StageDefinition { get; set; }
-        public required List<MaterialDto> Materials { get; set; }
-        public required List<ChemicalDto> Chemicals { get; set; }
+        public required List<StageMaterialDto> StageMaterials { get; set; }
+        public required List<StageChemicalDto> StageChemicals { get; set; }
         public required List<SampleRequirementDto> SampleRequirements { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<MethodStages, MethodStageDetailDto>()
-                .ForMember(src => src.Materials, 
-                opt => opt.MapFrom(src => src.StageMaterials.Select(sm => sm.Material)))
-                .ForMember(src => src.Chemicals,
-                opt => opt.MapFrom(src => src.StageChemicals.Select(sm => sm.Chemical)));
+                .ForMember(dst => dst.StageMaterials,
+                    opt => opt.MapFrom(src => src.StageMaterials))
+                .ForMember(dst => dst.StageChemicals,
+                    opt => opt.MapFrom(src => src.StageChemicals));
         }
     }
 }

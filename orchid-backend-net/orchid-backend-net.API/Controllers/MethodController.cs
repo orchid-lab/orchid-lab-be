@@ -179,7 +179,7 @@ namespace orchid_backend_net.API.Controllers
         [HttpPut("{methodId}/method-stages/{methodStageId}/chemical/{stageChemicalId}")]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
-        public async Task<ActionResult<JsonResponse<string>>> UpdateMethodMaterial(
+        public async Task<ActionResult<JsonResponse<string>>> UpdateMethodChemical(
             int methodId,
             int methodStageId,
             string stageChemicalId,

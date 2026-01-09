@@ -17,9 +17,10 @@ namespace orchid_backend_net.Domain.Entities
         {
             if (MethodStages.Any(ms => ms.StageDefinitionId == stageDefinitionId))
                 throw new DuplicateException("Đã tồn tại stage này trong method này rồi.");
-
+            var methodStageCountId = MethodStages.Count;
             var stage = new MethodStages
             {
+                ID = methodStageCountId,
                 MethodId = this.ID,
                 StageDefinitionId = stageDefinitionId,
                 DurationsDays = durationDays,

@@ -6,7 +6,7 @@ namespace orchid_backend_net.Domain.Entities
     public class Hybridzations : BaseGuidEntity
     {
         public required string ParentAId { get; set; } 
-        public required string ParentBId { get; set; }
+        public string? ParentBId { get; set; }
         [ForeignKey(nameof(ParentAId))]
         public virtual Seedlings ParentA { get; set; }
         [ForeignKey(nameof(ParentBId))]

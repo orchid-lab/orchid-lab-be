@@ -1,4 +1,5 @@
 ﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,6 +27,36 @@ namespace orchid_backend_net.Domain.Entities
         //1 - đang tiến hành - diễn ra khi technician nhận experiment log
         //2 - Hoàn thành
         //3 - Bị hủy => hủy toàn bộ samples thuộc experiment log này
-        public virtual IEnumerable<Samples> Samples { get; set; } = [];
+        public virtual List<Samples> Samples { get; set; } = [];
+
+        public void UpdateInformation(string? name, string? notes)
+        {
+            Name = name ?? Name;
+            Notes = notes;
+        }
+
+        public void MarkCompleted()
+        {
+            EnsureNotDestroyed();
+
+            if (Status == ExperimentLogStatus.Completed)
+                return;
+            Status = ExperimentLogStatus.Completed;
+        }
+
+        public void DestroyExperimentLogBecauseOfAllSampleInfected(string? reason)
+        {
+            EnsureNotDestroyed();
+            Reason = reason;
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            Status = ExperimentLogStatus.Destroyed;
+        }
+
+        private void EnsureNotDestroyed()
+        {
+            if(Status == ExperimentLogStatus.Destroyed)
+                throw new DomainException("Experiment log đã bị hủy.");
+
+        }
     }
 }

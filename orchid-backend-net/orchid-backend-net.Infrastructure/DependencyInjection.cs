@@ -108,6 +108,9 @@ namespace orchid_backend_net.Infrastructure
             //for method and experiment log module
             services.AddScoped<IMethodRepository, MethodRepository>();
             services.AddScoped<ISampleRequirementDefinitionRepository, SampleRequirementRepository>();
+            services.AddScoped<ISampleRepository, SampleRepository>();
+            services.AddScoped<IExperimentLogRepository, ExperimentLogRepository>();
+
             //signalR
             services.AddSignalR();
             return services;

@@ -6,5 +6,6 @@
         InProgressed,
         Completed,
         ExecutedBecauseOfDisease,
+        ConvertedToSeedling
     }
 }

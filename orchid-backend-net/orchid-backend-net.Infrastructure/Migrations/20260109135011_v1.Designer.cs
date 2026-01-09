@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260109070330_v1")]
+    [Migration("20260109135011_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -232,7 +232,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ParentBId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ID");
@@ -953,9 +952,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentB")
                         .WithMany()
-                        .HasForeignKey("ParentBId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParentBId");
 
                     b.Navigation("ParentA");
 

@@ -1,4 +1,5 @@
 ﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -26,6 +27,6 @@ namespace orchid_backend_net.Domain.Entities
         //1 - đang tiến hành - diễn ra khi technician nhận experiment log
         //2 - Hoàn thành
         //3 - Bị hủy => hủy toàn bộ samples thuộc experiment log này
-        public virtual IEnumerable<Samples> Samples { get; set; } = [];
+        public virtual List<Samples> Samples { get; set; } = [];
     }
 }

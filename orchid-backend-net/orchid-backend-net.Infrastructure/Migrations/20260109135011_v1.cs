@@ -294,7 +294,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     ParentAId = table.Column<string>(type: "text", nullable: false),
-                    ParentBId = table.Column<string>(type: "text", nullable: false)
+                    ParentBId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -309,8 +309,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_Hybridzations_Seedlings_ParentBId",
                         column: x => x.ParentBId,
                         principalTable: "Seedlings",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ID");
                 });
 
             migrationBuilder.CreateTable(

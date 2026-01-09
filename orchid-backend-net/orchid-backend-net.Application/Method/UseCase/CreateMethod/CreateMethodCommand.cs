@@ -19,6 +19,7 @@ namespace orchid_backend_net.Application.Method.UseCase.CreateMethod
         {
             var isMethodDuplicated = await methodRepository
                 .AnyAsync(m => m.Name.ToLower().Equals(request.Name.ToLower()), cancellationToken);
+            var methodIdCount = await methodRepository.CountAsync(cancellationToken: cancellationToken);
             if (isMethodDuplicated)
                 throw new DuplicateException("Method này đã trùng");
 
@@ -49,6 +50,7 @@ namespace orchid_backend_net.Application.Method.UseCase.CreateMethod
 
             var newMethod = new Methods() 
             { 
+                ID = methodIdCount,
                 Name = request.Name, 
                 Description = request.Description 
             };

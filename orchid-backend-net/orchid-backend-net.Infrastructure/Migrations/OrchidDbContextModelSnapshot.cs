@@ -533,7 +533,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("CurrentStageOrder")
                         .HasColumnType("integer");
 
-                    b.Property<DateOnly>("ExecutionDate")
+                    b.Property<DateOnly?>("ExecutionDate")
                         .HasColumnType("date");
 
                     b.Property<string>("ExperimentLogId")

@@ -556,7 +556,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     CurrentStageOrder = table.Column<int>(type: "integer", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
-                    ExecutionDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    ExecutionDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

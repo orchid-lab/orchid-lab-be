@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260108185339_v1")]
+    [Migration("20260109070330_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -77,7 +77,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Batches", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<int>("LabRoomId")
                         .HasColumnType("integer");
@@ -117,7 +120,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Chemicals", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -142,7 +148,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Disease", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -258,7 +267,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.LabRooms", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -306,7 +318,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Materials", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Category")
                         .IsRequired()
@@ -361,7 +376,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStages", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<int>("DurationsDays")
                         .HasColumnType("integer");
@@ -387,7 +405,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Methods", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
@@ -494,7 +515,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Roles", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -661,7 +685,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageDefinition", b =>
                 {
                     b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
                     b.Property<string>("Description")
                         .IsRequired()

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -53,7 +54,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Chemicals",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Category = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
@@ -68,7 +70,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Diseases",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false)
                 },
@@ -81,7 +84,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "LabRooms",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false)
@@ -95,7 +99,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Materials",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Category = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
@@ -110,7 +115,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Methods",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true)
                 },
@@ -139,7 +145,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -198,7 +205,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "StageDefinition",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false)
                 },
@@ -233,7 +241,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Batches",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LabRoomId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -334,7 +343,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "MethodStages",
                 columns: table => new
                 {
-                    ID = table.Column<int>(type: "integer", nullable: false),
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     MethodId = table.Column<int>(type: "integer", nullable: false),
                     StageDefinitionId = table.Column<int>(type: "integer", nullable: false),
                     DurationsDays = table.Column<int>(type: "integer", nullable: false),

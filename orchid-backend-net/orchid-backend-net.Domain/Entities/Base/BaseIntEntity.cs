@@ -5,8 +5,8 @@ namespace orchid_backend_net.Domain.Entities.Base
 {
     public class BaseIntEntity : BaseEntity<int>
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public override int ID { get; set; }
     }
 }

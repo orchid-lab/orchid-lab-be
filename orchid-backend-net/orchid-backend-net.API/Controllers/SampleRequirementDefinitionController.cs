@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.Application.Common.Pagination;
-using orchid_backend_net.Application.Method.Dto.SampleRequirement;
+using orchid_backend_net.Application.SampleRequirementDefinition.Dto;
 using orchid_backend_net.Application.SampleRequirementDefinition.UseCase.GetAllSampleRequirementDefinition;
 using orchid_backend_net.Application.SampleRequirementDefinition.UseCase.GetSampleRequirementDefinitionById;
 
@@ -24,7 +24,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [ProducesResponseType(typeof(PageResult<SampleRequirementDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(PageResult<SampleRequirementDefinitionDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAllCharacteristics([FromQuery] GetAllSampleRequirementDefinitionQuery query, CancellationToken cancellationToken = default)
         {
             try
@@ -47,7 +47,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet("{id}")]
-        [ProducesResponseType(typeof(SampleRequirementDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SampleRequirementDefinitionDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCharacteristicById([FromRoute] string id, CancellationToken cancellationToken = default)
         {
             try

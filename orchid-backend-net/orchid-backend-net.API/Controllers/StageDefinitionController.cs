@@ -13,9 +13,9 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="logger"></param>
-    [Route("api/stagedefinition")]
+    [Route("api/stage-definition")]
     [ApiController]
-    public class StageDefinitionController(ISender sender, ILogger<SeedlingController> logger) : BaseController(sender)
+    public class StageDefinitionController(ISender sender, ILogger<StageDefinitionController> logger) : BaseController(sender)
     {
         /// <summary>
         /// use for get all seedlings

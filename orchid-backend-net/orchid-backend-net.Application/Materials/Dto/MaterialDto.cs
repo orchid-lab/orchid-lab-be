@@ -6,6 +6,7 @@ namespace orchid_backend_net.Application.Materials.Dto
 {
     public class MaterialDto : IMapFrom<Domain.Entities.Materials>
     {
+        public required int Id { get; set; }
         public required string Name { get; set; }
         public required string Category { get; set; }
         public string? Description { get; set; }

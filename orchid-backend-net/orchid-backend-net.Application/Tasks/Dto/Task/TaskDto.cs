@@ -5,6 +5,7 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
 {
     public class TaskDto : IMapFrom<Domain.Entities.Tasks>
     {
+        public required string Id { get; set;  }
         public string Name { get; set; }
         public string Description { get; set; }
         public int? StageId { get; set; }

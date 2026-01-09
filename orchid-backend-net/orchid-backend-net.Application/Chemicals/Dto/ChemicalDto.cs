@@ -5,6 +5,7 @@ namespace orchid_backend_net.Application.Chemicals.Dto
 {
     public class ChemicalDto : IMapFrom<Domain.Entities.Chemicals>
     {
+        public required int Id { get; set; }
         public required string Name { get; set; }
         public required string Category { get; set; }
         public string? Description { get; set; }

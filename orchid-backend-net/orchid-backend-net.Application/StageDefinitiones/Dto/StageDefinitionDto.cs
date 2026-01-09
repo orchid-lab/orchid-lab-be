@@ -6,6 +6,7 @@ namespace orchid_backend_net.Application.StageDefinitiones.Dto
 {
     public class StageDefinitionDto : IMapFrom<StageDefinition>
     {
+        public required int Id { get; set; }
         public required string Name { get; set; }
         public required string Description { get; set; }
         public void Mapping(Profile profile)

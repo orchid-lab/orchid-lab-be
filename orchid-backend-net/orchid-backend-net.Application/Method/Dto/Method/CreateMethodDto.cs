@@ -7,6 +7,5 @@ namespace orchid_backend_net.Application.Method.Dto.Method
         int Order,
         int DurationDays,
         List<int> CreateMaterial,
-        List<int> CreateChemical,
-        List<CreateSampleRequirementSpec> CreateSampleRequirement);
+        List<int> CreateChemical);
 }

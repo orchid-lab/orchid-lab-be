@@ -15,12 +15,12 @@ namespace orchid_backend_net.Domain.Entities
             int order,
             int durationDays)
         {
-            if (MethodStages.Any(ms => ms.StageDefinitionId == stageDefinitionId))
+            if (MethodStages.Any(ms => ms.MethodStageDefinitionId == stageDefinitionId))
                 throw new DuplicateException("Đã tồn tại stage này trong method này rồi.");
             var stage = new MethodStages
             {
                 MethodId = this.ID,
-                StageDefinitionId = stageDefinitionId,
+                MethodStageDefinitionId = stageDefinitionId,
                 DurationsDays = durationDays,
                 Order = order
             };
@@ -35,14 +35,12 @@ namespace orchid_backend_net.Domain.Entities
             int order,
             int durationDays,
             IEnumerable<int>? materials,
-            IEnumerable<int>? chemicals,
-            IEnumerable<CreateSampleRequirementSpec>? sampleRequirements)
+            IEnumerable<int>? chemicals)
         {
             var stage = AddMethodStage(stageDefinitionId, order, durationDays);
 
             materials?.ToList().ForEach(stage.AddMaterial);
             chemicals?.ToList().ForEach(stage.AddChemical);
-            sampleRequirements?.ToList().ForEach(stage.AddSampleRequirement);
         }
 
         public void RemoveMaterialFromStage(int methodStageId, int materialId)
@@ -69,18 +67,7 @@ namespace orchid_backend_net.Domain.Entities
             stage.UpdateChemical(stageChemicalId, chemicalId);
         }
 
-        public void RemoveSampleRequirementFromStage(int methodStageId, string sampleRequirementId)
-        {
-            var stage = GetStageOrThrow(methodStageId);
-            stage.RemoveSampleRequirement(sampleRequirementId);
-        }
-
-        public void UpdateSampleRequirementInStage(int methodStageId, string sampleRequirementId, UpdateSampleRequirementSpec spec)
-        {
-            var stage = GetStageOrThrow(methodStageId);
-            stage.UpdateSampleRequirement(sampleRequirementId, spec);
-        }
-
+ 
         private MethodStages GetStageOrThrow(int methodStageId)
         {
             return MethodStages.SingleOrDefault(s => s.ID == methodStageId)

@@ -2,9 +2,10 @@
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class StageDefinition : BaseIntEntity
+    public class SampleStageDefinition : BaseIntEntity
     {
         public string Name { get; set; }
+        public int Order { get; set;  }
         public string Description { get; set; }
     }
 }

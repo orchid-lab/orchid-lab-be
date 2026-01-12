@@ -62,11 +62,5 @@ namespace orchid_backend_net.Application.Method.Policy
             if (!await chemicalRepository.AnyAsync(c => c.ID == chemicalId, ct))
                 throw new NotFoundException("Chemical không tồn tại.");
         }
-
-        public static async Task EnsureSampleRequirementExistsAsync(ISampleRequirementDefinitionRepository sampleRequirementDefinitionRepository, string requirementId, CancellationToken ct)
-        {
-            if (!await sampleRequirementDefinitionRepository.AnyAsync(r =>  r.ID == requirementId, ct))
-                throw new NotFoundException("Sample requirement không tồn tại.");
-        }
     }
 }

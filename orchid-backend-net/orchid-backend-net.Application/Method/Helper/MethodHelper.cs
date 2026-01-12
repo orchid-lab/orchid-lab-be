@@ -16,8 +16,7 @@ namespace orchid_backend_net.Application.Method.Helper
                      x.Order,
                      x.DurationDays,
                      x.CreateMaterial,
-                     x.CreateChemical,
-                     x.CreateSampleRequirement);
+                     x.CreateChemical);
             });
         }
     }

@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Common.Mappings;
-using orchid_backend_net.Application.Method.Dto.SampleRequirement;
 using orchid_backend_net.Application.Method.Dto.StageChemical;
 using orchid_backend_net.Application.Method.Dto.StageMaterial;
 using orchid_backend_net.Application.StageDefinitiones.Dto;
@@ -16,7 +15,6 @@ namespace orchid_backend_net.Application.Method.Dto.MethodStage
         public required StageDefinitionDto StageDefinition { get; set; }
         public required List<StageMaterialDto> StageMaterials { get; set; }
         public required List<StageChemicalDto> StageChemicals { get; set; }
-        public required List<SampleRequirementDto> SampleRequirements { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<MethodStages, MethodStageDetailDto>()

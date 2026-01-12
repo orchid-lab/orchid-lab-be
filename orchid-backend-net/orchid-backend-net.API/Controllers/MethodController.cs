@@ -14,12 +14,9 @@ using orchid_backend_net.Application.Method.UseCase.DeleteMaterialFromMethodStag
 using orchid_backend_net.Application.Method.UseCase.UpdateChemicalInMethodStage;
 using orchid_backend_net.Application.Method.UseCase.UpdateMaterialInMethodStage;
 using orchid_backend_net.Application.Method.UseCase.UpdateMethod;
-using orchid_backend_net.Application.Method.UseCase.UpdateRequirementInMethodStage;
 using orchid_backend_net.Domain.Entities;
 using System.Net.Mime;
 using System.Threading;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using orchid_backend_net.Application.Method.UseCase.DeleteSampleRequirementFromMethodStage;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -200,39 +197,6 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
-        /// update sample requirement in method stage
-        /// </summary>
-        /// <param name="methodId"></param>
-        /// <param name="methodStageId"></param>
-        /// <param name="sampleRequirementId"></param>
-        /// <param name="dto"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        [HttpPut("{methodId}/method-stages/{methodStageId}/sample-requirement/{sampleRequirementId}")]
-        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
-        public async Task<ActionResult<JsonResponse<string>>> UpdateSampleRequirement(
-            int methodId,
-            int methodStageId,
-            string sampleRequirementId,
-            [FromBody] UpdateSampleRequirementDto dto,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(new UpdateRequirementInMethodStageCommand(methodId, methodStageId, sampleRequirementId, dto.Minvalue, dto.MaxValue, dto.ExpectedValue), cancellationToken);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
-            }
-        }
-
-        /// <summary>
         /// delete entire method
         /// </summary>
         /// <param name="id"></param>
@@ -310,37 +274,6 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(new DeleteMaterialFromMethodStageCommand(methodId, methodStageId, materialId), cancellationToken);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// use to delete sample requirement in method
-        /// </summary>
-        /// <param name="methodId"></param>
-        /// <param name="methodStageId"></param>
-        /// <param name="sampleRequirementId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        [HttpDelete("{methodId}/method-stages/{methodStageId}/sample-requirement/{sampleRequirementId}")]
-        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
-        public async Task<ActionResult<JsonResponse<string>>> DeleteMethodSampleRequirement(
-            int methodId,
-            int methodStageId,
-            string sampleRequirementId,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(new DeleteSampleRequirementFromMethodStageCommand(methodId, methodStageId, sampleRequirementId), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -17,11 +17,6 @@ namespace orchid_backend_net.Infrastructure.Persistence.Configuration
                 .WithOne(sm => sm.MethodStage)
                 .HasForeignKey(sm => sm.StageId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(s => s.SamplesRequirements)
-                .WithOne(sr => sr.MethodStages)
-                .HasForeignKey(sm => sm.MethodStageId)
-                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -9,14 +9,13 @@ namespace orchid_backend_net.Domain.Entities
         public required int MethodId { get; set; }
         [ForeignKey(nameof(MethodId))]
         public virtual Methods Method { get; set; }
-        public required int StageDefinitionId { get; set; }
-        [ForeignKey(nameof(StageDefinitionId))]
-        public virtual StageDefinition StageDefinition { get; set; }
+        public required int MethodStageDefinitionId { get; set; }
+        [ForeignKey(nameof(MethodStageDefinitionId))]
+        public virtual MethodStageDefinition MethodStageDefinition { get; set; }
         public int DurationsDays { get; set; }
         public int Order { get; set; }
         public virtual List<StageMaterials> StageMaterials { get; set; } = [];
         public virtual List<StageChemicals> StageChemicals { get; set; } = [];
-        public virtual List<MethodStageSampleRequirement> SamplesRequirements { get; set; } = [];
 
         public void AddMaterial(int materialId)
         {
@@ -71,73 +70,7 @@ namespace orchid_backend_net.Domain.Entities
                 ?? throw new DomainException("Chemical này không tồn tại");
             stageChemical.ChemicalId = chemicalId ?? stageChemical.ChemicalId;
         }
-
-        public void AddSampleRequirement(
-            CreateSampleRequirementSpec spec)
-        {
-            ValidateRange(spec.MinValue, spec.MaxValue, spec.ExpectedValue);
-
-            if (SamplesRequirements.Any(x => x.SampleRequirementId == spec.SampleRequirementId))
-                throw new DuplicateException("Requirement cho characteristic này đã tồn tại.");
-
-            SamplesRequirements.Add(new MethodStageSampleRequirement
-            {
-                SampleRequirementId = spec.SampleRequirementId,
-                MinValue = spec.MinValue,
-                MaxValue = spec.MaxValue,
-                ExpectedValue = spec.ExpectedValue,
-            });
-        }
-
-        public void RemoveSampleRequirement(string sampleRequirementId)
-        {
-            var sampleReq = GetSampleRequirementOrThrow(sampleRequirementId);
-            SamplesRequirements.Remove(sampleReq);
-        }
-
-        public void UpdateSampleRequirement(
-           string sampleRequirementId,
-           UpdateSampleRequirementSpec spec)
-        {
-            var sampleReq = GetSampleRequirementOrThrow(sampleRequirementId);
-
-            var min = spec.MinValue ?? sampleReq.MinValue;
-            var max = spec.MaxValue ?? sampleReq.MaxValue;
-            var expected = spec.ExpectedValue ?? sampleReq.ExpectedValue;
-
-            ValidateRange(min, max, expected);
-
-            sampleReq.MinValue = min;
-            sampleReq.MaxValue = max;
-            sampleReq.ExpectedValue = expected;
-        }
-
-        private MethodStageSampleRequirement GetSampleRequirementOrThrow(string id)
-            => SamplesRequirements.SingleOrDefault(x => x.ID == id)
-                ?? throw new DomainException("Sample Requirement không tồn tại");
-
-        private static void ValidateRange(decimal min, decimal max, decimal expected)
-        {
-            if (min > max)
-                throw new DomainException("Min value không thể lớn hơn Max value.");
-
-            if (expected < min || expected > max)
-                throw new DomainException("Expected value phải nằm trong khoảng Min–Max.");
-        }
     }
 
-    public sealed class UpdateSampleRequirementSpec
-    {
-        public decimal? MinValue { get; init; }
-        public decimal? MaxValue { get; init; }
-        public decimal? ExpectedValue { get; init; }
-    }
-
-    public sealed class CreateSampleRequirementSpec
-    {
-        public required string SampleRequirementId { get; init; }
-        public required decimal MinValue { get; init; }
-        public required decimal MaxValue { get; init; }
-        public required decimal ExpectedValue { get; init; }
-    }
+   
 }

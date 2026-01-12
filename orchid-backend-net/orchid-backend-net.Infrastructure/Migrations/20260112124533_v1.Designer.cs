@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260109154144_v1")]
+    [Migration("20260112124533_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -81,6 +81,16 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("BatchName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("BatchSize")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsBatching")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("LabRoomId")
                         .HasColumnType("integer");
@@ -301,7 +311,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("RequirementId")
+                    b.Property<string>("SampleStageRequirementId")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -309,7 +319,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasIndex("MonitoringLogsId");
 
-                    b.HasIndex("RequirementId");
+                    b.HasIndex("SampleStageRequirementId");
 
                     b.ToTable("MonitoringLogDetails");
                 });
@@ -342,34 +352,25 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("Materials");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStageSampleRequirement", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStageDefinition", b =>
                 {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<decimal>("ExpectedValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("MaxValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("MethodStageId")
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("MinValue")
-                        .HasColumnType("numeric");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
 
-                    b.Property<string>("SampleRequirementId")
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("MethodStageId");
-
-                    b.HasIndex("SampleRequirementId");
-
-                    b.ToTable("MethodStageSampleRequirement");
+                    b.ToTable("MethodStageDefinition");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStages", b =>
@@ -386,17 +387,17 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("MethodId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Order")
+                    b.Property<int>("MethodStageDefinitionId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("StageDefinitionId")
+                    b.Property<int>("Order")
                         .HasColumnType("integer");
 
                     b.HasKey("ID");
 
                     b.HasIndex("MethodId");
 
-                    b.HasIndex("StageDefinitionId");
+                    b.HasIndex("MethodStageDefinitionId");
 
                     b.ToTable("MethodStages");
                 });
@@ -427,7 +428,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("AnalyticResultId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("CreatedBy")
@@ -448,16 +448,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
-                    b.Property<string>("SampleId")
+                    b.Property<string>("SampleStageId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("SampleStageOrder")
+                    b.Property<int>("Status")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("text");
@@ -476,7 +472,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasIndex("DiseaseId");
 
-                    b.HasIndex("SampleId");
+                    b.HasIndex("SampleStageId");
 
                     b.HasIndex("UserId");
 
@@ -528,13 +524,83 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("Roles");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<int>("CurrentStageOrder")
+                    b.Property<string>("SampleId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SampleStageDefinitionId")
                         .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SampleId");
+
+                    b.HasIndex("SampleStageDefinitionId");
+
+                    b.ToTable("SampleStages");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStageDefinition", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("SampleStageDefinition");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStageRequirement", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("ExpectedValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("SampleRequirementDefinitionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SampleStageId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SampleRequirementDefinitionId");
+
+                    b.HasIndex("SampleStageId");
+
+                    b.ToTable("SampleStagesRequirement");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
 
                     b.Property<DateOnly?>("ExecutionDate")
                         .HasColumnType("date");
@@ -552,9 +618,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<string>("Reason")
                         .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.HasKey("ID");
 
@@ -584,7 +647,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("SamplesRequirements");
+                    b.ToTable("SamplesRequirementDefinitions");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
@@ -679,27 +742,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.HasIndex("StageId");
 
                     b.ToTable("StageChemicals");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageDefinition", b =>
-                {
-                    b.Property<int>("ID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("StageDefinition");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageMaterials", b =>
@@ -978,34 +1020,15 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.MethodStageSampleRequirement", "Requirement")
+                    b.HasOne("orchid_backend_net.Domain.Entities.SampleStageRequirement", "SampleStageRequirement")
                         .WithMany()
-                        .HasForeignKey("RequirementId")
+                        .HasForeignKey("SampleStageRequirementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("MonitoringLogs");
 
-                    b.Navigation("Requirement");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStageSampleRequirement", b =>
-                {
-                    b.HasOne("orchid_backend_net.Domain.Entities.MethodStages", "MethodStages")
-                        .WithMany("SamplesRequirements")
-                        .HasForeignKey("MethodStageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("orchid_backend_net.Domain.Entities.SamplesRequirementsDefinition", "SampleRequirementsDefinition")
-                        .WithMany()
-                        .HasForeignKey("SampleRequirementId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MethodStages");
-
-                    b.Navigation("SampleRequirementsDefinition");
+                    b.Navigation("SampleStageRequirement");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStages", b =>
@@ -1016,32 +1039,30 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.StageDefinition", "StageDefinition")
+                    b.HasOne("orchid_backend_net.Domain.Entities.MethodStageDefinition", "MethodStageDefinition")
                         .WithMany()
-                        .HasForeignKey("StageDefinitionId")
+                        .HasForeignKey("MethodStageDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Method");
 
-                    b.Navigation("StageDefinition");
+                    b.Navigation("MethodStageDefinition");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MonitoringLogs", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.AnalyticResults", "AnalyticResult")
                         .WithOne("MonitoringLog")
-                        .HasForeignKey("orchid_backend_net.Domain.Entities.MonitoringLogs", "AnalyticResultId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("orchid_backend_net.Domain.Entities.MonitoringLogs", "AnalyticResultId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Disease", "Disease")
                         .WithMany("MonitoringLogs")
                         .HasForeignKey("DiseaseId");
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Sample")
+                    b.HasOne("orchid_backend_net.Domain.Entities.SampleStage", "SampleStage")
                         .WithMany()
-                        .HasForeignKey("SampleId")
+                        .HasForeignKey("SampleStageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1055,9 +1076,47 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Navigation("Disease");
 
-                    b.Navigation("Sample");
+                    b.Navigation("SampleStage");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Samples")
+                        .WithMany("SampleStages")
+                        .HasForeignKey("SampleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.SampleStageDefinition", "SampleStageDefinition")
+                        .WithMany()
+                        .HasForeignKey("SampleStageDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SampleStageDefinition");
+
+                    b.Navigation("Samples");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStageRequirement", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.SamplesRequirementsDefinition", "SampleRequirementsDefinition")
+                        .WithMany()
+                        .HasForeignKey("SampleRequirementDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.SampleStage", "SampleStage")
+                        .WithMany()
+                        .HasForeignKey("SampleStageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SampleRequirementsDefinition");
+
+                    b.Navigation("SampleStage");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
@@ -1229,8 +1288,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MethodStages", b =>
                 {
-                    b.Navigation("SamplesRequirements");
-
                     b.Navigation("StageChemicals");
 
                     b.Navigation("StageMaterials");
@@ -1246,6 +1303,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MonitoringLogs", b =>
                 {
                     b.Navigation("LogDetails");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
+                {
+                    b.Navigation("SampleStages");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>

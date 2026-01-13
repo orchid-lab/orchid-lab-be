@@ -1,4 +1,5 @@
 ﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities.Base;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,5 +18,34 @@ namespace orchid_backend_net.Domain.Entities
         //1 - Đang tiến hành - diễn ra khi technician nhận experiment log
         //2 - Hoàn thành
         //3 - Bị hủy 
+        internal void MarkAsCompleted()
+        {
+            EnsureNotTerminated();
+            if (Status == SampleStatus.Completed)
+                return;
+            if (Status != SampleStatus.InProgressed)
+                throw new DomainException("Stage không ở trạng thái đang tiến hành.");
+            Status = SampleStatus.Completed;
+        }
+
+        internal void Start()
+        {
+            if (Status != SampleStatus.Created)
+                throw new DomainException("Stage không hợp lệ để bắt đầu.");
+
+            Status = SampleStatus.InProgressed;
+        }
+        
+        internal void MarkAsExecuted()
+        {
+            EnsureNotTerminated();
+            Status = SampleStatus.ExecutedBecauseOfDisease;
+        }
+
+        internal void EnsureNotTerminated()
+        {
+            if (Status == SampleStatus.ExecutedBecauseOfDisease)
+                throw new DomainException("Sample này đã hủy do bệnh.");
+        }
     }
 }

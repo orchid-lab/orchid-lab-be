@@ -1,4 +1,5 @@
 ﻿using CloudinaryDotNet;
+using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Options;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Infrastructure.Service.CloudinarySettings;
@@ -15,26 +16,21 @@ namespace orchid_backend_net.Infrastructure.Repository
                 throw new ArgumentException("File stream cannot be null or empty.", nameof(fileStream));
             }
 
-            await using var memoryStream = new MemoryStream();
-            await fileStream.CopyToAsync(memoryStream);
-            memoryStream.Position = 0; // Reset the stream position to the beginning
-
-            var uploadParams = new CloudinaryDotNet.Actions.ImageUploadParams
+            var uploadParams = new ImageUploadParams
             {
-                File = new FileDescription(fileName, memoryStream),
+                File = new FileDescription(fileName, fileStream),
                 Folder = folder ?? options.Value.DefaultFolder,
                 UseFilename = options.Value.UseFilename,
                 UniqueFilename = options.Value.UniqueFilename,
-                Overwrite = options.Value.Overwrite
+                Overwrite = options.Value.Overwrite,
             };
 
-            var uploadResult = await cloudinary.UploadAsync(uploadParams);
-            if (uploadResult.StatusCode != HttpStatusCode.OK)
-            {
-                throw new Exception($"Image upload failed: {uploadResult.Error?.Message}");
-            }
-                
-            return uploadResult.SecureUrl.ToString();
+            var result = await cloudinary.UploadAsync(uploadParams);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+                throw new InvalidOperationException(result.Error?.Message);
+
+            return result.SecureUrl.ToString();
         }
     }
 }

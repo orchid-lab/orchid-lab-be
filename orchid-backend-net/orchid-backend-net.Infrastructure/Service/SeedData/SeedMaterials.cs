@@ -1,58 +1,81 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using orchid_backend_net.Domain.Entities;
+using orchid_backend_net.Infrastructure.Service.SeedData.Const;
 
 namespace orchid_backend_net.Infrastructure.Service.SeedData
 {
     public static class SeedMaterials
     {
-        // Constants cho Category
-        private const string CATEGORY_PREPARE_ROOM = "Phòng chuẩn bị môi trường nuôi cấy";
-        private const string CATEGORY_WASH_AREA = "Khu vực rửa dụng cụ";
-        private const string CATEGORY_STERILIZE_ROOM = "Phòng khử trùng";
-        private const string CATEGORY_CULTURE_ROOM = "Phòng cấy";
-
         // Constants cho Unit
-        private const string UNIT_PIECE = "cái";
 
         public static async Task SeedAsync(DbContext context)
         {
             if (!await context.Set<Materials>().AnyAsync())
             {
                 var materials = new List<Materials>
-                {
-                    // Phòng chuẩn bị môi trường nuôi cấy
-                    new() { Name = "Máy cất nước", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Máy đo pH", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Máy khuấy từ", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Tủ lạnh đựng hóa chất", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Cân điện tử (Cân 2 số)", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Muỗng", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Vá", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Đũa thủy tinh", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Cốc đong", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Ống đong", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Pipette", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Đĩa Petri", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Chai thủy tinh", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Becher", Category = CATEGORY_PREPARE_ROOM, Unit = UNIT_PIECE },
+        {
+            // ========================
+            // PHÒNG CHUẨN BỊ MÔI TRƯỜNG
+            // ========================
+            new() { Name = "Máy cất nước", Category = MaterialCategories.CATEGORY_PREPARE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Máy đo pH", Category = MaterialCategories.CATEGORY_PREPARE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Máy khuấy từ", Category = MaterialCategories.CATEGORY_PREPARE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Tủ lạnh đựng hóa chất", Category = MaterialCategories.CATEGORY_PREPARE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Cân điện tử (2 số)", Category = MaterialCategories.CATEGORY_PREPARE_ROOM, Unit = Unit.MATERIAL_UNIT },
 
-                    // Khu vực rửa dụng cụ
-                    new() { Name = "Vòi nước", Category = CATEGORY_WASH_AREA, Unit = UNIT_PIECE },
-                    new() { Name = "Bồn nước", Category = CATEGORY_WASH_AREA, Unit = UNIT_PIECE },
-                    new() { Name = "Giá, kệ để chai", Category = CATEGORY_WASH_AREA, Unit = UNIT_PIECE },
-                    new() { Name = "Xà phòng", Category = CATEGORY_WASH_AREA, Unit = UNIT_PIECE },
-                    new() { Name = "Cọ rửa chai", Category = CATEGORY_WASH_AREA, Unit = UNIT_PIECE },
+            // ========================
+            // DỤNG CỤ CHỨA
+            // ========================
+            new() { Name = "Becher", Category = MaterialCategories.CATEGORY_CONTAINER, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Cốc đong", Category = MaterialCategories.CATEGORY_CONTAINER, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Ống đong", Category = MaterialCategories.CATEGORY_CONTAINER, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Chai thủy tinh nuôi cấy", Category = MaterialCategories.CATEGORY_CONTAINER, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Đĩa Petri", Category = MaterialCategories.CATEGORY_CONTAINER, Unit = Unit.MATERIAL_UNIT },
 
-                    // Phòng khử trùng
-                    new() { Name = "Nồi hấp (autoclave)", Category = CATEGORY_STERILIZE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Tủ sấy", Category = CATEGORY_STERILIZE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Bàn để môi trường và dụng cụ đã khử trùng", Category = CATEGORY_STERILIZE_ROOM, Unit = UNIT_PIECE },
+            // ========================
+            // KHU RỬA DỤNG CỤ
+            // ========================
+            new() { Name = "Vòi nước", Category = MaterialCategories.CATEGORY_WASH_AREA, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Bồn nước", Category = MaterialCategories.CATEGORY_WASH_AREA, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Giá, kệ để chai", Category = MaterialCategories.CATEGORY_WASH_AREA, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Xà phòng", Category = MaterialCategories.CATEGORY_WASH_AREA, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Cọ rửa chai", Category = MaterialCategories.CATEGORY_WASH_AREA, Unit = Unit.MATERIAL_UNIT },
 
-                    // Phòng cấy
-                    new() { Name = "Phòng cấy", Category = CATEGORY_CULTURE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Tủ cấy - Loại tủ kín", Category = CATEGORY_CULTURE_ROOM, Unit = UNIT_PIECE },
-                    new() { Name = "Tủ cấy - Loại laminar flow", Category = CATEGORY_CULTURE_ROOM, Unit = UNIT_PIECE }
-                };
+            // ========================
+            // DỤNG CỤ THAO TÁC VÔ TRÙNG
+            // ========================
+            new() { Name = "Nhíp", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Dao mổ", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Lưỡi lam", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Khay inox", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Giấy lọc", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Găng tay y tế", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Pipette", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Đũa thủy tinh", Category = MaterialCategories.CATEGORY_SURGICAL_TOOL, Unit = Unit.MATERIAL_UNIT },
+
+            // ========================
+            // PHÒNG KHỬ TRÙNG
+            // ========================
+            new() { Name = "Nồi hấp (Autoclave)", Category = MaterialCategories.CATEGORY_STERILIZE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Tủ sấy", Category = MaterialCategories.CATEGORY_STERILIZE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Bàn để dụng cụ đã khử trùng", Category = MaterialCategories.CATEGORY_STERILIZE_ROOM, Unit = Unit.MATERIAL_UNIT },
+
+            // ========================
+            // PHÒNG CẤY
+            // ========================
+            new() { Name = "Tủ cấy – Laminar Flow", Category = MaterialCategories.CATEGORY_CULTURE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Tủ cấy – Loại kín", Category = MaterialCategories.CATEGORY_CULTURE_ROOM, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Phòng cấy", Category = MaterialCategories.CATEGORY_CULTURE_ROOM, Unit = Unit.MATERIAL_UNIT },
+
+            // ========================
+            // HUẤN LUYỆN & RA VƯỜN
+            // ========================
+            new() { Name = "Khay ươm cây", Category = MaterialCategories.CATEGORY_ACCLIMATIZATION, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Giá thể trồng (xơ dừa / than / rêu)", Category = MaterialCategories.CATEGORY_ACCLIMATIZATION, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Bình phun sương", Category = MaterialCategories.CATEGORY_ACCLIMATIZATION, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Kệ trồng cây", Category = MaterialCategories.CATEGORY_ACCLIMATIZATION, Unit = Unit.MATERIAL_UNIT },
+            new() { Name = "Nhà lưới / mái che", Category = MaterialCategories.CATEGORY_ACCLIMATIZATION, Unit = Unit.MATERIAL_UNIT }
+        };
 
                 await context.Set<Materials>().AddRangeAsync(materials);
                 await context.SaveChangesAsync();

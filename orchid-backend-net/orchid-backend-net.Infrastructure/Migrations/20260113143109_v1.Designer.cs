@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260112124533_v1")]
+    [Migration("20260113143109_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -529,12 +529,18 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<DateOnly?>("CompletedAt")
+                        .HasColumnType("date");
+
                     b.Property<string>("SampleId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("SampleStageDefinitionId")
                         .HasColumnType("integer");
+
+                    b.Property<DateOnly>("StartedAt")
+                        .HasColumnType("date");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -559,6 +565,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("MaxDurationDays")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MinDurationDays")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -634,8 +646,17 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("CharacteristicCode")
                         .HasColumnType("text");
 
+                    b.Property<decimal>("DefaultExpectedValue")
+                        .HasColumnType("numeric");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
+
+                    b.Property<decimal?>("MaxValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("MinValue")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()

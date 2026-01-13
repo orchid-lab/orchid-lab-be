@@ -129,20 +129,19 @@ namespace orchid_backend_net.API.Controllers
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<JsonResponse<string>>> UpdateAvatar(
             IFormFile image,
-            [FromForm] string userId,
             CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                if (string.IsNullOrEmpty(userId))
-                    return BadRequest("User ID is required.");
                 if (image == null || image.Length == 0)
                     return BadRequest("Image file is required.");
-                using var stream = image.OpenReadStream();
-                stream.Position = 0;
-                var command = new UpdateUserAvatarCommand(userId, image.FileName, stream);
+
+                await using var stream = image.OpenReadStream();
+
+                var command = new UpdateUserAvatarCommand(image.FileName, stream);
                 var result = await Sender.Send(command, cancellationToken);
+
                 return Ok(new JsonResponse<string>(result));
             }
             catch (Exception ex)

@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Azure;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Infrastructure.Service;
+using PuppeteerSharp;
 
 namespace orchid_backend_net.Infrastructure.Repository
 {
@@ -26,12 +28,12 @@ namespace orchid_backend_net.Infrastructure.Repository
             if (!response.IsSuccessStatusCode)
             {
                 var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Python API failed: {error}");
+                throw new RequestFailedException($"Python API failed: {error}");
             }
 
             var json = await response.Content.ReadAsStringAsync();
             var result = JsonConvert.DeserializeObject<OrchidAnalysisResult>(json);
-            return result ?? throw new Exception("Invalid JSON result from Python.");
+            return result ?? throw new EvaluationFailedException("Invalid JSON result from Python.");
         }
     }
 }

@@ -8,6 +8,6 @@ namespace orchid_backend_net.Domain.Entities
         public required string Category { get; set; }
         public string? Description { get; set; }
         public required string Unit { get; set; }
-        public virtual IEnumerable<StageMaterials> StageMaterials { get; set; } = [];
+        public virtual List<StageMaterials> StageMaterials { get; set; } = new();
     }
 }

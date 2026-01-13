@@ -14,8 +14,8 @@ namespace orchid_backend_net.Domain.Entities
         public virtual MethodStageDefinition MethodStageDefinition { get; set; }
         public int DurationsDays { get; set; }
         public int Order { get; set; }
-        public virtual List<StageMaterials> StageMaterials { get; set; } = [];
-        public virtual List<StageChemicals> StageChemicals { get; set; } = [];
+        public virtual List<StageMaterials> StageMaterials { get; set; } = new();
+        public virtual List<StageChemicals> StageChemicals { get; set; } = new();
 
         public void AddMaterial(int materialId)
         {

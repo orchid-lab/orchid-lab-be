@@ -8,13 +8,11 @@ namespace orchid_backend_net.Application.User.UpdateUser
 {
     public class UpdateUserInformationCommand : IRequest<string>
     {
-        public string Id { get; set; }
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
-        public UpdateUserInformationCommand(string id, string? name, string? email, string? phoneNumber)
+        public UpdateUserInformationCommand(string? name, string? email, string? phoneNumber)
         {
-            Id = id;
             Name = name;
             Email = email;
             PhoneNumber = phoneNumber;
@@ -25,7 +23,7 @@ namespace orchid_backend_net.Application.User.UpdateUser
     {
         public async Task<string> Handle(UpdateUserInformationCommand request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.FindAsync(u => u.ID.Equals(request.Id) && u.DeletedDate == null, cancellationToken);
+            var user = await userRepository.FindAsync(u => u.ID.Equals(currentUserService.UserId) && u.DeletedDate == null, cancellationToken);
             if (user == null)
             {
                 throw new NotFoundException("Không tìm thấy người dùng");

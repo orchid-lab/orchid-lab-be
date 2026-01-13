@@ -176,7 +176,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     CharacteristicCode = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Unit = table.Column<string>(type: "text", nullable: false)
+                    Unit = table.Column<string>(type: "text", nullable: false),
+                    MinValue = table.Column<decimal>(type: "numeric", nullable: true),
+                    MaxValue = table.Column<decimal>(type: "numeric", nullable: true),
+                    DefaultExpectedValue = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -191,7 +194,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    MinDurationDays = table.Column<int>(type: "integer", nullable: true),
+                    MaxDurationDays = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -565,6 +570,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     SampleId = table.Column<string>(type: "text", nullable: false),
                     SampleStageDefinitionId = table.Column<int>(type: "integer", nullable: false),
+                    StartedAt = table.Column<DateOnly>(type: "date", nullable: false),
+                    CompletedAt = table.Column<DateOnly>(type: "date", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>

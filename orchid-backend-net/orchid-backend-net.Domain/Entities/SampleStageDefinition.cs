@@ -7,5 +7,7 @@ namespace orchid_backend_net.Domain.Entities
         public string Name { get; set; }
         public int Order { get; set;  }
         public string Description { get; set; }
+        public int? MinDurationDays { get; set; }
+        public int? MaxDurationDays { get; set; }
     }
 }

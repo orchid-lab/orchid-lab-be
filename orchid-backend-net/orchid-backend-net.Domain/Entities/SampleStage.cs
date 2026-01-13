@@ -12,6 +12,8 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Samples Samples { get; set; }
         public int SampleStageDefinitionId { get; set; }
         [ForeignKey(nameof(SampleStageDefinitionId))]
+        public DateOnly StartedAt { get; set; }
+        public DateOnly? CompletedAt { get; set; }
         public virtual SampleStageDefinition SampleStageDefinition { get; set; }
         public SampleStatus Status { get; set; }
         //0 - Mới tạo - technician chưa nhận experiment log để tiến hành lai tạo
@@ -33,12 +35,15 @@ namespace orchid_backend_net.Domain.Entities
             if (Status != SampleStatus.Created)
                 throw new DomainException("Stage không hợp lệ để bắt đầu.");
 
+            StartedAt = DateOnly.FromDateTime(DateTime.UtcNow);
             Status = SampleStatus.InProgressed;
         }
-        
+
         internal void MarkAsExecuted()
         {
             EnsureNotTerminated();
+
+            CompletedAt = DateOnly.FromDateTime(DateTime.UtcNow);
             Status = SampleStatus.ExecutedBecauseOfDisease;
         }
 

@@ -20,10 +20,6 @@ namespace orchid_backend_net.Application.User.UpdateUserAvatar
                 .NotNull()
                 .NotEmpty()
                 .WithMessage("Tệp tin không được để trống.");
-            RuleFor(x => x.Id)
-                .NotEmpty()
-                .NotNull()
-                .WithMessage("Người dùng phải tồn tại.");
         }
     }
 }

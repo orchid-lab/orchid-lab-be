@@ -9,98 +9,156 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
         {
             if (!await context.Set<SamplesRequirementsDefinition>().AnyAsync())
             {
+                var data = new List<SamplesRequirementsDefinition>
+                { 
+                    // =========================
+                    // PROTOCORM (MẦM)
+                    // =========================
+                    new()
+                    {
+                        Name = "Tỷ lệ nảy mầm",
+                        Unit = "%",
+                        Description = "Tỷ lệ hạt hình thành protocorm",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Đường kính protocorm",
+                        Unit = "mm",
+                        Description = "Kích thước trung bình protocorm",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Thời gian nảy mầm",
+                        Unit = "ngày",
+                        Description = "Số ngày từ gieo đến khi xuất hiện protocorm",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Tỷ lệ sống protocorm",
+                        Unit = "%",
+                        Description = "Tỷ lệ protocorm sống đến cuối giai đoạn",
+                        CharacteristicCode = "SURVIVAL_RATE"
+                    },
 
+                    // =========================
+                    // SHOOT / PLB (CHỒI)
+                    // =========================
+                    new()
+                    {
+                        Name = "Số PLB hình thành",
+                        Unit = "cái",
+                        Description = "Số PLB được tạo ra trên mỗi mẫu cấy",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Đường kính PLB",
+                        Unit = "mm",
+                        Description = "Kích thước trung bình PLB",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Thời gian hình thành PLB",
+                        Unit = "ngày",
+                        Description = "Thời gian từ cấy đến khi xuất hiện PLB",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Số chồi",
+                        Unit = "chồi",
+                        Description = "Số chồi phát sinh từ PLB",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Chiều cao chồi",
+                        Unit = "cm",
+                        Description = "Chiều cao trung bình của chồi",
+                        CharacteristicCode = "PLANT_HEIGHT"
+                    },
+                    new()
+                    {
+                        Name = "Chiều dài thân giả",
+                        Unit = "cm",
+                        Description = "Chiều dài thân giả của chồi",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Tỷ lệ sống chồi",
+                        Unit = "%",
+                        Description = "Tỷ lệ chồi sống đến cuối giai đoạn",
+                        CharacteristicCode = "SURVIVAL_RATE"
+                    },
 
-            var data = new List<SamplesRequirementsDefinition>
-            {
-                    // === THÂN GIẢ  ===
-                new() 
-                {
-                    ID = Guid.Parse("10000000-0000-0000-0000-000000000001").ToString(),
-                    CharacteristicCode = "STEM_COUNT",
-                    Name = "Số thân giả",
-                    Description = "Số lượng thân giả trên cây",
-                    Unit = "cái",
-                    MinValue = 1,
-                    MaxValue = 3,
-                    DefaultExpectedValue = 2
-                },
-                new() 
-                {
-                    ID = Guid.Parse("10000000-0000-0000-0000-000000000002").ToString(),
-                    CharacteristicCode = "PLANT_HEIGHT",
-                    Name = "Chiều cao cây",
-                    Description = "Chiều cao từ gốc đến ngọn",
-                    Unit = "cm",
-                    MinValue = 5,
-                    MaxValue = 15,
-                    DefaultExpectedValue = 10
-                },
-                new() 
-                {
-                    ID = Guid.Parse("10000000-0000-0000-0000-000000000003").ToString(),
-                    CharacteristicCode = "STEM_CONDITION",
-                    Name = "Tình trạng thân/lá",
-                    Description = "Đánh giá không nhăn nheo (0=nhăn nhiều, 1=hơi nhăn, 2=không nhăn)",
-                    Unit = "mức",
-                    MinValue = 0,
-                    MaxValue = 2,
-                    DefaultExpectedValue = 2
-                },
-
-                // === LÁ ===
-                new() 
-                {
-                    ID = Guid.Parse("20000000-0000-0000-0000-000000000001").ToString(),
-                    CharacteristicCode = "LEAF_COUNT",
-                    Name = "Số lá",
-                    Description = "Số lượng lá trên cây",
-                    Unit = "lá",
-                    MinValue = 3,
-                    MaxValue = 12,
-                    DefaultExpectedValue = 6
-                },
-                new() 
-                {
-                    ID = Guid.Parse("20000000-0000-0000-0000-000000000002").ToString(),
-                    CharacteristicCode = "LEAF_COLOR",
-                    Name = "Màu sắc lá",
-                    Description = "Đánh giá màu xanh (0=vàng, 1=xanh nhạt, 2=xanh vừa, 3=xanh đậm)",
-                    Unit = "mức",
-                    MinValue = 0,
-                    MaxValue = 3,
-                    DefaultExpectedValue = 2 // "xanh vừa"
-                },
-
-                // === RỄ ===
-                new() 
-                {
-                    ID = Guid.Parse("30000000-0000-0000-0000-000000000001").ToString(),
-                    CharacteristicCode = "ROOT_COUNT",
-                    Name = "Số rễ",
-                    Description = "Số lượng rễ khỏe mạnh",
-                    Unit = "rễ",
-                    MinValue = 2,
-                    MaxValue = 10,
-                    DefaultExpectedValue = 3
-                },
-                new() 
-                {
-                    ID = Guid.Parse("30000000-0000-0000-0000-000000000002").ToString(),
-                    CharacteristicCode = "ROOT_LENGTH",
-                    Name = "Chiều dài rễ",
-                    Description = "Chiều dài rễ trung bình",
-                    Unit = "cm",
-                    MinValue = 2,
-                    MaxValue = 10,
-                    DefaultExpectedValue = 5
-                },
-            };
-
-            await context.Set<SamplesRequirementsDefinition>().AddRangeAsync(data);
-            await context.SaveChangesAsync();
-            }
+                    // =========================
+                    // PLANTLET (CÂY CON)
+                    // =========================
+                    new()
+                    {
+                        Name = "Số lá",
+                        Unit = "lá",
+                        Description = "Số lá thật trên cây con",
+                        CharacteristicCode = "LEAF_COUNT"
+                    },
+                    new()
+                    {
+                        Name = "Chiều dài lá",
+                        Unit = "cm",
+                        Description = "Chiều dài trung bình của lá",
+                        CharacteristicCode = "LEAF_LENGTH"
+                    },
+                    new()
+                    {
+                        Name = "Chiều rộng lá",
+                        Unit = "cm",
+                        Description = "Chiều rộng trung bình của lá",
+                        CharacteristicCode = "LEAF_WIDTH"
+                    },
+                    new()
+                    {
+                        Name = "Độ dày lá",
+                        Unit = "mm",
+                        Description = "Độ dày trung bình của lá",
+                        CharacteristicCode = "LEAF_THICKNESS"
+                    },
+                    new()
+                    {
+                        Name = "Số rễ",
+                        Unit = "rễ",
+                        Description = "Số rễ hữu hiệu của cây con",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Chiều dài rễ",
+                        Unit = "cm",
+                        Description = "Chiều dài trung bình của rễ",
+                        CharacteristicCode = null
+                    },
+                    new()
+                    {
+                        Name = "Chiều cao cây con",
+                        Unit = "cm",
+                        Description = "Chiều cao từ gốc đến đỉnh cây con",
+                        CharacteristicCode = "PLANT_HEIGHT"
+                    },
+                    new()
+                    {
+                        Name = "Tỷ lệ sống cây con",
+                        Unit = "%",
+                        Description = "Tỷ lệ cây con sống trước khi ra vườn ươm",
+                        CharacteristicCode = "SURVIVAL_RATE"
+                    }
+                };
+                await context.Set<SamplesRequirementsDefinition>().AddRangeAsync(data);
+                await context.SaveChangesAsync();
+            }   
         }
-
-    }
+    }   
 }

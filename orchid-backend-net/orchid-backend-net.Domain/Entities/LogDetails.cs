@@ -8,9 +8,9 @@ namespace orchid_backend_net.Domain.Entities
         public string MonitoringLogsId { get; set; }
         [ForeignKey(nameof(MonitoringLogsId))]
         public virtual MonitoringLogs MonitoringLogs { get; set; }
-        public required string SampleStageRequirementId { get; set; }
+        public string SampleStageRequirementId { get; set; }
         [ForeignKey(nameof(SampleStageRequirementId))]
-        public virtual required SampleStageRequirement SampleStageRequirement { get; set; }
+        public virtual SampleStageRequirement SampleStageRequirement { get; set; }
         public required decimal MeasuredValue { get; set; }
         public required bool IsMatch { get; set; }
     }

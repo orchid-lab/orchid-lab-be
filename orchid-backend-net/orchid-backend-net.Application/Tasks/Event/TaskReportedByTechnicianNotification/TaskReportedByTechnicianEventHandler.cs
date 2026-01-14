@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Exceptions;
-using orchid_backend_net.Domain.Events;
+using orchid_backend_net.Domain.Events.TaskEvents;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.Event.TaskReportedByTechnicianNotification

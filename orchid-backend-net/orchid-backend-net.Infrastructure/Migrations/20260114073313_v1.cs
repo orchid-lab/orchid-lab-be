@@ -176,10 +176,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     CharacteristicCode = table.Column<string>(type: "text", nullable: true),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    Unit = table.Column<string>(type: "text", nullable: false),
-                    MinValue = table.Column<decimal>(type: "numeric", nullable: true),
-                    MaxValue = table.Column<decimal>(type: "numeric", nullable: true),
-                    DefaultExpectedValue = table.Column<decimal>(type: "numeric", nullable: false)
+                    Unit = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -346,7 +343,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     SampleStageDefinitionId = table.Column<int>(type: "integer", nullable: false),
                     SampleRequirementDefinitionId = table.Column<string>(type: "text", nullable: false),
-                    ExpectedValue = table.Column<decimal>(type: "numeric", nullable: false)
+                    ExpectedValue = table.Column<decimal>(type: "numeric", nullable: false),
+                    MinValue = table.Column<decimal>(type: "numeric", nullable: true),
+                    MaxValue = table.Column<decimal>(type: "numeric", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -536,6 +535,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     HybridzationsID = table.Column<string>(type: "text", nullable: true),
                     MethodId = table.Column<int>(type: "integer", nullable: false),
                     BatchId = table.Column<int>(type: "integer", nullable: false),
+                    CurrentStageOrder = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     AssignedTo = table.Column<string>(type: "text", nullable: false),

@@ -2,6 +2,7 @@
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities.Base;
 using orchid_backend_net.Domain.Events;
+using orchid_backend_net.Domain.Events.TaskEvents;
 
 namespace orchid_backend_net.Domain.Entities
 {

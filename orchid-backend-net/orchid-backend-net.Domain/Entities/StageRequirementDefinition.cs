@@ -12,5 +12,7 @@ namespace orchid_backend_net.Domain.Entities
         [ForeignKey(nameof(SampleRequirementDefinitionId))]
         public virtual SamplesRequirementsDefinition SampleRequirementsDefinition { get; set; } = default!;
         public required decimal ExpectedValue { get; set; }
+        public decimal? MinValue { get; set; }
+        public decimal? MaxValue { get; set; }
     }
 }

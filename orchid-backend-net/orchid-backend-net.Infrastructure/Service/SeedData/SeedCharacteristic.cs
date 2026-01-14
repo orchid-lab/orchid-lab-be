@@ -11,12 +11,24 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
             {
                 var characteristics = new List<Characteristic>
                 {
-                    new() { Code = "PLANT_HEIGHT", Name = "Chiều cao cây", Unit = "cm", Description = "Chiều cao cây con hoặc cây trưởng thành, đo từ gốc đến đỉnh sinh trưởng" },
-                    new() { Code = "LEAF_COUNT", Name = "Số lá", Unit = "lá", Description = "Số lượng lá thật trên cây" },
-                    new() { Code = "ROOT_COUNT", Name = "Số rễ", Unit = "rễ", Description = "Số lượng rễ khỏe, có khả năng sinh trưởng" },
-                    new() { Code = "ROOT_LENGTH", Name = "Chiều dài rễ", Unit = "cm", Description = "Chiều dài trung bình của rễ chính" },
-                    new() { Code = "FLOWER_COLOR", Name = "Màu hoa", Unit = "nhóm màu", Description = "Màu sắc chủ đạo của hoa (trắng, hồng, vàng, tím…)" },
-                    new() { Code = "FLOWER_SIZE", Name = "Kích thước hoa", Unit = "cm", Description = "Đường kính trung bình của hoa" }
+
+                    new() { Code = "PLANT_HEIGHT", Name = "Chiều cao cây trưởng thành", Unit = "cm" },
+                    new() { Code = "LEAF_LENGTH", Name = "Chiều dài lá", Unit = "cm" },
+                    new() { Code = "LEAF_WIDTH", Name = "Chiều rộng lá", Unit = "cm" },
+                    new() { Code = "LEAF_THICKNESS", Name = "Độ dày lá", Unit = "mm" },
+                    new() { Code = "LEAF_COUNT", Name = "Số lá trên cây", Unit = "lá" },
+
+                    new() { Code = "FLOWER_DIAMETER", Name = "Đường kính hoa", Unit = "cm" },
+                    new() { Code = "FLOWER_COUNT_PER_SPIKE", Name = "Số hoa trên phát hoa", Unit = "hoa" },
+
+                    new() { Code = "FLOWER_COLOR_R", Name = "Màu hoa - Red", Unit = "0-255" },
+                    new() { Code = "FLOWER_COLOR_G", Name = "Màu hoa - Green", Unit = "0-255" },
+                    new() { Code = "FLOWER_COLOR_B", Name = "Màu hoa - Blue", Unit = "0-255" },
+
+                    new() { Code = "DAYS_TO_FLOWERING", Name = "Thời gian đến ra hoa", Unit = "ngày" },
+                    new() { Code = "FLOWER_LIFESPAN", Name = "Thời gian hoa bền", Unit = "ngày" },
+
+                    new() { Code = "SURVIVAL_RATE", Name = "Tỷ lệ sống", Unit = "%" }
                 };
 
                 await context.Set<Characteristic>().AddRangeAsync(characteristics);

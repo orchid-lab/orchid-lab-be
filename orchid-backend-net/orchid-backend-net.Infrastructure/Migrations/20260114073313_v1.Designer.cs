@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260113162750_v1")]
+    [Migration("20260114073313_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -191,6 +191,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("CurrentStageOrder")
+                        .HasColumnType("integer");
 
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
@@ -643,17 +646,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("CharacteristicCode")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("DefaultExpectedValue")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<decimal?>("MaxValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("MinValue")
-                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -788,6 +782,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<decimal>("ExpectedValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("MaxValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("MinValue")
                         .HasColumnType("numeric");
 
                     b.Property<string>("SampleRequirementDefinitionId")

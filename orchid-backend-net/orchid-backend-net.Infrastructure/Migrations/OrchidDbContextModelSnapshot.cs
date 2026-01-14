@@ -189,6 +189,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("CurrentStageOrder")
+                        .HasColumnType("integer");
+
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
@@ -586,22 +589,19 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("ExpectedValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("SampleRequirementDefinitionId")
+                    b.Property<string>("SampleStageId")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("SampleStageId")
+                    b.Property<string>("StageRequirementDefinitionId")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ID");
 
-                    b.HasIndex("SampleRequirementDefinitionId");
-
                     b.HasIndex("SampleStageId");
+
+                    b.HasIndex("StageRequirementDefinitionId");
 
                     b.ToTable("SampleStagesRequirement");
                 });
@@ -643,17 +643,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("CharacteristicCode")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("DefaultExpectedValue")
-                        .HasColumnType("numeric");
-
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<decimal?>("MaxValue")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal?>("MinValue")
-                        .HasColumnType("numeric");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -780,6 +771,36 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.HasIndex("StageId");
 
                     b.ToTable("StageMaterials");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageRequirementDefinition", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("ExpectedValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("MaxValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("MinValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("SampleRequirementDefinitionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SampleStageDefinitionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SampleRequirementDefinitionId");
+
+                    b.HasIndex("SampleStageDefinitionId");
+
+                    b.ToTable("StageRequirementDefinitions");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAssignment", b =>
@@ -1120,21 +1141,21 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStageRequirement", b =>
                 {
-                    b.HasOne("orchid_backend_net.Domain.Entities.SamplesRequirementsDefinition", "SampleRequirementsDefinition")
-                        .WithMany()
-                        .HasForeignKey("SampleRequirementDefinitionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("orchid_backend_net.Domain.Entities.SampleStage", "SampleStage")
                         .WithMany()
                         .HasForeignKey("SampleStageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SampleRequirementsDefinition");
+                    b.HasOne("orchid_backend_net.Domain.Entities.StageRequirementDefinition", "StageRequirementDefinition")
+                        .WithMany()
+                        .HasForeignKey("StageRequirementDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("SampleStage");
+
+                    b.Navigation("StageRequirementDefinition");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>
@@ -1218,6 +1239,25 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Material");
 
                     b.Navigation("MethodStage");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageRequirementDefinition", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.SamplesRequirementsDefinition", "SampleRequirementsDefinition")
+                        .WithMany()
+                        .HasForeignKey("SampleRequirementDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.SampleStageDefinition", "SampleStage")
+                        .WithMany()
+                        .HasForeignKey("SampleStageDefinitionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SampleRequirementsDefinition");
+
+                    b.Navigation("SampleStage");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskAssignment", b =>

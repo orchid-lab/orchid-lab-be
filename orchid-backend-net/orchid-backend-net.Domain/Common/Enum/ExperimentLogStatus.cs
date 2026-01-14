@@ -3,7 +3,7 @@
     public enum ExperimentLogStatus
     {
         Created,
-        InProgessed,
+        InProgressed,
         Completed,
         Destroyed,
     }

@@ -11,9 +11,5 @@ namespace orchid_backend_net.Domain.Entities
         public required string Name { get; set; }
         public string? Description { get; set; }
         public required string Unit { get; set; }
-
-        public decimal? MinValue { get; set; }
-        public decimal? MaxValue { get; set; }
-        public decimal DefaultExpectedValue { get; set; }
     }
 }

@@ -21,20 +21,21 @@ namespace orchid_backend_net.Infrastructure.Persistence
         public virtual DbSet<LogDetails> MonitoringLogDetails { get; set; }
         public virtual DbSet<Materials> Materials { get; set; }
         public virtual DbSet<Methods> Methods { get; set; }
+        public virtual DbSet<MethodStageDefinition> MethodStageDefinition { get; set; }
         public virtual DbSet<MethodStages> MethodStages { get; set; }
         public virtual DbSet<MonitoringLogs> MonitoringLogs { get; set; }
         public virtual DbSet<Notification> Notifications { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<Samples> Samples { get; set; }
         public virtual DbSet<SamplesRequirementsDefinition> SamplesRequirementDefinitions { get; set; }
+        public virtual DbSet<SampleStage> SampleStages {  get; set; }
+        public virtual DbSet<SampleStageDefinition> SampleStageDefinition { get; set; }
+        public virtual DbSet<SampleStageRequirement> SampleStagesRequirement { get; set; }
         public virtual DbSet<Seedlings> Seedlings { get; set; }
         public virtual DbSet<SeedlingsTraits> SeedlingsTraits { get; set; }
         public virtual DbSet<StageChemicals> StageChemicals { get; set; }
-        public virtual DbSet<MethodStageDefinition> MethodStageDefinition { get; set; }
-        public virtual DbSet<SampleStageDefinition> SampleStageDefinition { get; set; }
-        public virtual DbSet<SampleStage> SampleStages {  get; set; }
-        public virtual DbSet<SampleStageRequirement> SampleStagesRequirement { get; set; }
         public virtual DbSet<StageMaterials> StageMaterials { get; set; }
+        public virtual DbSet<StageRequirementDefinition> StageRequirementDefinitions { get; set; }
         public virtual DbSet<TaskAssignment> TaskAssignments { get; set; }
         public virtual DbSet<TaskAttributes> TaskAttributes { get; set; }
         public virtual DbSet<Tasks> Tasks { get; set; }

@@ -13,6 +13,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
 
             var stages = await context.Set<MethodStages>()
                 .Include(s => s.MethodStageDefinition)
+                .AsNoTracking()
                 .ToListAsync();
 
             var chemicals = await context.Set<Chemicals>().ToListAsync();

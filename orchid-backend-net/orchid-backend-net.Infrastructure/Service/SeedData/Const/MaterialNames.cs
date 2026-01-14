@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace orchid_backend_net.Infrastructure.Service.SeedData
+namespace orchid_backend_net.Infrastructure.Service.SeedData.Const
 {
     public static class MaterialNames
     {

@@ -8,6 +8,8 @@ using orchid_backend_net.Application.User.GetAllUser;
 using orchid_backend_net.Application.User.GetUserId;
 using orchid_backend_net.Application.User.UpdateUser;
 using orchid_backend_net.Application.User.UpdateUserAvatar;
+using orchid_backend_net.Infrastructure.Service;
+using Org.BouncyCastle.Utilities.Zlib;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
@@ -137,9 +139,15 @@ namespace orchid_backend_net.API.Controllers
                 if (image == null || image.Length == 0)
                     return BadRequest("Image file is required.");
 
-                await using var stream = image.OpenReadStream();
+                await using var inputStream = new MemoryStream();
+                await image.CopyToAsync(inputStream, cancellationToken);
 
-                var command = new UpdateUserAvatarCommand(image.FileName, stream);
+                var resizedBytes = ResizeAndCompressingImage
+                    .ResizeAndCompressImages(inputStream.ToArray(), 512, 512, 70);
+
+                await using var resizedStream = new MemoryStream(resizedBytes);
+
+                var command = new UpdateUserAvatarCommand(image.FileName, resizedStream);
                 var result = await Sender.Send(command, cancellationToken);
 
                 return Ok(new JsonResponse<string>(result));

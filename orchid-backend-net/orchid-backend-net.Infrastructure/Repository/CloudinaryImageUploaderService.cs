@@ -22,7 +22,14 @@ namespace orchid_backend_net.Infrastructure.Repository
                 Folder = folder ?? options.Value.DefaultFolder,
                 UseFilename = options.Value.UseFilename,
                 UniqueFilename = options.Value.UniqueFilename,
-                Overwrite = options.Value.Overwrite,
+                Overwrite = true, 
+                Invalidate = false,
+                Transformation = new Transformation()
+                .Width(512)
+                .Height(512)
+                .Crop("limit")
+                .Quality(70)
+                .FetchFormat("jpg")
             };
 
             var result = await cloudinary.UploadAsync(uploadParams);

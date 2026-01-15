@@ -2,6 +2,6 @@
 {
     public interface IImageUploaderService
     {
-        Task<string> UpdloadImageAsync(Stream fileStream, string fileName, string? folder = null);
+        Task<string> UpdloadImageAsync(byte[] imageBytes, string fileName, string? folder = null);
     }
 }

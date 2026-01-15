@@ -38,7 +38,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 MethodId = M(MethodNames.INVITRO),
                 MethodStageDefinitionId = S(StageNames.INITIATION),
                 Order = 3,
-                DurationsDays = 14
+                DurationsDays = 14,
+                IsSampleGenerated = true
             },
             new() {
                 MethodId = M(MethodNames.INVITRO),
@@ -76,7 +77,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 MethodId = M(MethodNames.TCL),
                 MethodStageDefinitionId = S(StageNames.INITIATION),
                 Order = 3,
-                DurationsDays = 10
+                DurationsDays = 10,
+                IsSampleGenerated = true
             },
             new() {
                 MethodId = M(MethodNames.TCL),
@@ -102,7 +104,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 MethodId = M(MethodNames.DIVISION),
                 MethodStageDefinitionId = S(StageNames.SAMPLING),
                 Order = 1,
-                DurationsDays = 1
+                DurationsDays = 1,
+                IsSampleGenerated = true
             },
             new() {
                 MethodId = M(MethodNames.DIVISION),
@@ -128,7 +131,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 MethodId = M(MethodNames.PSEUDOBULB),
                 MethodStageDefinitionId = S(StageNames.INITIATION),
                 Order = 2,
-                DurationsDays = 21
+                DurationsDays = 21,
+                IsSampleGenerated = true
             },
             new() {
                 MethodId = M(MethodNames.PSEUDOBULB),
@@ -148,7 +152,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 MethodId = M(MethodNames.CUTTING),
                 MethodStageDefinitionId = S(StageNames.SAMPLING),
                 Order = 1,
-                DurationsDays = 1
+                DurationsDays = 1,
+                IsSampleGenerated = true
             },
             new() {
                 MethodId = M(MethodNames.CUTTING),

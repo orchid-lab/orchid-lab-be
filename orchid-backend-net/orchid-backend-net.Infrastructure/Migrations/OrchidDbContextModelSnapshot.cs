@@ -195,6 +195,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
 
+                    b.Property<int>("ExpectedSampleCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("HybridzationId")
                         .IsRequired()
                         .HasColumnType("text");
@@ -383,6 +386,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<int>("DurationsDays")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsSampleGenerated")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("MethodId")
                         .HasColumnType("integer");

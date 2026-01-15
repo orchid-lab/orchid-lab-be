@@ -9,16 +9,17 @@ namespace orchid_backend_net.Infrastructure.Repository
 {
     public class CloudinaryImageUploaderService(Cloudinary cloudinary, IOptions<CloudinaryOptions> options) : IImageUploaderService
     {
-        public async Task<string> UpdloadImageAsync(Stream fileStream, string fileName, string? folder = null)
+        public async Task<string> UpdloadImageAsync(byte[] imageBytes, string fileName, string? folder = null)
         {
-            if (fileStream == null || fileStream.Length == 0)
-            {
-                throw new ArgumentException("File stream cannot be null or empty.", nameof(fileStream));
-            }
+            if (imageBytes == null || imageBytes.Length == 0)
+                throw new ArgumentException("Image bytes cannot be empty");
+
+            await using var stream = new MemoryStream(imageBytes);
+
 
             var uploadParams = new ImageUploadParams
             {
-                File = new FileDescription(fileName, fileStream),
+                File = new FileDescription(fileName, stream),
                 Folder = folder ?? options.Value.DefaultFolder,
                 UseFilename = options.Value.UseFilename,
                 UniqueFilename = options.Value.UniqueFilename,

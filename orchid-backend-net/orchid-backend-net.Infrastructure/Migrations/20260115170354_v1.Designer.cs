@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260114073313_v1")]
+    [Migration("20260115170354_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -197,6 +197,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<DateOnly?>("EndDate")
                         .HasColumnType("date");
+
+                    b.Property<int>("ExpectedSampleCount")
+                        .HasColumnType("integer");
 
                     b.Property<string>("HybridzationId")
                         .IsRequired()
@@ -386,6 +389,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<int>("DurationsDays")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("IsSampleGenerated")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("MethodId")
                         .HasColumnType("integer");

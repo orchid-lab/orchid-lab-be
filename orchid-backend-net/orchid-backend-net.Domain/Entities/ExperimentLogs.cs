@@ -16,6 +16,7 @@ namespace orchid_backend_net.Domain.Entities
         public required int BatchId { get; set; }
         [ForeignKey(nameof(BatchId))]
         public virtual Batches Batch { get; set; }
+        public int ExpectedSampleCount { get; set; }
         public int CurrentStageOrder { get; set; }
         public required string Name { get; set; }
         public required string CreatedBy { get; set; }

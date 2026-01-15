@@ -7,9 +7,6 @@ using orchid_backend_net.Application.User.DeleteUser;
 using orchid_backend_net.Application.User.GetAllUser;
 using orchid_backend_net.Application.User.GetUserId;
 using orchid_backend_net.Application.User.UpdateUser;
-using orchid_backend_net.Application.User.UpdateUserAvatar;
-using orchid_backend_net.Infrastructure.Service;
-using Org.BouncyCastle.Utilities.Zlib;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
@@ -111,51 +108,6 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
                 throw new InvalidOperationException(ex.Message);
-            }
-        }
-
-        /// <summary>
-        /// using for user want to update avatar
-        /// </summary>
-        /// <param name="image"></param>
-        /// <param name="userId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        [HttpPut("images")]
-        [Authorize(Roles = "Admin,Researcher,Technician")]
-        [Produces(MediaTypeNames.Application.Json)]
-        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<JsonResponse<string>>> UpdateAvatar(
-            IFormFile image,
-            CancellationToken cancellationToken)
-        {
-            try
-            {
-                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                if (image == null || image.Length == 0)
-                    return BadRequest("Image file is required.");
-
-                await using var inputStream = new MemoryStream();
-                await image.CopyToAsync(inputStream, cancellationToken);
-
-                var resizedBytes = ResizeAndCompressingImage
-                    .ResizeAndCompressImages(inputStream.ToArray(), 512, 512, 70);
-
-                await using var resizedStream = new MemoryStream(resizedBytes);
-
-                var command = new UpdateUserAvatarCommand(image.FileName, resizedStream);
-                var result = await Sender.Send(command, cancellationToken);
-
-                return Ok(new JsonResponse<string>(result));
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "User update failed", Detail = ex.Message });
             }
         }
 

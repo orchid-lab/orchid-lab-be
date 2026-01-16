@@ -11,11 +11,14 @@ namespace orchid_backend_net.Application.User.UpdateUser
         public string? Name { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
-        public UpdateUserInformationCommand(string? name, string? email, string? phoneNumber)
+        public string? AvatarUrl { get; set; }
+        public UpdateUserInformationCommand(string? name, string? email, string? phoneNumber,
+            string? avatarUrl)
         {
             Name = name;
             Email = email;
             PhoneNumber = phoneNumber;
+            AvatarUrl = avatarUrl;
         }
     }
 
@@ -31,6 +34,7 @@ namespace orchid_backend_net.Application.User.UpdateUser
             user.Name = request.Name ?? user.Name;
             user.Email = request.Email ?? user.Email;
             user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
+            user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
             user.UpdatedBy = currentUserService.UserId;
             user.UpdatedDate = DateTime.UtcNow;
             userRepository.Update(user);

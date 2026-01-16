@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="ExperimentLog\UseCase\GetAllExperimentLog\" />
+    <Folder Include="LabRoom\Dto\LabRoom\" />
     <Folder Include="Sample\UseCase\" />
   </ItemGroup>
 

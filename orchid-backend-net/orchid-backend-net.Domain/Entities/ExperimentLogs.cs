@@ -20,7 +20,7 @@ namespace orchid_backend_net.Domain.Entities
         public int CurrentStageOrder { get; set; }
         public required string Name { get; set; }
         public required string AssignedTo { get; set; }
-        public DateOnly StartDate { get; set; }
+        public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }

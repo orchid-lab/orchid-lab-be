@@ -30,7 +30,6 @@ namespace orchid_backend_net.Infrastructure.Persistence
         public virtual DbSet<SamplesRequirementsDefinition> SamplesRequirementDefinitions { get; set; }
         public virtual DbSet<SampleStage> SampleStages {  get; set; }
         public virtual DbSet<SampleStageDefinition> SampleStageDefinition { get; set; }
-        public virtual DbSet<SampleStageRequirement> SampleStagesRequirement { get; set; }
         public virtual DbSet<Seedlings> Seedlings { get; set; }
         public virtual DbSet<SeedlingsTraits> SeedlingsTraits { get; set; }
         public virtual DbSet<StageChemicals> StageChemicals { get; set; }

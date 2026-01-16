@@ -1,22 +1,17 @@
 ﻿using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities.Base;
-using orchid_backend_net.Domain.Events;
 using orchid_backend_net.Domain.Events.TaskEvents;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class Tasks : BaseGuidEntity
+    public class Tasks : AuditableEntity
     {
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
         //StageId để xác định là cái task này có phải là template hay không
         public int? StageId { get; set; }
         public string? ResearcherId { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public string? UpdatedBy { get; set; }
         public DateTime? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }

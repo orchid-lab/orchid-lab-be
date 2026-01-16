@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class ExperimentLogs : BaseGuidEntity
+    public class ExperimentLogs : AuditableEntity
     {
         public required string HybridzationId { get; set; }
         public virtual Hybridzations Hybridzations { get; set; }
@@ -19,17 +19,16 @@ namespace orchid_backend_net.Domain.Entities
         public int ExpectedSampleCount { get; set; }
         public int CurrentStageOrder { get; set; }
         public required string Name { get; set; }
-        public required string CreatedBy { get; set; }
         public required string AssignedTo { get; set; }
         public DateOnly StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public ExperimentLogStatus Status { get; set; }
-        //0 - Mới tạo - chưa nhận
-        //1 - đang tiến hành - diễn ra khi technician nhận experiment log
-        //2 - Hoàn thành
-        //3 - Bị hủy => hủy toàn bộ samples thuộc experiment log này
+        //0 - Created: đã tạo, đã assign technician, CHƯA bắt đầu thực nghiệm
+        //1 - InProgressed: đang thực hiện các stage
+        //2 - Completed: hoàn thành
+        //3 - Destroyed: hủy do toàn bộ sample nhiễm bệnh
         public virtual List<Samples> Samples { get; set; } = [];
 
         public void Start()
@@ -39,33 +38,47 @@ namespace orchid_backend_net.Domain.Entities
 
             Status = ExperimentLogStatus.InProgressed;
             CurrentStageOrder = 1;
+            StartDate = DateOnly.FromDateTime(DateTime.UtcNow);
             AddDomainEvent(new ExperimentLogStarted(this.ID, MethodId, AssignedTo));
         }
 
-        public void MoveToNextStage(List<MethodStages> methodStages)
+        public void MoveToNextStage(MethodStages nextStage, int maxStageOrder)
         {
-            if (Status != ExperimentLogStatus.InProgressed)
-                throw new InvalidOperationException("Experiment log không trong quá trình thực hiện.");
+            EnsureInProgressed();
 
-            var maxStageOrder = methodStages.Max(s => s.Order);
             if (CurrentStageOrder >= maxStageOrder)
-                throw new InvalidOperationException("Đã ở giai đoạn cuối.");
+                throw new DomainException("Đã ở giai đoạn cuối.");
 
             CurrentStageOrder++;
 
-            var nextStage = methodStages.FirstOrDefault(s => s.Order == CurrentStageOrder);
-            if (nextStage != null)
+            AddDomainEvent(new ExperimentLogStageChanged(
+                ID,
+                CurrentStageOrder,
+                AssignedTo
+            ));
+
+            if (nextStage.IsSampleGenerated)
             {
-                // Trigger domain event cho stage này (tạo Task, hoặc notify technician)
-                AddDomainEvent(new ExperimentLogStageChanged(this.ID, CurrentStageOrder, AssignedTo));
+                AddDomainEvent(new ExperimentLogSampleGenerationRequired(
+                    ID,
+                    nextStage.ID,
+                    CurrentStageOrder,
+                    ExpectedSampleCount,
+                    AssignedTo
+                ));
             }
         }
 
-        public void Complete()
+
+        public void DestroyBecauseAllSamplesInfected(string? reason)
         {
-            Status = ExperimentLogStatus.Completed;
-            EndDate = DateOnly.FromDateTime(DateTime.Now);
-            AddDomainEvent(new ExperimentLogCompleted(this.ID));
+            EnsureInProgressed();
+
+            Status = ExperimentLogStatus.Destroyed;
+            Reason = reason;
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            AddDomainEvent(new ExperimentLogDestroyed(ID, reason));
         }
 
         public void UpdateInformation(string? name, string? notes)
@@ -74,21 +87,15 @@ namespace orchid_backend_net.Domain.Entities
             Notes = notes;
         }
 
-        public void MarkCompleted()
+        public void Complete()
         {
             EnsureNotDestroyed();
+            EnsureInProgressed();
 
-            if (Status == ExperimentLogStatus.Completed)
-                return;
             Status = ExperimentLogStatus.Completed;
-        }
 
-        public void DestroyExperimentLogBecauseOfAllSampleInfected(string? reason)
-        {
-            EnsureNotDestroyed();
-            Reason = reason;
-            EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            Status = ExperimentLogStatus.Destroyed;
+            EndDate = DateOnly.FromDateTime(DateTime.Now);
+            AddDomainEvent(new ExperimentLogCompleted(this.ID));
         }
 
         private void EnsureNotDestroyed()
@@ -96,6 +103,12 @@ namespace orchid_backend_net.Domain.Entities
             if (Status == ExperimentLogStatus.Destroyed)
                 throw new DomainException("Experiment log đã bị hủy.");
 
+        }
+
+        private void EnsureInProgressed()
+        {
+            if (Status != ExperimentLogStatus.InProgressed)
+                throw new InvalidOperationException("Experiment log không trong quá trình thực hiện.");
         }
     }
 }

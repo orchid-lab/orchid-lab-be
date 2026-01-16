@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class MonitoringLogs : BaseGuidEntity
+    public class MonitoringLogs : AuditableEntity
     {
         public required string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
@@ -22,12 +22,8 @@ namespace orchid_backend_net.Domain.Entities
         public required MonitoringLogStatus Status { get; set; }
         //0 - Đang chờ duyệt
         //1 - Đã duyệt
-        public DateOnly? CreatedDate { get; set; }
-        public string? CreatedBy { get; set; }
         public DateOnly? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
-        public DateOnly? UpdatedDate { get; set; }
-        public string? UpdatedBy { get; set; }
         public virtual List<LogDetails> LogDetails { get; set; } = [];
     }
 }

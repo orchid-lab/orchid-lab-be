@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class Seedlings : BaseGuidEntity
+    public class Seedlings : AuditableEntity
     {
         public required string LocalName { get; set; }
         public required string ScientificName { get; set; }
@@ -15,12 +15,8 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Seedlings? ParentA { get; set; }
         [ForeignKey(nameof(ParentBId))]
         public virtual Seedlings? ParentB { get; set; }
-        public DateTime? CreatedDate { get; set; }
-        public string? CreatedBy { get; set; }
         public DateTime? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
-        public DateTime? UpdatedDate { get; set; }
-        public string? UpdatedBy { get; set; }
 
         public virtual List<SeedlingsTraits> SeedlingsTraits { get; set; } = [];
 

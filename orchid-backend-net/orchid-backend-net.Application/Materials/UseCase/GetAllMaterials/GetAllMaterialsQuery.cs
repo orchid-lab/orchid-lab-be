@@ -31,7 +31,7 @@ namespace orchid_backend_net.Application.Materials.UseCase.GetAllMaterials
             IQueryable<Domain.Entities.Materials> queryOptions(IQueryable<Domain.Entities.Materials> query)
             {
                 if (!string.IsNullOrWhiteSpace(request.CategoryName))
-                    query = query.Where(c => c.Category.Contains(request.CategoryName));
+                    query = query.Where(c => c.Category.ToLower().Contains(request.CategoryName.ToLower()));
                 return query;
             }
 

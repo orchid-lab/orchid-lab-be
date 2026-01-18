@@ -110,6 +110,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<ISampleRequirementDefinitionRepository, SampleRequirementRepository>();
             services.AddScoped<ISampleRepository, SampleRepository>();
             services.AddScoped<IExperimentLogRepository, ExperimentLogRepository>();
+            services.AddScoped<IBatchesRepository, BatchesRepository>();
 
             //signalR
             services.AddSignalR();

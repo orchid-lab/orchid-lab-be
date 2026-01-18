@@ -16,11 +16,11 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.GetAllExperimentL
             {
                 if(!string.IsNullOrWhiteSpace(request.NameSearchTerm))
                 {
-                    query = query.Where(el => el.Name.Contains(request.NameSearchTerm));
+                    query = query.Where(el => el.Name.ToLower().Contains(request.NameSearchTerm.ToLower()));
                 }
                 if (!string.IsNullOrWhiteSpace(request.MethodNameSearchTerm))
                 {
-                    query = query.Where(el => el.Method.Name.Contains(request.MethodNameSearchTerm));
+                    query = query.Where(el => el.Method.Name.ToLower().Contains(request.MethodNameSearchTerm.ToLower()));
                 }
                 if(request.CurrentStageOrder is not null)
                 {

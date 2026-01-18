@@ -6,6 +6,6 @@ namespace orchid_backend_net.Domain.Entities
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = [];
+        public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
     }
 }

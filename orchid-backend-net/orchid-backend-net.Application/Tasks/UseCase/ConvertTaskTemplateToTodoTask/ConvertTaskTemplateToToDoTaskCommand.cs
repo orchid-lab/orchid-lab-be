@@ -22,7 +22,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodo
     {
         public async Task<string> Handle(ConvertTaskTemplateToToDoTaskCommand request, CancellationToken cancellationToken)
         {
-            List<CreateTaskAttributeDto> createTaskAttributeList = [];
+            List<CreateTaskAttributeDto> createTaskAttributeList = new();
 
             var taskTemplate = await taskRepository.GetTemplateForConversionAsync(request.TaskTemplateId, cancellationToken);
             if (taskTemplate is null)

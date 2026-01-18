@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
+using orchid_backend_net.Application.Batch.Dto.Batch;
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Application.ExperimentLog.Dto.Hybridzation;
-using orchid_backend_net.Application.LabRoom.Dto.Batch;
 using orchid_backend_net.Application.Method.Dto.Method;
 using orchid_backend_net.Application.Sample.Dto;
 using orchid_backend_net.Domain.Common.Enum;
@@ -32,13 +32,13 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
         public void Mapping(Profile profile)
         {
             profile.CreateMap<ExperimentLogs, ExperimentLogDetailDto>()
-                .ForMember(dest => dest.Hybridzation, 
+                .ForMember(dest => dest.Hybridzation,
                 opt => opt.MapFrom(src => src.Hybridzations))
                 .ForMember(dest => dest.Method,
                 opt => opt.MapFrom(src => src.Method))
                 .ForMember(dest => dest.Batch,
                 opt => opt.MapFrom(src => src.Batch))
-                .ForMember(dest => dest.Samples,
+               .ForMember(dest => dest.Samples,
                 opt => opt.MapFrom(src => src.Samples));
         }
     }

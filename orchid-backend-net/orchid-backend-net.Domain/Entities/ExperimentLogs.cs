@@ -8,7 +8,7 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class ExperimentLogs : AuditableEntity
     {
-        public required string HybridzationId { get; set; }
+        public string HybridzationId { get; set; }
         public virtual Hybridzations Hybridzations { get; set; }
         public required int MethodId { get; set; }
         [ForeignKey(nameof(MethodId))]
@@ -29,7 +29,7 @@ namespace orchid_backend_net.Domain.Entities
         //1 - InProgressed: đang thực hiện các stage
         //2 - Completed: hoàn thành
         //3 - Destroyed: hủy do toàn bộ sample nhiễm bệnh
-        public virtual List<Samples> Samples { get; set; } = [];
+        public virtual List<Samples> Samples { get; set; } = new();
 
         public void Start()
         {

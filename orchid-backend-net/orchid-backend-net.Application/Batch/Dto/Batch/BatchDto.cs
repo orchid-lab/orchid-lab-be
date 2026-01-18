@@ -2,7 +2,7 @@
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Domain.Entities;
 
-namespace orchid_backend_net.Application.LabRoom.Dto.Batch
+namespace orchid_backend_net.Application.Batch.Dto.Batch
 {
     public class BatchDto : IMapFrom<Batches>
     {

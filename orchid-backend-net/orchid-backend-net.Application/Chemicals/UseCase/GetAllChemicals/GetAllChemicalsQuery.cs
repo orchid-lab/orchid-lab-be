@@ -32,7 +32,7 @@ namespace orchid_backend_net.Application.Chemicals.UseCase.GetAllChemicals
             IQueryable<Domain.Entities.Chemicals> queryOptions(IQueryable<Domain.Entities.Chemicals> query)
             {
                 if (!string.IsNullOrWhiteSpace(request.CategoryName))
-                    query = query.Where(c => c.Category.Contains(request.CategoryName));
+                    query = query.Where(c => c.Category.ToLower().Contains(request.CategoryName.ToLower()));
                 return query;
             }
 

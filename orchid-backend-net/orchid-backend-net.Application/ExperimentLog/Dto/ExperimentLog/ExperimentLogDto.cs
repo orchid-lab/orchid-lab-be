@@ -4,7 +4,7 @@ using orchid_backend_net.Domain.Entities;
 
 namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
 {
-    internal class ExperimentLogDto : IMapFrom<ExperimentLogs>
+    public class ExperimentLogDto : IMapFrom<ExperimentLogs>
     {
         public string Id { get; set; }
         public string Name { get; set; }

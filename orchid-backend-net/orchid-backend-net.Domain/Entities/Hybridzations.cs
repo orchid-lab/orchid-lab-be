@@ -11,5 +11,6 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Seedlings ParentA { get; set; }
         [ForeignKey(nameof(ParentBId))]
         public virtual Seedlings ParentB { get; set; }
+        public virtual ExperimentLogs Experiment { get; set; }
     }
 }

@@ -533,14 +533,13 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     HybridzationId = table.Column<string>(type: "text", nullable: false),
-                    HybridzationsID = table.Column<string>(type: "text", nullable: true),
                     MethodId = table.Column<int>(type: "integer", nullable: false),
                     BatchId = table.Column<int>(type: "integer", nullable: false),
                     ExpectedSampleCount = table.Column<int>(type: "integer", nullable: false),
                     CurrentStageOrder = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     AssignedTo = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
@@ -560,10 +559,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ExperimentLogs_Hybridzations_HybridzationsID",
-                        column: x => x.HybridzationsID,
+                        name: "FK_ExperimentLogs_Hybridzations_HybridzationId",
+                        column: x => x.HybridzationId,
                         principalTable: "Hybridzations",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ExperimentLogs_Methods_MethodId",
                         column: x => x.MethodId,
@@ -724,9 +724,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "BatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExperimentLogs_HybridzationsID",
+                name: "IX_ExperimentLogs_HybridzationId",
                 table: "ExperimentLogs",
-                column: "HybridzationsID");
+                column: "HybridzationId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentLogs_MethodId",

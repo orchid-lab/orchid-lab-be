@@ -24,6 +24,6 @@ namespace orchid_backend_net.Domain.Entities
         //1 - Đã duyệt
         public DateOnly? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
-        public virtual List<LogDetails> LogDetails { get; set; } = [];
+        public virtual List<LogDetails> LogDetails { get; set; } = new();
     }
 }

@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260116182006_v1")]
+    [Migration("20260118135255_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -208,9 +208,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("HybridzationsID")
-                        .HasColumnType("text");
-
                     b.Property<int>("MethodId")
                         .HasColumnType("integer");
 
@@ -224,7 +221,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("Reason")
                         .HasColumnType("text");
 
-                    b.Property<DateOnly>("StartDate")
+                    b.Property<DateOnly?>("StartDate")
                         .HasColumnType("date");
 
                     b.Property<int>("Status")
@@ -240,7 +237,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.HasIndex("HybridzationsID");
+                    b.HasIndex("HybridzationId")
+                        .IsUnique();
 
                     b.HasIndex("MethodId");
 
@@ -1006,8 +1004,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Hybridzations", "Hybridzations")
-                        .WithMany()
-                        .HasForeignKey("HybridzationsID");
+                        .WithOne("Experiment")
+                        .HasForeignKey("orchid_backend_net.Domain.Entities.ExperimentLogs", "HybridzationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("orchid_backend_net.Domain.Entities.Methods", "Method")
                         .WithMany("ExperimentLogs")
@@ -1312,6 +1312,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>
                 {
                     b.Navigation("Samples");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridzations", b =>
+                {
+                    b.Navigation("Experiment")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.LabRooms", b =>

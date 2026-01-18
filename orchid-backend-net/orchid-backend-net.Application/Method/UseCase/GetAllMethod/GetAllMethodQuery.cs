@@ -31,7 +31,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetAllMethod
             IQueryable<Methods> queryOptions(IQueryable<Methods> query)
             {
                 if (!string.IsNullOrWhiteSpace(request.SearchTerm))
-                    query = query.Where(m => m.Name.Contains(request.SearchTerm));
+                    query = query.Where(m => m.Name.ToLower().Contains(request.SearchTerm.ToLower()));
                 return query;
             }
 

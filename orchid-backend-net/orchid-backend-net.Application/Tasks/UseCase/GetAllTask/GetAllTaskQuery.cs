@@ -30,7 +30,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetAllTask
                 }
                 if (!string.IsNullOrWhiteSpace(request.SearchTerm))
                 {
-                    query = query.Where(t => t.Name.Contains(request.SearchTerm));
+                    query = query.Where(t => t.Name.ToLower().Contains(request.SearchTerm.ToLower()));
                 }
                 if (!string.IsNullOrWhiteSpace(request.StageId))
                 {

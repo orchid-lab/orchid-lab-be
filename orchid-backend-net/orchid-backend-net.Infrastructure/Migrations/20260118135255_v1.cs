@@ -533,14 +533,13 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     HybridzationId = table.Column<string>(type: "text", nullable: false),
-                    HybridzationsID = table.Column<string>(type: "text", nullable: true),
                     MethodId = table.Column<int>(type: "integer", nullable: false),
                     BatchId = table.Column<int>(type: "integer", nullable: false),
                     ExpectedSampleCount = table.Column<int>(type: "integer", nullable: false),
                     CurrentStageOrder = table.Column<int>(type: "integer", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     AssignedTo = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
@@ -560,10 +559,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ExperimentLogs_Hybridzations_HybridzationsID",
-                        column: x => x.HybridzationsID,
+                        name: "FK_ExperimentLogs_Hybridzations_HybridzationId",
+                        column: x => x.HybridzationId,
                         principalTable: "Hybridzations",
-                        principalColumn: "ID");
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_ExperimentLogs_Methods_MethodId",
                         column: x => x.MethodId,
@@ -668,31 +668,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SampleStagesRequirement",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    SampleStageId = table.Column<string>(type: "text", nullable: false),
-                    StageRequirementDefinitionId = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SampleStagesRequirement", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_SampleStagesRequirement_SampleStages_SampleStageId",
-                        column: x => x.SampleStageId,
-                        principalTable: "SampleStages",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_SampleStagesRequirement_StageRequirementDefinitions_StageRe~",
-                        column: x => x.StageRequirementDefinitionId,
-                        principalTable: "StageRequirementDefinitions",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Imgs",
                 columns: table => new
                 {
@@ -717,7 +692,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     MonitoringLogsId = table.Column<string>(type: "text", nullable: false),
-                    SampleStageRequirementId = table.Column<string>(type: "text", nullable: false),
+                    StageRequirementDefinitionId = table.Column<string>(type: "text", nullable: false),
                     MeasuredValue = table.Column<decimal>(type: "numeric", nullable: false),
                     IsMatch = table.Column<bool>(type: "boolean", nullable: false)
                 },
@@ -731,9 +706,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MonitoringLogDetails_SampleStagesRequirement_SampleStageReq~",
-                        column: x => x.SampleStageRequirementId,
-                        principalTable: "SampleStagesRequirement",
+                        name: "FK_MonitoringLogDetails_StageRequirementDefinitions_StageRequi~",
+                        column: x => x.StageRequirementDefinitionId,
+                        principalTable: "StageRequirementDefinitions",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -749,9 +724,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "BatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExperimentLogs_HybridzationsID",
+                name: "IX_ExperimentLogs_HybridzationId",
                 table: "ExperimentLogs",
-                column: "HybridzationsID");
+                column: "HybridzationId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentLogs_MethodId",
@@ -789,9 +765,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "MonitoringLogsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_MonitoringLogDetails_SampleStageRequirementId",
+                name: "IX_MonitoringLogDetails_StageRequirementDefinitionId",
                 table: "MonitoringLogDetails",
-                column: "SampleStageRequirementId");
+                column: "StageRequirementDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MonitoringLogs_AnalyticResultId",
@@ -828,16 +804,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_SampleStages_SampleStageDefinitionId",
                 table: "SampleStages",
                 column: "SampleStageDefinitionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SampleStagesRequirement_SampleStageId",
-                table: "SampleStagesRequirement",
-                column: "SampleStageId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_SampleStagesRequirement_StageRequirementDefinitionId",
-                table: "SampleStagesRequirement",
-                column: "StageRequirementDefinitionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Seedlings_ParentAId",
@@ -964,7 +930,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "MonitoringLogs");
 
             migrationBuilder.DropTable(
-                name: "SampleStagesRequirement");
+                name: "StageRequirementDefinitions");
 
             migrationBuilder.DropTable(
                 name: "Characteristics");
@@ -988,28 +954,25 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Diseases");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "SampleStages");
 
             migrationBuilder.DropTable(
-                name: "StageRequirementDefinitions");
+                name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "SamplesRequirementDefinitions");
 
             migrationBuilder.DropTable(
                 name: "MethodStageDefinition");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "SampleStageDefinition");
 
             migrationBuilder.DropTable(
                 name: "Samples");
 
             migrationBuilder.DropTable(
-                name: "SampleStageDefinition");
-
-            migrationBuilder.DropTable(
-                name: "SamplesRequirementDefinitions");
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "ExperimentLogs");

@@ -14,7 +14,7 @@ namespace orchid_backend_net.Application.Seedling.Dto
         public string? ParentAScientificName { get; set; }
         public string? ParentBLocalName { get; set; }
         public string? ParentBScientificName { get; set; }
-        public List<SeedlingsTraitDto> Traits { get; set; } = [];
+        public List<SeedlingsTraitDto> Traits { get; set; } = new();
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? DeletedDate { get; set; }

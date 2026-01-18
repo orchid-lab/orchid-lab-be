@@ -34,18 +34,18 @@ namespace orchid_backend_net.Application.Seedling.UseCase.GetAllSeedlings
             IQueryable<Seedlings> queryOptions(IQueryable<Seedlings> query)
             {
                 if(!string.IsNullOrWhiteSpace(request.SearchTerm))
-                    query = query.Where(s => s.LocalName.Contains(request.SearchTerm) || s.ScientificName.Contains(request.SearchTerm));
+                    query = query.Where(s => s.LocalName.ToLower().Contains(request.SearchTerm.ToLower()) || s.ScientificName.Contains(request.SearchTerm.ToLower()));
 
                 if (!string.IsNullOrWhiteSpace(request.ByParentLocalName))
                     query = query.Where(s => 
-                        s.ParentA != null && s.ParentA.LocalName.Contains(request.ByParentLocalName) 
-                        || s.ParentB != null && s.ParentB.LocalName.Contains(request.ByParentLocalName)
+                        s.ParentA != null && s.ParentA.LocalName.ToLower().Contains(request.ByParentLocalName.ToLower()) 
+                        || s.ParentB != null && s.ParentB.LocalName.ToLower().Contains(request.ByParentLocalName.ToLower())
                     );
 
                 if (!string.IsNullOrWhiteSpace(request.ByParentScientificName))
                     query = query.Where(s =>
-                        s.ParentA != null && s.ParentA.ScientificName.Contains(request.ByParentScientificName)
-                        || s.ParentB != null && s.ParentB.ScientificName.Contains(request.ByParentScientificName)
+                        s.ParentA != null && s.ParentA.ScientificName.ToLower().Contains(request.ByParentScientificName.ToLower())
+                        || s.ParentB != null && s.ParentB.ScientificName.ToLower().Contains(request.ByParentScientificName.ToLower())
                     );
 
                 return query;

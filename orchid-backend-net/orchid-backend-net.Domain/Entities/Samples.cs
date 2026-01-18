@@ -14,7 +14,7 @@ namespace orchid_backend_net.Domain.Entities
 
         [ForeignKey(nameof(ExperimentLogId))]
         public virtual ExperimentLogs ExperimentLog { get; set; } = null!;
-        public virtual List<SampleStage> SampleStages { get; set; } = [];
+        public virtual List<SampleStage> SampleStages { get; set; } = new();
         public void UpdateSampleInformation(string? name, string? notes, string? reason)
         {
             var currentStage = GetCurrentSampleStage();

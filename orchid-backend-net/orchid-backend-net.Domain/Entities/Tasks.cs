@@ -16,7 +16,7 @@ namespace orchid_backend_net.Domain.Entities
         public string? DeletedBy { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }
         public virtual TaskAssignment TaskAssignment { get; set; } = null!;
-        public virtual List<TaskAttributes> TaskAttributes { get; set; } = [];
+        public virtual List<TaskAttributes> TaskAttributes { get; set; } = new();
 
         public void AddTaskAssignment(
             string technicianId,

@@ -7,8 +7,8 @@ namespace orchid_backend_net.Domain.Entities
     {
         public required string Name { get; set; }
         public string? Description { get; set; }
-        public virtual IEnumerable<ExperimentLogs> ExperimentLogs { get; set; } = [];
-        public virtual List<MethodStages> MethodStages { get; set; } = [];
+        public virtual List<ExperimentLogs> ExperimentLogs { get; set; } = new();
+        public virtual List<MethodStages> MethodStages { get; set; } = new();
 
         public MethodStages AddMethodStage(
             int stageDefinitionId,

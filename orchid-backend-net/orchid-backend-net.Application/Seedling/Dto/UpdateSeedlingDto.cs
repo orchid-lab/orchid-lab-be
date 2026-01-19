@@ -10,7 +10,6 @@
         public string? ScientificName { get; set; }
         public string? Description { get; set; }
         public string? ParentAId { get; set; }
-        public string? ParentBId { get; set; }
         public List<CreateSeedlingTraistDto>? CreateSeedlingsTraits { get; set; }
         public List<UpdateSeedlingsTraitsDto>? UpdateSeedlingsTraits { get; set; }
     }

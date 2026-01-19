@@ -657,9 +657,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ParentAId")
                         .HasColumnType("text");
 
-                    b.Property<string>("ParentBId")
-                        .HasColumnType("text");
-
                     b.Property<string>("ScientificName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -673,8 +670,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.HasKey("ID");
 
                     b.HasIndex("ParentAId");
-
-                    b.HasIndex("ParentBId");
 
                     b.ToTable("Seedlings");
                 });
@@ -1113,13 +1108,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("ParentAId");
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentB")
-                        .WithMany()
-                        .HasForeignKey("ParentBId");
-
                     b.Navigation("ParentA");
-
-                    b.Navigation("ParentB");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SeedlingsTraits", b =>

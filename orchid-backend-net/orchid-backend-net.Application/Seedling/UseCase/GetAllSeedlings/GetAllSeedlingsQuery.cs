@@ -39,13 +39,11 @@ namespace orchid_backend_net.Application.Seedling.UseCase.GetAllSeedlings
                 if (!string.IsNullOrWhiteSpace(request.ByParentLocalName))
                     query = query.Where(s => 
                         s.ParentA != null && s.ParentA.LocalName.ToLower().Contains(request.ByParentLocalName.ToLower()) 
-                        || s.ParentB != null && s.ParentB.LocalName.ToLower().Contains(request.ByParentLocalName.ToLower())
                     );
 
                 if (!string.IsNullOrWhiteSpace(request.ByParentScientificName))
                     query = query.Where(s =>
                         s.ParentA != null && s.ParentA.ScientificName.ToLower().Contains(request.ByParentScientificName.ToLower())
-                        || s.ParentB != null && s.ParentB.ScientificName.ToLower().Contains(request.ByParentScientificName.ToLower())
                     );
 
                 return query;

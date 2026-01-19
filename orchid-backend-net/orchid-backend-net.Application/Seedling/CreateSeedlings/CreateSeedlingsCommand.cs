@@ -12,14 +12,12 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
         string scientificName,
         string? description,
         string? parentAId,
-        string? parentBId,
         List<CreateSeedlingTraistDto> createSeedlingTraistDtos) : IRequest<string>
     {
         public required string LocalName { get; set; } = localName;
         public required string ScientificName { get; set; } = scientificName;
         public string? Description { get; set; } = description;
         public string? ParentAId { get; set; } = parentAId;
-        public string? ParentBId { get; set; } = parentBId;
         public required List<CreateSeedlingTraistDto> SeedlingsTraits { get; set; } = createSeedlingTraistDtos;
     }
 
@@ -34,7 +32,6 @@ namespace orchid_backend_net.Application.Seedling.CreateSeedlings
                 ScientificName = request.ScientificName,
                 Description = request.Description,
                 ParentAId = request.ParentAId,
-                ParentBId = request.ParentBId,
                 CreatedBy = currentUserService.UserId,
                 CreatedDate = DateTime.UtcNow,
             };

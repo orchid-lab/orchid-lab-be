@@ -209,7 +209,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ScientificName = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     ParentAId = table.Column<string>(type: "text", nullable: true),
-                    ParentBId = table.Column<string>(type: "text", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -223,11 +222,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Seedlings_Seedlings_ParentAId",
                         column: x => x.ParentAId,
-                        principalTable: "Seedlings",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Seedlings_Seedlings_ParentBId",
-                        column: x => x.ParentBId,
                         principalTable: "Seedlings",
                         principalColumn: "ID");
                 });
@@ -774,11 +768,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_Seedlings_ParentAId",
                 table: "Seedlings",
                 column: "ParentAId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Seedlings_ParentBId",
-                table: "Seedlings",
-                column: "ParentBId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SeedlingsTraits_CharacteristicId",

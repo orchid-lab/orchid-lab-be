@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260118135255_v1")]
+    [Migration("20260119090806_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -204,10 +204,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("ExpectedSampleCount")
                         .HasColumnType("integer");
 
-                    b.Property<string>("HybridzationId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<int>("MethodId")
                         .HasColumnType("integer");
 
@@ -219,6 +215,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Reason")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SeedlingParentId")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateOnly?>("StartDate")
@@ -237,33 +237,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasIndex("BatchId");
 
-                    b.HasIndex("HybridzationId")
-                        .IsUnique();
-
                     b.HasIndex("MethodId");
 
+                    b.HasIndex("SeedlingParentId");
+
                     b.ToTable("ExperimentLogs");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridzations", b =>
-                {
-                    b.Property<string>("ID")
-                        .HasColumnType("text");
-
-                    b.Property<string>("ParentAId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ParentBId")
-                        .HasColumnType("text");
-
-                    b.HasKey("ID");
-
-                    b.HasIndex("ParentAId");
-
-                    b.HasIndex("ParentBId");
-
-                    b.ToTable("Hybridzations");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Imgs", b =>
@@ -1003,40 +981,23 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Hybridzations", "Hybridzations")
-                        .WithOne("Experiment")
-                        .HasForeignKey("orchid_backend_net.Domain.Entities.ExperimentLogs", "HybridzationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("orchid_backend_net.Domain.Entities.Methods", "Method")
                         .WithMany("ExperimentLogs")
                         .HasForeignKey("MethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Batch");
-
-                    b.Navigation("Hybridzations");
-
-                    b.Navigation("Method");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridzations", b =>
-                {
-                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentA")
-                        .WithMany()
-                        .HasForeignKey("ParentAId")
+                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "SeedlingParent")
+                        .WithMany("ExperimentLogs")
+                        .HasForeignKey("SeedlingParentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("orchid_backend_net.Domain.Entities.Seedlings", "ParentB")
-                        .WithMany()
-                        .HasForeignKey("ParentBId");
+                    b.Navigation("Batch");
 
-                    b.Navigation("ParentA");
+                    b.Navigation("Method");
 
-                    b.Navigation("ParentB");
+                    b.Navigation("SeedlingParent");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Imgs", b =>
@@ -1314,12 +1275,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Samples");
                 });
 
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Hybridzations", b =>
-                {
-                    b.Navigation("Experiment")
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.LabRooms", b =>
                 {
                     b.Navigation("Batches");
@@ -1356,6 +1311,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Seedlings", b =>
                 {
+                    b.Navigation("ExperimentLogs");
+
                     b.Navigation("SeedlingsTraits");
                 });
 

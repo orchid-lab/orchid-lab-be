@@ -15,7 +15,6 @@ namespace orchid_backend_net.Infrastructure.Persistence
         public virtual DbSet<Chemicals> Chemicals { get; set; }
         public virtual DbSet<Disease> Diseases { get; set; }
         public virtual DbSet<ExperimentLogs> ExperimentLogs { get; set; }
-        public virtual DbSet<Hybridzations> Hybridzations { get; set; }
         public virtual DbSet<Imgs> Imgs { get; set; }
         public virtual DbSet<LabRooms> LabRooms { get; set; }
         public virtual DbSet<LogDetails> MonitoringLogDetails { get; set; }

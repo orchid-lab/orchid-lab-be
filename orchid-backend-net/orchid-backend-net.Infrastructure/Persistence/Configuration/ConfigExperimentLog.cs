@@ -8,9 +8,9 @@ namespace orchid_backend_net.Infrastructure.Persistence.Configuration
     {
         public void Configure(EntityTypeBuilder<ExperimentLogs> builder)
         {
-            builder.HasOne(e => e.Hybridzations)
-                .WithOne(h => h.Experiment)
-                .HasForeignKey<ExperimentLogs>(e => e.HybridzationId);
+            builder.HasOne(e => e.SeedlingParent)
+                .WithMany(s => s.ExperimentLogs)
+                .HasForeignKey(e => e.SeedlingParentId);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace orchid_backend_net.Domain.Entities
         public string? DeletedBy { get; set; }
 
         public virtual List<SeedlingsTraits> SeedlingsTraits { get; set; } = new();
+        public virtual List<ExperimentLogs> ExperimentLogs { get; set; } = new();
 
         public void UpdateTrait(string traitId, decimal value)
         {

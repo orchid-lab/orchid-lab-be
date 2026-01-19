@@ -32,16 +32,9 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
             var batch = await batchesRepository.FindAsync(b => b.ID == request.BatchesId && !b.IsBatching, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy batch này.");
 
-            var parentA = await seedlingRepository.FindAsync(pA => pA.ID == request.ParentAId, cancellationToken)
+            var parent = await seedlingRepository.FindAsync(pA => pA.ID == request.ParentAId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy seedling này");
 
-            Seedlings? parentB = null;
-            if (!string.IsNullOrEmpty(request.ParentBId))
-            {
-                parentB = await seedlingRepository.FindAsync(
-                    pB => pB.ID == request.ParentBId, cancellationToken)
-                    ?? throw new NotFoundException("Không tìm thấy seedling ParentB");
-            }
             var technicianAssigned = await userRepository.FindAsync(u => u.ID == request.AssignedToTechnicianId  && u.RoleID == 3, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy technician");
 
@@ -52,18 +45,11 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 throw new DuplicateException("Experiment Log này đã bị trùng");
             }
 
-            var hybrid = new Hybridzations()
-            {
-                ParentAId = parentA.ID,
-                ParentBId = parentB?.ID,
-            };
-
             var eL = new ExperimentLogs()
             {
                 MethodId = method.ID,
                 BatchId = batch.ID,
-                Hybridzations = hybrid,
-                HybridzationId = hybrid.ID,
+                SeedlingParentId = parent.ID,
                 Name = request.Name,
                 ExpectedSampleCount = request.ExpectedSampleCount,
                 AssignedTo = technicianAssigned.ID,

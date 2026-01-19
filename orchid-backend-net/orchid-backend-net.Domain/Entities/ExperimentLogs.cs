@@ -8,8 +8,9 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class ExperimentLogs : AuditableEntity
     {
-        public string HybridzationId { get; set; }
-        public virtual Hybridzations Hybridzations { get; set; }
+        public string SeedlingParentId { get; set; }
+        [ForeignKey(nameof(SeedlingParentId))]
+        public virtual Seedlings SeedlingParent { get; set; }
         public required int MethodId { get; set; }
         [ForeignKey(nameof(MethodId))]
         public virtual Methods Method { get; set; }

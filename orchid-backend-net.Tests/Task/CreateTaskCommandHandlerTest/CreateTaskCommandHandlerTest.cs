@@ -6,6 +6,8 @@ using orchid_backend_net.Application.Tasks.Dto.Task;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
 using orchid_backend_net.Application.Tests.Config.TaskConfig;
+using System.Linq.Expressions;
+using orchid_backend_net.Domain.Entities;
 
 namespace orchid_backend_net.Application.Tests.Tasks.CreateTaskCommandHandlerTest;
 
@@ -110,6 +112,10 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
         TaskRepositoryMock
             .Setup(x => x.Add(It.IsAny<Domain.Entities.Tasks>()))
             .Callback<Domain.Entities.Tasks>(t => savedTask = t);
+
+        StageDefinitionRepositoryMock
+            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<MethodStageDefinition, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(true);
 
         var command = new CreateTaskCommand(
             new CreateTaskDto

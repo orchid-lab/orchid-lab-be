@@ -10,7 +10,7 @@ namespace orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto
         public string TaskId { get; set; }
         public string TechnicianName { get; set; }
         public string TargetType { get; set; }
-        public string TargetName { get; set; }
+        public string TargetId{ get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime ExpectedEndDate { get; set; }

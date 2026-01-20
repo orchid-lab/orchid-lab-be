@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Batch.Dto.Batch;
 using orchid_backend_net.Application.Common.Mappings;
-using orchid_backend_net.Application.ExperimentLog.Dto.Hybridzation;
 using orchid_backend_net.Application.Method.Dto.Method;
 using orchid_backend_net.Application.Sample.Dto;
+using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Entities;
 
@@ -12,7 +12,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
     public class ExperimentLogDetailDto : IMapFrom<ExperimentLogs>
     {
         public string Id { get; set; }
-        public required HybridzationDto Hybridzation { get; set; }
+        public required SeedlingsDetailDto Seedling { get; set; }
         public required MethodDetailDto Method { get; set; }
         public required BatchDto Batch { get; set; }
         public int ExpectedSampleCount { get; set; }
@@ -32,8 +32,8 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
         public void Mapping(Profile profile)
         {
             profile.CreateMap<ExperimentLogs, ExperimentLogDetailDto>()
-                .ForMember(dest => dest.Hybridzation,
-                opt => opt.MapFrom(src => src.Hybridzations))
+                .ForMember(dest => dest.Seedling,
+                opt => opt.MapFrom(src => src.SeedlingParent))
                 .ForMember(dest => dest.Method,
                 opt => opt.MapFrom(src => src.Method))
                 .ForMember(dest => dest.Batch,

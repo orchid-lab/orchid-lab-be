@@ -69,11 +69,15 @@ if (app.Environment.IsProduction())
 
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+
 app.UseCorsPolicy();
-app.UseMiddleware<RateLimitingMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<RateLimitingMiddleware>();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");

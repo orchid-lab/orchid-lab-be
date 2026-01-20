@@ -20,5 +20,7 @@
         DeclinedByTechnician,
         //researcher yêu cầu làm lại
         ReworkRequired,
+        //chỉ là mẫu thôi không có đá đụng gì hết, là template thì phải tạo mới task mới được gán
+        Template
     }
 }

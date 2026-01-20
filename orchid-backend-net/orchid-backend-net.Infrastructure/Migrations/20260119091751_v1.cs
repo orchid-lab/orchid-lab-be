@@ -209,7 +209,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ScientificName = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
                     ParentAId = table.Column<string>(type: "text", nullable: true),
-                    ParentBId = table.Column<string>(type: "text", nullable: true),
                     DeletedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -223,11 +222,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     table.ForeignKey(
                         name: "FK_Seedlings_Seedlings_ParentAId",
                         column: x => x.ParentAId,
-                        principalTable: "Seedlings",
-                        principalColumn: "ID");
-                    table.ForeignKey(
-                        name: "FK_Seedlings_Seedlings_ParentBId",
-                        column: x => x.ParentBId,
                         principalTable: "Seedlings",
                         principalColumn: "ID");
                 });
@@ -366,30 +360,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Hybridzations",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    ParentAId = table.Column<string>(type: "text", nullable: false),
-                    ParentBId = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Hybridzations", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Hybridzations_Seedlings_ParentAId",
-                        column: x => x.ParentAId,
-                        principalTable: "Seedlings",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Hybridzations_Seedlings_ParentBId",
-                        column: x => x.ParentBId,
-                        principalTable: "Seedlings",
-                        principalColumn: "ID");
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SeedlingsTraits",
                 columns: table => new
                 {
@@ -443,6 +413,51 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         name: "FK_TaskAttributes_Tasks_TaskId",
                         column: x => x.TaskId,
                         principalTable: "Tasks",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ExperimentLogs",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    SeedlingParentId = table.Column<string>(type: "text", nullable: false),
+                    MethodId = table.Column<int>(type: "integer", nullable: false),
+                    BatchId = table.Column<int>(type: "integer", nullable: false),
+                    ExpectedSampleCount = table.Column<int>(type: "integer", nullable: false),
+                    CurrentStageOrder = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    AssignedTo = table.Column<string>(type: "text", nullable: false),
+                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    Notes = table.Column<string>(type: "text", nullable: true),
+                    Reason = table.Column<string>(type: "text", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ExperimentLogs", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_ExperimentLogs_Batches_BatchId",
+                        column: x => x.BatchId,
+                        principalTable: "Batches",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExperimentLogs_Methods_MethodId",
+                        column: x => x.MethodId,
+                        principalTable: "Methods",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ExperimentLogs_Seedlings_SeedlingParentId",
+                        column: x => x.SeedlingParentId,
+                        principalTable: "Seedlings",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -525,51 +540,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ExperimentLogs",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    HybridzationId = table.Column<string>(type: "text", nullable: false),
-                    MethodId = table.Column<int>(type: "integer", nullable: false),
-                    BatchId = table.Column<int>(type: "integer", nullable: false),
-                    ExpectedSampleCount = table.Column<int>(type: "integer", nullable: false),
-                    CurrentStageOrder = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    AssignedTo = table.Column<string>(type: "text", nullable: false),
-                    StartDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    EndDate = table.Column<DateOnly>(type: "date", nullable: true),
-                    Notes = table.Column<string>(type: "text", nullable: true),
-                    Reason = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<string>(type: "text", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ExperimentLogs", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_ExperimentLogs_Batches_BatchId",
-                        column: x => x.BatchId,
-                        principalTable: "Batches",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExperimentLogs_Hybridzations_HybridzationId",
-                        column: x => x.HybridzationId,
-                        principalTable: "Hybridzations",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ExperimentLogs_Methods_MethodId",
-                        column: x => x.MethodId,
-                        principalTable: "Methods",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -724,25 +694,14 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "BatchId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ExperimentLogs_HybridzationId",
-                table: "ExperimentLogs",
-                column: "HybridzationId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_ExperimentLogs_MethodId",
                 table: "ExperimentLogs",
                 column: "MethodId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Hybridzations_ParentAId",
-                table: "Hybridzations",
-                column: "ParentAId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Hybridzations_ParentBId",
-                table: "Hybridzations",
-                column: "ParentBId");
+                name: "IX_ExperimentLogs_SeedlingParentId",
+                table: "ExperimentLogs",
+                column: "SeedlingParentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Imgs_MonitoringLogsId",
@@ -809,11 +768,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_Seedlings_ParentAId",
                 table: "Seedlings",
                 column: "ParentAId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Seedlings_ParentBId",
-                table: "Seedlings",
-                column: "ParentBId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SeedlingsTraits_CharacteristicId",
@@ -981,16 +935,13 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Batches");
 
             migrationBuilder.DropTable(
-                name: "Hybridzations");
-
-            migrationBuilder.DropTable(
                 name: "Methods");
 
             migrationBuilder.DropTable(
-                name: "LabRooms");
+                name: "Seedlings");
 
             migrationBuilder.DropTable(
-                name: "Seedlings");
+                name: "LabRooms");
         }
     }
 }

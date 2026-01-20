@@ -13,7 +13,6 @@ namespace orchid_backend_net.Application.Seedling.UseCase.UpdateSeedlings
         public string? ScientificName { get; set; } = parameter.ScientificName;
         public string? Description { get; set; } = parameter.Description;
         public string? ParentAId { get; set; } = parameter.ParentAId;
-        public string? ParentBId { get; set; } = parameter.ParentBId;
         public List<CreateSeedlingTraistDto>? CreateSeedlingsTraits { get; set; } = parameter.CreateSeedlingsTraits;
         public List<UpdateSeedlingsTraitsDto>? UpdateSeedlingsTraits { get; set; } = parameter.UpdateSeedlingsTraits;
     }
@@ -30,7 +29,6 @@ namespace orchid_backend_net.Application.Seedling.UseCase.UpdateSeedlings
             seedlings.ScientificName = request.ScientificName ?? seedlings.ScientificName;
             seedlings.Description = request.Description ?? seedlings.Description;
             seedlings.ParentAId = request.ParentAId ?? seedlings.ParentAId;
-            seedlings.ParentBId = request.ParentBId ?? seedlings.ParentBId;
             seedlings.UpdatedDate = DateTime.UtcNow;
             seedlings.UpdatedBy = currentUserService.UserId;
 

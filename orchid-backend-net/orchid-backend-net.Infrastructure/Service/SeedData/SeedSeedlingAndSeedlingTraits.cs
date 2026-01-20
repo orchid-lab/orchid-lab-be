@@ -1,10 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using orchid_backend_net.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace orchid_backend_net.Infrastructure.Service.SeedData
 {
@@ -88,7 +83,6 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 ScientificName = "Phalaenopsis Hybrid A",
                 Description = "Con lai giữa Hồ Điệp Trắng × Hồ Điệp Hồng",
                 ParentAId = parentA.ID,
-                ParentBId = parentB.ID,
                 CreatedBy = "system",
                 CreatedDate = DateTime.UtcNow,
             };

@@ -16,6 +16,12 @@ jobs:
         with:
           dotnet-version: '8.0.x'
           cache: true
+        env:
+          DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
+      - name: Check dotnet
+        run: |
+          which dotnet
+          dotnet --info
 
       - name: 🔍 Restore
         working-directory: orchid-backend-net
@@ -33,10 +39,10 @@ jobs:
         if: always()
         run: |
           echo "Cleaning NuGet cache..."
-          rm -rf ~/.nuget/packages
+          dotnet nuget locals all --clear
 
           echo "Cleaning .NET SDK cache..."
-          rm -rf "$RUNNER_TOOL_CACHE/dotnet"
+          rm -rf ${{ runner.temp }}/dotnet
 
           echo "Cleanup done."
 

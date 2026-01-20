@@ -70,6 +70,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchName = "RT-2026-01",
                 BatchSizeWidth = 2200,
                 BatchSizeHeight = 1900,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
                 Status = Domain.Common.Enum.BatchStatus.Ready,
             },
 

@@ -15,28 +15,28 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
             {
                 Name = "Phòng cấy mô",
                 Description = "Thực hiện khử trùng và cấy mô ban đầu",
-                Status = 1
+                Status = Domain.Common.Enum.LabRoomStatus.Active
             };
 
             var multiplicationLab = new LabRooms
             {
                 Name = "Phòng nhân chồi",
                 Description = "Nhân nhanh chồi in-vitro",
-                Status = 1
+                Status = Domain.Common.Enum.LabRoomStatus.Active
             };
 
             var rootingLab = new LabRooms
             {
                 Name = "Phòng ra rễ",
                 Description = "Kích thích ra rễ trước khi ra vườn ươm",
-                Status = 1
+                Status = Domain.Common.Enum.LabRoomStatus.Active
             };
 
             var acclimatizationLab = new LabRooms
             {
                 Name = "Phòng thích nghi",
                 Description = "Giảm sốc cây con, chuẩn bị ra môi trường tự nhiên",
-                Status = 1
+                Status = Domain.Common.Enum.LabRoomStatus.Active
             };
 
             await context.AddRangeAsync(

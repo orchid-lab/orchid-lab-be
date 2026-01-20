@@ -21,7 +21,7 @@ namespace orchid_backend_net.Application.Batch.UseCase.UpdateBatch
             {
                 throw new NotFoundException($"không tìm thấy batch này.");
             }
-            if(batch.IsBatching)
+            if(batch.Status == Domain.Common.Enum.BatchStatus.InUse)
             {
                 return "Không thể cập nhật batch đang trong quá trình thực hiện.";
             }

@@ -83,14 +83,25 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("BatchSize")
-                        .HasColumnType("integer");
+                    b.Property<decimal>("BatchSizeHeight")
+                        .HasColumnType("numeric");
 
-                    b.Property<bool>("IsBatching")
-                        .HasColumnType("boolean");
+                    b.Property<decimal>("BatchSizeWidth")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("HeightUnit")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("LabRoomId")
                         .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("WidthUnit")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 

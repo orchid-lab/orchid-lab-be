@@ -24,7 +24,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchSizeHeight = 1500,
                 WidthUnit = "mm",
                 HeightUnit = "mm",
-                IsBatching = false
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             },
             new()
             {
@@ -35,7 +35,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchSizeHeight = 1800,
                 WidthUnit = "mm",
                 HeightUnit = "mm",
-                IsBatching = true
+                Status = Domain.Common.Enum.BatchStatus.InUse,
             },
 
             // ===== Phòng nhân chồi =====
@@ -48,7 +48,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchSizeHeight = 2000,
                 WidthUnit = "mm",
                 HeightUnit = "mm",
-                IsBatching = true
+                Status = Domain.Common.Enum.BatchStatus.Ready
             },
             new()
             {
@@ -59,7 +59,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchSizeHeight = 2200,
                 WidthUnit = "mm",
                 HeightUnit = "mm",
-                IsBatching = false
+                Status = Domain.Common.Enum.BatchStatus.Ready   
             },
 
             // ===== Phòng ra rễ =====
@@ -70,7 +70,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchName = "RT-2026-01",
                 BatchSizeWidth = 2200,
                 BatchSizeHeight = 1900,
-                IsBatching = true
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             },
 
             // ===== Phòng thích nghi =====
@@ -83,7 +83,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchSizeHeight = 1800,
                 WidthUnit = "mm",
                 HeightUnit = "mm",
-                IsBatching = false
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             }
         };
 

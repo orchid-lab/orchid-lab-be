@@ -1,4 +1,4 @@
-﻿using System;
+﻿h using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -256,8 +256,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LabRoomId = table.Column<int>(type: "integer", nullable: false),
                     BatchName = table.Column<string>(type: "text", nullable: false),
-                    BatchSize = table.Column<int>(type: "integer", nullable: false),
-                    IsBatching = table.Column<bool>(type: "boolean", nullable: false)
+                    BatchSizeWidth = table.Column<decimal>(type: "numeric", nullable: false),
+                    BatchSizeHeight = table.Column<decimal>(type: "numeric", nullable: false),
+                    WidthUnit = table.Column<string>(type: "text", nullable: false),
+                    HeightUnit = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

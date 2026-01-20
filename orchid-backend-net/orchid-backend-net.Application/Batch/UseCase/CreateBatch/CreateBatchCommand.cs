@@ -27,12 +27,12 @@ namespace orchid_backend_net.Application.Batch.UseCase.CreateBatch
                 BatchSizeHeight = request.BatchSizeHeight,
                 WidthUnit = request.WidthUnit,
                 HeightUnit = request.HeightUnit,
-                IsBatching = false
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             };
             batchesRepository.Add(newBatch);
             return await batchesRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? newBatch.ID.ToString()
-                : throw new Exception("Failed to create batch.");
+                : "Tạo batch thất bại.";
 
         }
     }

@@ -14,7 +14,7 @@ namespace orchid_backend_net.Application.Batch.UseCase.DeleteBatch
             {
                 throw new NotFoundException($"không tìm thấy batch này.");
             }
-            if (batch.IsBatching)
+            if (batch.Status == Domain.Common.Enum.BatchStatus.InUse)
                 throw new InvalidOperationException("Không thể xóa batch đang trong quá trình thực hiện.");
             batchesRepository.Remove(batch);
             return await batchesRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0

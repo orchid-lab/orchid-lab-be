@@ -14,6 +14,7 @@
                 Domain.Common.Enum.TaskStatus.Deleted => "đã bị xoá.",
                 Domain.Common.Enum.TaskStatus.DeclinedByTechnician => "đã bị technician từ chối.",
                 Domain.Common.Enum.TaskStatus.ReworkRequired => "yêu cầu làm lại.",
+                Domain.Common.Enum.TaskStatus.Template => "công việc mẫu.",
                 _ => "không xác định."
             };
         }

@@ -15,7 +15,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetAllTask
         /// search term only for names
         /// </summary>
         public string? SearchTerm { get; set; }
-        public string? StageId { get; set; }
+        public int? StageId { get; set; }
     }
 
     internal class GetAllTaskQueryHandler(ITaskRepository taskRepository) : IRequestHandler<GetAllTaskQuery, PageResult<TaskDto>>
@@ -32,7 +32,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetAllTask
                 {
                     query = query.Where(t => t.Name.ToLower().Contains(request.SearchTerm.ToLower()));
                 }
-                if (!string.IsNullOrWhiteSpace(request.StageId))
+                if (request.StageId is not null)
                 {
                     query = query.Where(t => t.StageId!.Equals(request.StageId));
                 }

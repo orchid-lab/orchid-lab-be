@@ -41,6 +41,8 @@ builder.Services.ConfigureSwagger(builder.Configuration);
 builder.Services.ConfigurationCors();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+builder.Services.AddHealthChecks();
+
 //optimization
 builder.Services.AddMemoryCache();
 
@@ -81,5 +83,6 @@ app.UseMiddleware<RateLimitingMiddleware>();
 
 app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
+app.MapHealthChecks("/health");
 
 app.Run();

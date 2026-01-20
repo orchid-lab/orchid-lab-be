@@ -20,16 +20,22 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng cấy mô"].ID,
                 LabRoom = labRooms["Phòng cấy mô"],
                 BatchName = "TC-2026-01",
-                BatchSize = 120,
-                IsBatching = false
+                BatchSizeWidth = 1200,
+                BatchSizeHeight = 1500,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             },
             new()
             {
                 LabRoomId = labRooms["Phòng cấy mô"].ID,
                 LabRoom = labRooms["Phòng cấy mô"],
                 BatchName = "TC-2026-02",
-                BatchSize = 150,
-                IsBatching = true
+                BatchSizeWidth = 1500,
+                BatchSizeHeight = 1800,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.InUse,
             },
 
             // ===== Phòng nhân chồi =====
@@ -38,16 +44,22 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng nhân chồi"].ID,
                 LabRoom = labRooms["Phòng nhân chồi"],
                 BatchName = "MP-2026-01",
-                BatchSize = 300,
-                IsBatching = true
+                BatchSizeWidth = 3000,
+                BatchSizeHeight = 2000,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.Ready
             },
             new()
             {
                 LabRoomId = labRooms["Phòng nhân chồi"].ID,
                 LabRoom = labRooms["Phòng nhân chồi"],
                 BatchName = "MP-2026-02",
-                BatchSize = 280,
-                IsBatching = false
+                BatchSizeWidth = 2800,
+                BatchSizeHeight = 2200,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.Ready   
             },
 
             // ===== Phòng ra rễ =====
@@ -56,8 +68,11 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng ra rễ"].ID,
                 LabRoom = labRooms["Phòng ra rễ"],
                 BatchName = "RT-2026-01",
-                BatchSize = 220,
-                IsBatching = true
+                BatchSizeWidth = 2200,
+                BatchSizeHeight = 1900,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             },
 
             // ===== Phòng thích nghi =====
@@ -66,8 +81,11 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng thích nghi"].ID,
                 LabRoom = labRooms["Phòng thích nghi"],
                 BatchName = "AC-2026-01",
-                BatchSize = 200,
-                IsBatching = false
+                BatchSizeWidth = 2000,
+                BatchSizeHeight = 1800,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             }
         };
 

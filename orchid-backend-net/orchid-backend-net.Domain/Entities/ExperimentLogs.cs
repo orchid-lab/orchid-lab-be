@@ -40,7 +40,15 @@ namespace orchid_backend_net.Domain.Entities
             Status = ExperimentLogStatus.InProgressed;
             CurrentStageOrder = 1;
             StartDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            AddDomainEvent(new ExperimentLogStarted(this.ID, MethodId, AssignedTo));
+
+            Batch.StartBatching();
+
+            AddDomainEvent(new ExperimentLogStarted(
+                this.ID, 
+                BatchId, 
+                Batch.BatchName,
+                Name,
+                AssignedTo));
         }
 
         public void MoveToNextStage(MethodStages nextStage, int maxStageOrder)

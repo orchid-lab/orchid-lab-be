@@ -20,9 +20,13 @@ namespace orchid_backend_net.API.Controllers
     public class ExperimentLogController(ISender sender, ILogger<ExperimentLogController> logger) : BaseController(sender)
     {
         /// <summary>
-        /// get all experiment log
+        /// get all experiment logs with pagination and filtering
         /// </summary>
-        /// <param name="query"></param>
+        /// <param name="pageSize">page size</param>
+        /// <param name="pageNo">page number</param>
+        /// <param name="nameSearchTerm">name of experiment log</param>
+        /// <param name="methodNameSearchTerm">method name</param>
+        /// <param name="currentStageOrder">current stage of experiment log</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>

@@ -5,6 +5,23 @@ on:
     branches: [main]
 jobs:
  
+  ci-test:
+    name: ✅ CI Test
+    runs-on: [self-hosted,dotnet]
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: 🔍 Restore
+      working-directory: orchid-backend-net
+      run: dotnet restore
+
+    - name: 🧪 Run Tests
+      working-directory: orchid-backend-net
+      run: dotnet test orchid-backend-net.Tests \
+           --configuration Release \
+           --verbosity normal
+
+
   build-image:
     name: 🛠️ Build Docker Image
     runs-on:

@@ -31,7 +31,7 @@ jobs:
       - name: 🧪 Run Tests
         working-directory: orchid-backend-net
         run: |
-          dotnet test orchid-backend-net.Tests/orchid-backend-net.Application.Tests.csproj \
+          dotnet test orchid-backend-net.Tests \
             --configuration Release \
             --verbosity normal
 

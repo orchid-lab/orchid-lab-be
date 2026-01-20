@@ -26,12 +26,12 @@ jobs:
 
       - name: 🔍 Restore
         working-directory: orchid-backend-net
-        run: dotnet restore
+        run: dotnet restore orchid-backend-net.sln
 
       - name: 🧪 Run Tests
         working-directory: orchid-backend-net
         run: |
-          dotnet test orchid-backend-net.Tests \
+          dotnet test orchid-backend-net.Tests/orchid-backend-net.Application.Tests.csproj \
             --configuration Release \
             --verbosity normal
 

@@ -1,4 +1,4 @@
-﻿namespace orchid_backend_net.Infrastructure.Service.SeedData.Const
+﻿namespace orchid_backend_net.Domain.Common.Const
 {
     public static class StageNames
     {

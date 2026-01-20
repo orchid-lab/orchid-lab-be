@@ -5,6 +5,11 @@ using orchid_backend_net.Application.Chemicals.Dto;
 using orchid_backend_net.Application.Chemicals.UseCase.GetChemicalById;
 using orchid_backend_net.Application.Chemicals.UseCase.GetAllChemicals;
 using orchid_backend_net.Application.Common.Pagination;
+using orchid_backend_net.Application.Chemicals.UseCase.CreateChemicals;
+using orchid_backend_net.Application.Chemicals.UseCase.DeleteChemical;
+using Microsoft.AspNetCore.Authorization;
+using orchid_backend_net.API.Dto.Chemical;
+using orchid_backend_net.Application.Chemicals.UseCase.UpdateChemical;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -48,7 +53,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ChemicalDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetCharacteristicById([FromRoute] int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetChemicalById([FromRoute] int id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -60,6 +65,84 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while getting chemical.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+            }
+        }
+
+        /// <summary>
+        /// create chemical only admin can use this
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        public async Task<ActionResult<JsonResponse<string>>> CreateChemical([FromBody] CreateChemicalCommand command, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(command, cancellationToken);
+                return CreatedAtAction(nameof(GetChemicalById), new { id = result }, new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while creating chemical.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+
+            }
+        }
+
+        /// <summary>
+        /// delete chemical only admin can use this
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> DeleteChemical([FromRoute] int id, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new DeleteChemicalCommand(id), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while deleting chemical.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+            }
+        }
+
+        /// <summary>
+        /// update chemical only admin can use this
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateChemical(
+            [FromRoute] int id,
+            [FromBody] UpdateChemicalDto dto,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new UpdateChemicalCommand(id, dto.Name, dto.Category, dto.Description, dto.Unit), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while deleting chemical.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
             }
         }

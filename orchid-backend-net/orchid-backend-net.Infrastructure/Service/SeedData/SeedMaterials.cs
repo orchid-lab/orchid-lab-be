@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using orchid_backend_net.Domain.Entities;
-using orchid_backend_net.Infrastructure.Service.SeedData.Const;
+using orchid_backend_net.Domain.Common.Const;
 
 namespace orchid_backend_net.Infrastructure.Service.SeedData
 {

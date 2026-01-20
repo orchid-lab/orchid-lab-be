@@ -5,7 +5,7 @@ using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
 
-namespace orchid_backend_net.Application.Seedling.CreateSeedlings
+namespace orchid_backend_net.Application.Seedling.UseCase.CreateSeedlings
 {
     public class CreateSeedlingsCommand(
         string localName,

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace orchid_backend_net.Infrastructure.Service.SeedData.Const
+﻿namespace orchid_backend_net.Domain.Common.Const
 {
     public static class MaterialNames
     {

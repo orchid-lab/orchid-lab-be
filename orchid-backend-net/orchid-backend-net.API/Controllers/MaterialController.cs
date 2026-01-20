@@ -5,6 +5,11 @@ using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.Materials.Dto;
 using orchid_backend_net.Application.Materials.UseCase.GetMaterialById;
 using orchid_backend_net.Application.Materials.UseCase.GetAllMaterials;
+using orchid_backend_net.Application.Materials.UseCase.CreateMaterial;
+using orchid_backend_net.Application.Materials.UseCase.UpdateMaterial;
+using orchid_backend_net.API.Dto.Material;
+using Microsoft.AspNetCore.Authorization;
+using orchid_backend_net.Application.Materials.UseCase.DeleteMaterial;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -48,7 +53,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(MaterialDto), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetCharacteristicById([FromRoute] int id, CancellationToken cancellationToken = default)
+        public async Task<IActionResult> GetMaterialById([FromRoute] int id, CancellationToken cancellationToken = default)
         {
             try
             {
@@ -60,6 +65,85 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while getting chemical.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+            }
+        }
+        /// <summary>
+        /// create material only admin can use this
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        public async Task<ActionResult<JsonResponse<string>>> CreateMaterial([FromBody] CreateMaterialCommand command, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(command, cancellationToken);
+                return CreatedAtAction(nameof(GetMaterialById), new { id = result }, new JsonResponse<string>("Material created successfully"));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while creating material.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+            }
+        }
+        /// <summary>
+        /// update material only admin can use this
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateMaterial(
+            [FromRoute] int id,
+            [FromBody] UpdateMaterialDto dto, 
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new UpdateMaterialCommand(id, dto.Name, dto.Description, dto.Category, dto.Unit), cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while updating material.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+            }
+        }
+
+        /// <summary>
+        /// delete material only admin can use this
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        public async Task<ActionResult<JsonResponse<string>>> DeleteMaterial(
+            [FromRoute] int id,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new DeleteMaterialCommand(id), cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while deleting material.");
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
             }
         }

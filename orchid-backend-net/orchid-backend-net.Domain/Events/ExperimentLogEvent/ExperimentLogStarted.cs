@@ -2,5 +2,10 @@
 
 namespace orchid_backend_net.Domain.Events.ExperimentLogEvent
 {
-    public record class ExperimentLogStarted(string ExperimentLogId, int MethodId, string TechnicianId) : DomainEvent;
+    public record class ExperimentLogStarted(
+        string ExperimentLogId, 
+        int BatchId, 
+        string BatchName,
+        string ExperimentName,
+        string StartByUserId) : DomainEvent;
 }

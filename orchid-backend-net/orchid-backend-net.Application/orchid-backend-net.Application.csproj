@@ -30,6 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ExperimentLog\Event\" />
+    <Folder Include="LabRoom\Dto\" />
+    <Folder Include="LabRoom\UseCase\" />
     <Folder Include="Sample\UseCase\" />
   </ItemGroup>
 

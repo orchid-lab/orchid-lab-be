@@ -4,7 +4,7 @@ namespace orchid_backend_net.Application.Materials.Policy
 {
     public static class MaterialPolicy
     {
-        public static readonly HashSet<string> ValidCategories =
+        private static readonly HashSet<string> ValidCategories =
         [
                 MaterialCategories.CATEGORY_PREPARE_ROOM,
                 MaterialCategories.CATEGORY_WASH_AREA,
@@ -18,7 +18,7 @@ namespace orchid_backend_net.Application.Materials.Policy
         public static bool IsValidCategory(string category)
             => ValidCategories.Contains(category);
 
-        public static readonly HashSet<string> ValidUnit =
+        private static readonly HashSet<string> ValidUnit =
         [
             Unit.MATERIAL_UNIT,
         ];

@@ -4,7 +4,7 @@ namespace orchid_backend_net.Application.Chemicals.Policy
 {
     public static class ChemicalPolicy
     {
-        public static HashSet<string> ChemicalCategoriesValidation =
+        private readonly static HashSet<string> ChemicalCategoriesValidation =
         [
             ChemicalCategories.MACRO_MINERALS,
             ChemicalCategories.MICRO_MINERALS,
@@ -19,7 +19,7 @@ namespace orchid_backend_net.Application.Chemicals.Policy
             return ChemicalCategoriesValidation.Contains(category);
         }
 
-        public static HashSet<string> ChemicalUnitValidation =
+        private readonly static HashSet<string> ChemicalUnitValidation =
         [
                 Unit.CHEMICAL_UNIT,
         ];

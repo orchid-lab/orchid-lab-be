@@ -20,7 +20,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng cấy mô"].ID,
                 LabRoom = labRooms["Phòng cấy mô"],
                 BatchName = "TC-2026-01",
-                BatchSize = 120,
+                BatchSizeWidth = 1200,
+                BatchSizeHeight = 1500,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
                 IsBatching = false
             },
             new()
@@ -28,7 +31,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng cấy mô"].ID,
                 LabRoom = labRooms["Phòng cấy mô"],
                 BatchName = "TC-2026-02",
-                BatchSize = 150,
+                BatchSizeWidth = 1500,
+                BatchSizeHeight = 1800,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
                 IsBatching = true
             },
 
@@ -38,7 +44,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng nhân chồi"].ID,
                 LabRoom = labRooms["Phòng nhân chồi"],
                 BatchName = "MP-2026-01",
-                BatchSize = 300,
+                BatchSizeWidth = 3000,
+                BatchSizeHeight = 2000,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
                 IsBatching = true
             },
             new()
@@ -46,7 +55,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng nhân chồi"].ID,
                 LabRoom = labRooms["Phòng nhân chồi"],
                 BatchName = "MP-2026-02",
-                BatchSize = 280,
+                BatchSizeWidth = 2800,
+                BatchSizeHeight = 2200,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
                 IsBatching = false
             },
 
@@ -56,7 +68,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng ra rễ"].ID,
                 LabRoom = labRooms["Phòng ra rễ"],
                 BatchName = "RT-2026-01",
-                BatchSize = 220,
+                BatchSizeWidth = 2200,
+                BatchSizeHeight = 1900,
                 IsBatching = true
             },
 
@@ -66,7 +79,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 LabRoomId = labRooms["Phòng thích nghi"].ID,
                 LabRoom = labRooms["Phòng thích nghi"],
                 BatchName = "AC-2026-01",
-                BatchSize = 200,
+                BatchSizeWidth = 2000,
+                BatchSizeHeight = 1800,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
                 IsBatching = false
             }
         };

@@ -6,6 +6,7 @@
         Created,
         //InProgressed: đang thực hiện các stage
         InProgressed,
+        WaitingForChangeState,
         //Completed: hoàn thành
         Completed,
         //Destroyed: hủy do toàn bộ sample nhiễm bệnh

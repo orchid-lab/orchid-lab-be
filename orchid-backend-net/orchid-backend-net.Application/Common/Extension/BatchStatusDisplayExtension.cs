@@ -6,7 +6,7 @@
         {
             return status switch
             {
-                Domain.Common.Enum.BatchStatus.Ready => "Sẵn sàng  chờ thí nghiệm",
+                Domain.Common.Enum.BatchStatus.Ready => "Sẵn sàng chờ thí nghiệm",
                 Domain.Common.Enum.BatchStatus.InUse => "Đang tiến hành thí nghiệm",
                 Domain.Common.Enum.BatchStatus.Cleaning => "Đang vệ sinh",
                 Domain.Common.Enum.BatchStatus.Maintenance => "Đã Bảo trì",

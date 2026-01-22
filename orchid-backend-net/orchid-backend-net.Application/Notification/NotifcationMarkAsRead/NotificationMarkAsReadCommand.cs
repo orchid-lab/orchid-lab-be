@@ -4,22 +4,13 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Notification.NotifcationMarkAsRead
 {
-    public class NotificationMarkAsReadCommand : IRequest<string>
-    {
-        public required string NotifcationId { get; set; }
-
-        public NotificationMarkAsReadCommand() { }
-        public NotificationMarkAsReadCommand(string notifcationId)
-        {
-            NotifcationId = notifcationId;
-        }
-    }
+    public record NotificationMarkAsReadCommand(string Id) : IRequest<string>;
 
     internal class NotificationMarkAsReadCommandHandler(INotificationRepository notificationRepository) : IRequestHandler<NotificationMarkAsReadCommand, string>
     {
         public async Task<string> Handle(NotificationMarkAsReadCommand request, CancellationToken cancellationToken)
         {
-            var notification = await notificationRepository.FindAsync(n => n.ID == request.NotifcationId, cancellationToken)
+            var notification = await notificationRepository.FindAsync(n => n.ID == request.Id, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy thông báo này");
 
             notification.IsRead = true;

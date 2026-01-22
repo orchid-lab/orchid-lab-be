@@ -16,13 +16,13 @@ namespace orchid_backend_net.API.Controllers
     public class NotificationController(ISender sender, ILogger<NotificationController> logger) : BaseController(sender)
     {
         /// <summary>
-        /// use this api to mark notification has read
+        /// use this api to mark notification as read
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="id"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        [HttpPut("mark-as-read")]
+        [HttpPut("{id}/mark-as-read")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
@@ -30,12 +30,12 @@ namespace orchid_backend_net.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<JsonResponse<string>>> MarkAsRead([FromBody] NotificationMarkAsReadCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult<JsonResponse<string>>> MarkAsRead([FromRoute] string id, CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received Put request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(command, cancellationToken);
+                var result = await Sender.Send(new NotificationMarkAsReadCommand(id), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

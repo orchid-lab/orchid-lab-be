@@ -85,4 +85,4 @@ app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
 app.MapHealthChecks("/health");
 
-app.Run();
+await app.RunAsync();

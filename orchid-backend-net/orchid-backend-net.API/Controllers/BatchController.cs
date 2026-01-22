@@ -9,6 +9,7 @@ using orchid_backend_net.Application.Batch.UseCase.DeleteBatch;
 using orchid_backend_net.Application.Batch.UseCase.GetAllBatch;
 using orchid_backend_net.Application.Batch.UseCase.GetBatchById;
 using orchid_backend_net.Application.Batch.UseCase.UpdateBatch;
+using orchid_backend_net.Application.Batch.UseCase.UpdateBatchStatus;
 using orchid_backend_net.Application.Common.Pagination;
 
 namespace orchid_backend_net.API.Controllers
@@ -142,20 +143,54 @@ namespace orchid_backend_net.API.Controllers
         [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
-        public async Task<ActionResult<JsonResponse<string>>> UpdateBatch([FromRoute] int id, [FromBody] UpdateBatchDto updateBatchDto, CancellationToken cancellationToken)
+        public async Task<ActionResult<JsonResponse<string>>> UpdateBatch([FromRoute] int id, [FromBody] UpdateBatchInformationDto updateBatchDto, CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(
                     new UpdateBatchCommand(
-                        id, 
-                        updateBatchDto.LabRoomId, 
+                        id,
+                        updateBatchDto.LabRoomId,
                         updateBatchDto.BatchName,
                         updateBatchDto.BatchSizeWidth,
                         updateBatchDto.BatchSizeHeight,
                         updateBatchDto.WidthUnit,
                         updateBatchDto.HeightUnit), cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                throw new InvalidOperationException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// use this api to update batch status
+        /// only admin role can access
+        /// if a batch is completed batching in experiment log => set status to Cleaning
+        /// if a batch is completed cleaning in experiment log => set status to Ready
+        /// if a batch need to maintenance => set status to Maintenance
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="updateBatchStatus"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateBatchStatus([FromRoute] int id, [FromBody] UpdateBatchStatus updateBatchStatus, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(
+                    new UpdateBatchStatusCommand(
+                        id,
+                        Status: updateBatchStatus.Status), cancellationToken);
                 return Ok(new JsonResponse<string>(result));
             }
             catch (Exception ex)

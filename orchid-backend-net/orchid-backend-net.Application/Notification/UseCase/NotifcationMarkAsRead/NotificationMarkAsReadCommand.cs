@@ -16,7 +16,7 @@ namespace orchid_backend_net.Application.Notification.UseCase.NotifcationMarkAsR
             notification.IsRead = true;
 
             notificationRepository.Update(notification);
-            return await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? "Cập nhật thành công." : "Cập nhật thất bại.";
+            return await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? notification.ID.ToString() : "Cập nhật thất bại.";
         }
     }
 }

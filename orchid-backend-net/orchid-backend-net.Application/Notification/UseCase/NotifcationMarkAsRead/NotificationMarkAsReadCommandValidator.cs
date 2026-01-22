@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace orchid_backend_net.Application.Notification.NotifcationMarkAsRead
+namespace orchid_backend_net.Application.Notification.UseCase.NotifcationMarkAsRead
 {
     public class NotificationMarkAsReadCommandValidator : AbstractValidator<NotificationMarkAsReadCommand>
     {

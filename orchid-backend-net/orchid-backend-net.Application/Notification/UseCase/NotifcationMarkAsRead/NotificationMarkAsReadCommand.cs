@@ -2,7 +2,7 @@
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
 
-namespace orchid_backend_net.Application.Notification.NotifcationMarkAsRead
+namespace orchid_backend_net.Application.Notification.UseCase.NotifcationMarkAsRead
 {
     public record NotificationMarkAsReadCommand(string Id) : IRequest<string>;
 

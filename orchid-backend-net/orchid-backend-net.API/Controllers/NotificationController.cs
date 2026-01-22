@@ -1,7 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
-using orchid_backend_net.Application.Notification.NotifcationMarkAsRead;
+using orchid_backend_net.Application.Common.Pagination;
+using orchid_backend_net.Application.Notification.Dto;
+using orchid_backend_net.Application.Notification.UseCase.GetAllNotification;
+using orchid_backend_net.Application.Notification.UseCase.NotifcationMarkAsRead;
 using System.Net.Mime;
 
 namespace orchid_backend_net.API.Controllers
@@ -43,6 +46,37 @@ namespace orchid_backend_net.API.Controllers
                 logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
                 throw new InvalidOperationException(ex.Message);
             }
+        }
+
+        /// <summary>
+        /// get all notification for a user
+        /// </summary>
+        /// <param name="pageNumber"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="userId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpGet]
+        [ProducesResponseType(typeof(PageResult<NotificationDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<PageResult<NotificationDto>>> GetNotifications(
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize,
+            [FromQuery] string userId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received Get request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new GetAllNotificationQuery(pageNumber, pageSize, userId), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
+                throw new InvalidOperationException(ex.Message);
+            }
+
         }
     }
 }

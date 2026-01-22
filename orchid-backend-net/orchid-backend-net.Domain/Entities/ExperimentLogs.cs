@@ -1,7 +1,7 @@
 ﻿using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities.Base;
-using orchid_backend_net.Domain.Events.ExperimentLogEvent;
+using orchid_backend_net.Domain.Events.ExperimentLogEvents;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities

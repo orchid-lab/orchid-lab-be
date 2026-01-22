@@ -9,7 +9,7 @@
     /// <param name="BatchSizeHeight"></param>
     /// <param name="WidthUnit"></param>
     /// <param name="HeightUnit"></param>
-    public record UpdateBatchDto(
+    public record UpdateBatchInformationDto(
         int? LabRoomId,
         string? BatchName,
         decimal? BatchSizeWidth,

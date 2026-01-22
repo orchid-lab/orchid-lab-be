@@ -35,7 +35,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 BatchSizeHeight = 1800,
                 WidthUnit = "mm",
                 HeightUnit = "mm",
-                Status = Domain.Common.Enum.BatchStatus.InUse,
+                Status = Domain.Common.Enum.BatchStatus.Ready,
             },
 
             // ===== Phòng nhân chồi =====

@@ -111,7 +111,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<ISampleRepository, SampleRepository>();
             services.AddScoped<IExperimentLogRepository, ExperimentLogRepository>();
             services.AddScoped<IBatchesRepository, BatchesRepository>();
-
+            services.AddScoped<ILabRoomRepository, LabRoomRepository>();
             //signalR
             services.AddSignalR();
             return services;

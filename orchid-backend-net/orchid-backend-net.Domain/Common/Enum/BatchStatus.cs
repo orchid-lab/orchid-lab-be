@@ -9,6 +9,7 @@
         //đang được làm sạch sau thí nghiệm
         Cleaning,
         //đang bảo trì
-        Maintainance
+        Maintenance,
+        Inactive
     }
 }

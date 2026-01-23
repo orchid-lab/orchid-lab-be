@@ -8,7 +8,7 @@ namespace orchid_backend_net.Infrastructure.Repository
 {
     public class MethodRepository(OrchidDbContext dbContext, IMapper mapper) : RepositoryBase<Methods, Methods, OrchidDbContext>(dbContext, mapper), IMethodRepository
     {
-        public async Task<MethodStages> GetMethodByIdAsync(int id, int currentStageOrder, CancellationToken cancellationToken)
+        public async Task<MethodStages> GetMethodStageByMethodIdAndStageOrderAsync(int id, int currentStageOrder, CancellationToken cancellationToken)
         {
             var method = await this.FindAsync(m => m.ID == id, cancellationToken)
                 ?? throw new NotFoundException("Không thấy phương pháp này");

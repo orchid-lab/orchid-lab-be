@@ -1,59 +1,43 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using orchid_backend_net.Application.ExperimentLog.Helper;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 using orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodoTask;
 using orchid_backend_net.Domain.Common.Exceptions;
+using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.Events.ExperimentLogEvents;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.ExperimentLog.Event.SeedTaskOnStart
 {
-    public record SeedTaskOnStartExperimentLogNotification(SeedTaskOnStartExperimentLogEvent DomainEvent) : INotification;
+    public record SeedTaskOnStartExperimentLogNotification(
+        SeedTaskOnStartExperimentLogEvent DomainEvent) 
+        : INotification;
 
     internal class SeedTaskOnStartExperimentLogNotificationHandler(
         IExperimentLogRepository experimentLogRepository,
         IMethodRepository methodRepository,
         ITaskRepository taskRepository,
-        IMediator mediator) : INotificationHandler<SeedTaskOnStartExperimentLogNotification>
+        ExperimentLogSeedTask experimentLogSeedTask) 
+        : INotificationHandler<SeedTaskOnStartExperimentLogNotification>
     {
+
         public async Task Handle(SeedTaskOnStartExperimentLogNotification evt, CancellationToken cancellationToken)
         {
             //find experiment log 
-            var experimentLog = await experimentLogRepository.FindAsync(el => el.ID == evt.DomainEvent.ExperimentLogId, cancellationToken)
-                ?? throw new NotFoundException("Không tìm thấy thí nghiệm này");
+            var experimentLog = await experimentLogRepository.GetExperimentLogByIdAsync(evt.DomainEvent.ExperimentLogId, cancellationToken);
 
             //determine stage order
             var stageOrder = experimentLog.CurrentStageOrder > 0 ? experimentLog.CurrentStageOrder : 1;
-            
-            //find all method stages for the method
-            var method = await methodRepository.FindAsync(m => m.ID == experimentLog.MethodId, cancellationToken)
-                ?? throw new NotFoundException("Không tìm thấy phương pháp này");
 
-            var methodStages = method.MethodStages.SingleOrDefault(ms => ms.Order == stageOrder)
-                ?? throw new NotFoundException("Không tìm thấy giai đoạn phương pháp này");
+            //find all method stages for the method
+            var methodStage = await methodRepository.GetMethodStageByMethodIdAndStageOrderAsync(experimentLog.MethodId, stageOrder, cancellationToken);
 
             //find template task (where stage id == method stage definition id == template)
-            var templateTask = await taskRepository.FindAllAsync(
-                t => t.StageId == methodStages.MethodStageDefinitionId 
-                && t.Status == Domain.Common.Enum.TaskStatus.Template, cancellationToken)
-                ?? throw new NotFoundException("Không tìm thấy công việc mẫu cho giai đoạn này");
+            var templateTasks = await taskRepository.GetAllTaskTemplateByStageId(methodStage.MethodStageDefinitionId, cancellationToken);
 
-            if (templateTask is null || templateTask.Count == 0)
-                return;
-            //notify to create task from template
-            //also seed task
-            foreach(var template in templateTask)
-            {
-                var assignment = new CreateTaskAssignmentDto
-                {
-                    TechnicianId = experimentLog.AssignedTo,
-                    TargetType = Domain.Common.Enum.TaskTargetType.ExperimentLog,
-                    TargetId = experimentLog.ID,
-                    ExpectedEndDate = DateTime.UtcNow.AddDays(methodStages.DurationsDays)
-                };
-
-                await mediator.Send(new ConvertTaskTemplateToToDoTaskCommand(template.ID, assignment), cancellationToken);
-            }
+           await experimentLogSeedTask.SeedTaskAsync(templateTasks, experimentLog, methodStage, cancellationToken);
         }
     }
 }

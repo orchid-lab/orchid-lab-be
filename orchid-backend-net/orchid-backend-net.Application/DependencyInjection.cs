@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using orchid_backend_net.Application.Common.Behaviours;
 using orchid_backend_net.Application.Common.Validation;
+using orchid_backend_net.Application.ExperimentLog.Helper;
 
 namespace orchid_backend_net.Application
 {
@@ -24,6 +25,7 @@ namespace orchid_backend_net.Application
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddScoped<IValidationProvider, ValidationProvider>();
+            services.AddTransient<ExperimentLogSeedTask>();
 
             return services;
         }

@@ -168,9 +168,6 @@ namespace orchid_backend_net.API.Controllers
 
         /// <summary>
         /// use this api as admin to update batch status
-        /// if a batch is completed batching in experiment log => set status to Cleaning
-        /// if a batch is completed cleaning in experiment log => set status to Ready
-        /// if a batch need to maintenance => set status to Maintenance
         /// </summary>
         /// <remarks>
         /// <ul>

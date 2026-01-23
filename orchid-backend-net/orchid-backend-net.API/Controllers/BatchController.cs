@@ -167,12 +167,18 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
-        /// use this api to update batch status
-        /// only admin role can access
+        /// use this api as admin to update batch status
         /// if a batch is completed batching in experiment log => set status to Cleaning
         /// if a batch is completed cleaning in experiment log => set status to Ready
         /// if a batch need to maintenance => set status to Maintenance
         /// </summary>
+        /// <remarks>
+        /// <ul>
+        /// <li><c>Cleaning</c> - when a batch is completed batching in experiment log</li>
+        /// <li><c>Ready</c> - when a batch is completed in cleaning </li>
+        /// <li><c>Maintenance</c> - when a batch is needed to be maintain</li>
+        /// </ul>
+        /// </remarks>
         /// <param name="id"></param>
         /// <param name="updateBatchStatus"></param>
         /// <param name="cancellationToken"></param>

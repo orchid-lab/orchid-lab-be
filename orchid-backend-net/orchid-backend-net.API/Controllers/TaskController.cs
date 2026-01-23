@@ -130,7 +130,7 @@ namespace orchid_backend_net.API.Controllers
         public async Task<ActionResult<JsonResponse<string>>> TaskTemplateConverted([FromBody] ConvertTaskTemplateToToDoTaskCommand command, CancellationToken cancellationToken)
         {
             try
-            {
+            {   
                 logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
@@ -179,6 +179,20 @@ namespace orchid_backend_net.API.Controllers
         /// technician use for updated status task to in-progess and waiting for approval
         /// researcher use for updated task status to completed in time, completed out time and in progress
         /// </summary>
+        /// <remarks>
+        /// Technician can update status to:
+        /// <ul>
+        /// <li><c>InProgress</c> - when technician is confirm doing task</li>
+        /// <li><c>DeclinedByTechnician</c> - when technician decline doing task</li>
+        /// <li><c>WaitingForApproval</c> - when technician need researcher confirm their task complete</li>
+        /// </ul>
+        /// Researcher can update status to:
+        /// <ul>
+        /// <li><c>CompletedInTime</c> - when technician completed task in time</li>
+        /// <li><c>CompletedOutTime</c> - when technician completed task out of time</li>
+        /// <li><c>ReworkRequired</c> - when technician is need to rework</li>
+        /// </ul>
+        /// </remarks>
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

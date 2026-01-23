@@ -137,12 +137,18 @@ namespace orchid_backend_net.API.Controllers
 
         /// <summary>
         /// use this api as researcher to update experiment log by status 
-        /// please follow the status enum like below:
-        /// when technician press "Start Experiment" button, then status = "InProgress"
-        /// when technician finish a stage of experiment log technician then press request change stage in experiment log, then status = "WaitingForChangeStage" and require researcher to confirm it
-        /// when researcher confirm change stage in experiment log by passing "ConfirmChangeStage" into api, then status = "In Progress" and current stage + 1
-        /// when technician press "Complete Experiment" button, api receive "Completed", then status = "Completed"
         /// </summary>
+        /// <remarks>
+        /// Use the following status enum values:
+        /// <para>
+        /// <ul>
+        /// <li><c>InProgress</c> — Technician pressed the "Start Experiment" button.</li>
+        /// <li><c>WaitingForChangeStage</c> — Technician finished a stage and requested a stage change; researcher confirmation is required.</li>
+        /// <li><c>ConfirmChangeStage</c> — Researcher confirmed the stage change. After this, the status becomes <c>InProgress</c> and the experiment's current stage is incremented by 1.</li>
+        /// <li><c>Completed</c> — Technician pressed the "Complete Experiment" button; the experiment is finished.</li>
+        /// </ul>
+        /// </para>
+        /// </remarks>
         /// <param name="id"></param>
         /// <param name="dto"></param>
         /// <param name="cancellationToken"></param>

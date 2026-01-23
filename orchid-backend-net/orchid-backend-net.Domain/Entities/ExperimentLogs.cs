@@ -126,11 +126,21 @@ namespace orchid_backend_net.Domain.Entities
             Batch.FinishBatching(CreatedBy);
         }
 
-        public void UpdateInformation(string? name, string? notes)
+        public void UpdateInformation(string? name, string? notes, int? expectedSampleCount)
         {
             EnsureNotFinished();
             Name = name ?? Name;
             Notes = notes;
+            var currentStage = Method.MethodStages
+                .FirstOrDefault(ms => ms.Order == CurrentStageOrder)
+                ?? throw new DomainException("Không tìm thấy giai đoạn này");
+            if (expectedSampleCount is not null
+                &&
+                currentStage.IsSampleGenerated)
+            {
+                throw new DomainException("Không thể cập nhật số lượng sample mong muốn sau khi mẫu đã được tạo.");
+            }
+            ExpectedSampleCount = expectedSampleCount.Value;
         }
 
         public void Complete()

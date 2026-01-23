@@ -6,7 +6,7 @@
             => experimentLogStatus switch
             {
                 Domain.Common.Enum.ExperimentLogStatus.Created => "mới tạo",
-                Domain.Common.Enum.ExperimentLogStatus.InProgressed => "đang trong quá trình thực hiện",
+                Domain.Common.Enum.ExperimentLogStatus.InProgress => "đang trong quá trình thực hiện",
                 Domain.Common.Enum.ExperimentLogStatus.Destroyed => "bị hủy",
                 _ => throw new NotImplementedException()
             };

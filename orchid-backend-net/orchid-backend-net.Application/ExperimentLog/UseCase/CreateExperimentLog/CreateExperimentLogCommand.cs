@@ -11,7 +11,6 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
         int MethodId,
         int BatchesId,
         string ParentAId,
-        string? ParentBId,
         string Name,
         int ExpectedSampleCount,
         string AssignedToTechnicianId) : IRequest<string>;

@@ -37,7 +37,19 @@ namespace orchid_backend_net.Domain.Entities
             if (Status != ExperimentLogStatus.Created)
                 throw new InvalidOperationException("Experiment log đã bắt đầu hoặc hoàn thành rồi.");
 
-            Status = ExperimentLogStatus.InProgressed;
+            if (MethodId <= 0)
+                throw new DomainException("Method must be specified before starting experiment.");
+
+            if (BatchId <= 0)
+                throw new DomainException("Batch must be specified before starting experiment.");
+
+            if (string.IsNullOrWhiteSpace(AssignedTo))
+                throw new DomainException("AssignedTo (technician) must be specified before starting experiment.");
+
+            if (ExpectedSampleCount < 0)
+                throw new DomainException("ExpectedSampleCount cannot be negative.");
+
+            Status = ExperimentLogStatus.InProgress;
             CurrentStageOrder = 1;
             StartDate = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -49,22 +61,46 @@ namespace orchid_backend_net.Domain.Entities
                 Batch.BatchName,
                 Name,
                 AssignedTo));
+
+            AddDomainEvent(new SeedTaskOnStartExperimentLogEvent(
+                ID,
+                Method.ID,
+                AssignedTo,
+                CreatedBy
+            ));
+        }
+
+        public void PendingToChangeStage()
+        {
+            EnsureInProgressed();
+            Status = ExperimentLogStatus.WaitingForChangeStage;
+            AddDomainEvent(new ExperimentLogPendingToChangeStage(
+                ID,
+                CurrentStageOrder,
+                AssignedTo
+            ));
         }
 
         public void MoveToNextStage(MethodStages nextStage, int maxStageOrder)
         {
-            EnsureInProgressed();
+            EnsureInWaitingForChangeStage();
 
             if (CurrentStageOrder >= maxStageOrder)
                 throw new DomainException("Đã ở giai đoạn cuối.");
 
             CurrentStageOrder++;
-
+            Status = ExperimentLogStatus.InProgress;
             AddDomainEvent(new ExperimentLogStageChanged(
                 ID,
                 CurrentStageOrder,
                 AssignedTo
             ));
+
+            AddDomainEvent(new SeedTaskOnExperimentLogStageChanged(
+                ID,
+                MethodId,
+                AssignedTo,
+                CreatedBy));
 
             if (nextStage.IsSampleGenerated)
             {
@@ -81,17 +117,18 @@ namespace orchid_backend_net.Domain.Entities
 
         public void DestroyBecauseAllSamplesInfected(string? reason)
         {
-            EnsureInProgressed();
+            EnsureInProgressOrWaiting();
 
             Status = ExperimentLogStatus.Destroyed;
             Reason = reason;
             EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
-
             AddDomainEvent(new ExperimentLogDestroyed(ID, reason));
+            Batch.FinishBatching(CreatedBy);
         }
 
         public void UpdateInformation(string? name, string? notes)
         {
+            EnsureNotFinished();
             Name = name ?? Name;
             Notes = notes;
         }
@@ -99,12 +136,12 @@ namespace orchid_backend_net.Domain.Entities
         public void Complete()
         {
             EnsureNotDestroyed();
-            EnsureInProgressed();
+            EnsureInProgressOrWaiting();
 
             Status = ExperimentLogStatus.Completed;
-
-            EndDate = DateOnly.FromDateTime(DateTime.Now);
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
             AddDomainEvent(new ExperimentLogCompleted(this.ID));
+            Batch.FinishBatching(CreatedBy);
         }
 
         private void EnsureNotDestroyed()
@@ -116,8 +153,29 @@ namespace orchid_backend_net.Domain.Entities
 
         private void EnsureInProgressed()
         {
-            if (Status != ExperimentLogStatus.InProgressed)
+            if (Status != ExperimentLogStatus.InProgress)
                 throw new InvalidOperationException("Experiment log không trong quá trình thực hiện.");
+        }
+
+        private void EnsureInProgressOrWaiting()
+        {
+            if (Status != ExperimentLogStatus.InProgress
+                && Status != ExperimentLogStatus.WaitingForChangeStage)
+            {
+                throw new InvalidOperationException("Experiment log không trong trạng thái hợp lệ để thực hiện thao tác này.");
+            }
+        }
+
+        private void EnsureInWaitingForChangeStage()
+        {
+            if (Status != ExperimentLogStatus.WaitingForChangeStage)
+                throw new InvalidOperationException("Experiment log không ở trạng thái chờ chuyển giai đoạn.");
+        }
+
+        private void EnsureNotFinished()
+        {
+            if (Status == ExperimentLogStatus.Completed || Status == ExperimentLogStatus.Destroyed)
+                throw new DomainException("Không thể cập nhật experiment log đã hoàn thành hoặc bị hủy.");
         }
     }
 }

@@ -9,11 +9,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodoTask
 {
-    public class ConvertTaskTemplateToToDoTaskCommand(string taskTemplateId, CreateTaskAssignmentDto createTaskAssignment) : IRequest<string>
-    {
-        public required string TaskTemplateId { get; set; } = taskTemplateId;
-        public CreateTaskAssignmentDto CreateTaskAssignment { get; set; } = createTaskAssignment;
-    }
+    public record ConvertTaskTemplateToToDoTaskCommand(string TaskTemplateId, CreateTaskAssignmentDto CreateTaskAssignment) : IRequest<string>;
 
     internal class ConvertTaskTemplateToToDoTaskCommandHandler(
         ITaskRepository taskRepository,
@@ -24,10 +20,9 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodo
         {
             List<CreateTaskAttributeDto> createTaskAttributeList = new();
 
-            var taskTemplate = await taskRepository.GetTemplateForConversionAsync(request.TaskTemplateId, cancellationToken);
-            if (taskTemplate is null)
-                throw new NotFoundException("Không tìm thấy task template này.");
-
+            var taskTemplate = await taskRepository.GetTemplateForConversionAsync(request.TaskTemplateId, cancellationToken)
+                ?? throw new NotFoundException("Không tìm thấy task template này.");
+            
             TaskPolicy.ValidateTaskWorkingHour(request.CreateTaskAssignment.ExpectedEndDate, dateTimeProvider);
 
             Domain.Entities.Tasks taskToDo = new()

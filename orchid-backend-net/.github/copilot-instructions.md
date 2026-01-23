@@ -7,6 +7,7 @@
 ## Code Style
 - Use specific formatting rules
 - Follow naming conventions
+- Use XML remarks rendered as visible bullet lists (one case per bullet) in API documentation; when updating summaries, use HTML `<ul><li>` blocks for Swagger rendering.
 
 ## Project-Specific Rules
 - Admin manages chemicals, materials, users, batches, and labrooms.

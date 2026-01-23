@@ -2,11 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
+using orchid_backend_net.API.Dto.ExperimentLog;
 using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog;
 using orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentLog;
+using orchid_backend_net.Application.ExperimentLog.UseCase.DeleteExperimentLog;
 using orchid_backend_net.Application.ExperimentLog.UseCase.GetAllExperimentLog;
 using orchid_backend_net.Application.ExperimentLog.UseCase.GetExperimentLogById;
+using orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentLogInformation;
+using orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentLogStatus;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -90,9 +94,105 @@ namespace orchid_backend_net.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         public async Task<ActionResult<JsonResponse<string>>> CreateExperimentLog([FromBody] CreateExperimentLogCommand command, CancellationToken cancellationToken)
         {
-            logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
-            var result = await Sender.Send(command, cancellationToken);
-            return Ok(result);
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                throw new InvalidOperationException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// update experiment log information by id
+        /// only researcher use this api
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateExperimentLogInformation([FromRoute] string id, [FromBody] UpdateExperimentLogInformationDto dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                var command = new UpdateExperimentLogInformationCommand(id, dto.Name, dto.Notes, dto.ExpectedSampleCount);
+                var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                throw new InvalidOperationException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// use this api as researcher to update experiment log by status 
+        /// please follow the status enum like below:
+        /// when technician press "Start Experiment" button, then status = "InProgress"
+        /// when technician finish a stage of experiment log technician then press request change stage in experiment log, then status = "WaitingForChangeStage" and require researcher to confirm it
+        /// when researcher confirm change stage in experiment log by passing "ConfirmChangeStage" into api, then status = "In Progress" and current stage + 1
+        /// when technician press "Complete Experiment" button, api receive "Completed", then status = "Completed"
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="dto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpPut("{id}/status")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateExperimentLogStatus([FromRoute] string id, [FromBody] UpdateExperimentLogStatusDto dto, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId);
+                var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                throw new InvalidOperationException(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// researcher only use this api to destroy experiment log if
+        /// experiment log's sample are all infected with disease or experiment log is created by mistake
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> DestroyExperimentLog([FromRoute] string id, [FromBody] string? reason, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
+                var command = new DeleteExperimentLogCommand(id, reason);
+                var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                throw new InvalidOperationException(ex.Message);
+            }
         }
     }
 }

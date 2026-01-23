@@ -56,7 +56,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
                 nextStatus,
                 nextStage,
                 currentUserService.UserId!);
-
+            experimentLogs.UpdatedBy = currentUserService.UserId!;
+            experimentLogs.UpdatedDate = DateTime.UtcNow;
             //update and save changes
             experimentLogRepository.Update(experimentLogs);
             return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? 

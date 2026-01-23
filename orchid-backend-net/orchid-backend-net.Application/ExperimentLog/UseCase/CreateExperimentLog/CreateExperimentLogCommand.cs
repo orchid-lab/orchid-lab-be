@@ -54,8 +54,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 ExpectedSampleCount = request.ExpectedSampleCount,
                 AssignedTo = technicianAssigned.ID,
                 CreatedDate = DateTime.UtcNow,
-                CreatedBy = currentUserService.UserId,
-                Status = Domain.Common.Enum.ExperimentLogStatus.Created,
+                CreatedBy = currentUserService.UserId!,
+                Status = ExperimentLogStatus.Created,
             };
 
             experimentLogRepository.Add(eL);

@@ -30,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ExperimentLog\Event\" />
     <Folder Include="Sample\UseCase\" />
   </ItemGroup>
 

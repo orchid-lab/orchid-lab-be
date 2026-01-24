@@ -3,7 +3,7 @@ using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Domain.Entities;
 
-namespace orchid_backend_net.Application.Sample.Dto
+namespace orchid_backend_net.Application.Sample.Dto.Sample
 {
     public class SampleDto : IMapFrom<Samples>
     {
@@ -13,7 +13,7 @@ namespace orchid_backend_net.Application.Sample.Dto
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public DateOnly? ExecutionDate { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } = default!;
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Samples, SampleDto>()

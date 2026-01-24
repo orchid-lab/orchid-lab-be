@@ -83,7 +83,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
             services.AddScoped<IDateTimeProvider, VietNamDateTimeProvider>();
             services.AddScoped<IHubnotificationService, HubNotificationService>();
-
+            services.AddScoped<INotificationPushService, NotificationPushService>();
             //Add repositories
 
             //for notification module

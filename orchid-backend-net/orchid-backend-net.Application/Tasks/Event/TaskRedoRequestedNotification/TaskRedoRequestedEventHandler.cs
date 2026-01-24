@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Events.TaskEvents;
 using orchid_backend_net.Domain.IRepositories;
@@ -8,7 +9,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskRedoRequestedNotificati
 {
     public record TaskRedoRequestedNotification(TaskRedoRequestedEvent DomainEvent) : INotification;
     internal class TaskRedoRequestedEventHandler(
-        IHubnotificationService hubService,
+        INotificationPushService notificationService,
         INotificationRepository notificationRepository,
         IUserRepository userRepository,
         ITaskRepository taskRepository) : INotificationHandler<TaskRedoRequestedNotification>
@@ -20,18 +21,14 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskRedoRequestedNotificati
             var task = await taskRepository.FindAsync(t => t.ID == evt.DomainEvent.TaskId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy task.");
 
-            Domain.Entities.Notification noti = new()
-            {
-                UserId = evt.DomainEvent.TechnicianId,
-                Title = "Task đã yêu cầu làm lại",
-                Content = $"Task {task.Name} đã được yêu cầu làm lại bởi Researcher {researcher.Name}.",
-                IsRead = false,
-                CreatedAt = DateTime.UtcNow,
-            };
+            var title = "Task đã yêu cầu làm lại";
+            var content = $"Task {task.Name} đã được yêu cầu làm lại bởi Researcher {researcher.Name}.";
+
+            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.TechnicianId, title, content);
 
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
-            await hubService.PushToUserAsync(evt.DomainEvent.TechnicianId, noti.Title, noti.Content);
+            await notificationService.PushToSingleUserAsync(evt.DomainEvent.TechnicianId, noti.Title, noti.Content);
         }
     }
 }

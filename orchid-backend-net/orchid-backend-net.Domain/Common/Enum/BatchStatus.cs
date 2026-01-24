@@ -10,6 +10,7 @@
         Cleaning,
         //đang bảo trì
         Maintenance,
+        //xóa khỏi hệ thống
         Inactive
     }
 }

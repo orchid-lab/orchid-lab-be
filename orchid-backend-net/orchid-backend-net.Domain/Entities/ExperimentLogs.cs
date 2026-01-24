@@ -58,9 +58,8 @@ namespace orchid_backend_net.Domain.Entities
             AddDomainEvent(new ExperimentLogStarted(
                 this.ID, 
                 BatchId, 
-                Batch.BatchName,
-                Name,
-                AssignedTo));
+                AssignedTo,
+                CreatedBy));
 
             AddDomainEvent(new SeedTaskOnStartExperimentLogEvent(
                 ID,
@@ -77,7 +76,8 @@ namespace orchid_backend_net.Domain.Entities
             AddDomainEvent(new ExperimentLogPendingToChangeStage(
                 ID,
                 CurrentStageOrder,
-                AssignedTo
+                AssignedTo,
+                CreatedBy
             ));
         }
 
@@ -93,7 +93,8 @@ namespace orchid_backend_net.Domain.Entities
             AddDomainEvent(new ExperimentLogStageChanged(
                 ID,
                 CurrentStageOrder,
-                AssignedTo
+                AssignedTo,
+                CreatedBy
             ));
 
             AddDomainEvent(new SeedTaskOnExperimentLogStageChanged(

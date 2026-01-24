@@ -74,6 +74,9 @@ namespace orchid_backend_net.Domain.Entities
             if (nextDefinitionId == 0)
                 return;
 
+            if (IsInFinalStage(definitionOrderMap, currentOrder))
+                throw new DomainException("Sample này đã phát triển tối đa rồi");
+
             var nextStage = new SampleStage
             {
                 SampleStageDefinitionId = nextDefinitionId,

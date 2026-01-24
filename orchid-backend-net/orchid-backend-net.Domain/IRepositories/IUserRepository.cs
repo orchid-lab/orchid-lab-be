@@ -6,5 +6,6 @@ namespace orchid_backend_net.Domain.IRepositories
     {
         string HashPassword(string password);
         bool VerifyPassword(string password, string hash);
+        Task<Users> GetByIdAsync(string Id, CancellationToken cancellationToken);
     }
 }

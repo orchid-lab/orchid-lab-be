@@ -2,7 +2,7 @@
 using orchid_backend_net.Application.Batch.Dto.Batch;
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Application.Method.Dto.Method;
-using orchid_backend_net.Application.Sample.Dto.SampleDtos;
+using orchid_backend_net.Application.Sample.Dto.Sample;
 using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Entities;

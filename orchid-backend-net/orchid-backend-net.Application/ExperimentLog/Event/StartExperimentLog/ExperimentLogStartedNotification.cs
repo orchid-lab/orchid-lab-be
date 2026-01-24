@@ -30,7 +30,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.StartExperimentLog
             //get researcher name to inform title and content
             var researcher = await userRepository.GetByIdAsync(evt.DomainEvent.CreatedBy, cancellationToken);
 
-            var title = "Bắt đầu thí nghiệm";
+            var title = "Một thí nghiệm đang được thực hiện";
             var content = $"Thí nghiệm {experimentLog.Name} của {researcher.Name} đã bắt đầu ở lồng {batch.BatchName}, được thực hiện bởi {technician.Name}";
 
             //get all technician for notification

@@ -2,7 +2,6 @@
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.ExperimentLog.Helper;
 using orchid_backend_net.Application.ExperimentLog.Policy;
-using orchid_backend_net.Application.Tasks.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
 
@@ -58,10 +57,11 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
                 currentUserService.UserId!);
             experimentLogs.UpdatedBy = currentUserService.UserId!;
             experimentLogs.UpdatedDate = DateTime.UtcNow;
+
             //update and save changes
             experimentLogRepository.Update(experimentLogs);
-            return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ? 
-                experimentLogs.ID.ToString() 
+            return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ?
+                experimentLogs.ID.ToString()
                 : "Cập nhật thất bại";
         }
     }

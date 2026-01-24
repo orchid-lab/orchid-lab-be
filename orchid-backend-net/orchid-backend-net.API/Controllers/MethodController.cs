@@ -17,6 +17,7 @@ using orchid_backend_net.Application.Method.UseCase.UpdateMethod;
 using orchid_backend_net.Domain.Entities;
 using System.Net.Mime;
 using System.Threading;
+using orchid_backend_net.Application.Common.Security;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -86,6 +87,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpPost]
+        [Authorize(Roles = "Researcher")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]

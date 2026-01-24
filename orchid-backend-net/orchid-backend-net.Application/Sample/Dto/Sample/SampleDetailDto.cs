@@ -1,0 +1,20 @@
+﻿using AutoMapper;
+using orchid_backend_net.Application.Common.Mappings;
+using orchid_backend_net.Domain.Entities;
+
+namespace orchid_backend_net.Application.Sample.Dto.Sample
+{
+    public class SampleDetailDto : IMapFrom<Samples>
+    {
+        public string Name { get; set; } = default!;
+        public required string ExperimentLogId { get; set; } 
+        public string? Notes { get; set; }
+        public string? Reason { get; set; }
+        public DateOnly? ExecutionDate { get; set; }
+        public string Status { get; set; } = default!;
+        public void Mapping(Profile profile)
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

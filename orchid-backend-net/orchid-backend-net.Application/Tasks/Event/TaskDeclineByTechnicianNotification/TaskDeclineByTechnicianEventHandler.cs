@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Events.TaskEvents;
 using orchid_backend_net.Domain.IRepositories;
@@ -8,7 +9,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskDeclineByTechnicianNoti
 {
     public record TaskDeclineByTechnicianNotification(TaskDeclineByTechnicianEvent DomainEvent) : INotification;
     internal class TaskDeclineByTechnicianEventHandler(
-        IHubnotificationService hubService,
+        INotificationPushService notificationService,
         INotificationRepository notificationRepository,
         IUserRepository userRepository,
         ITaskRepository taskRepository) : INotificationHandler<TaskDeclineByTechnicianNotification>
@@ -20,17 +21,15 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskDeclineByTechnicianNoti
             var task = await taskRepository.FindAsync(t => t.ID == evt.DomainEvent.TaskId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy task.");
 
-            Domain.Entities.Notification noti = new()
-            {
-                UserId = evt.DomainEvent.ResearcherId,
-                Title = "Task đã bị từ chối",
-                Content = $"Task {task.Name} đã bị từ chối bởi Technician {technician.Name}.",
-                CreatedAt = DateTime.UtcNow,
-                IsRead = false,
-            };
+            var title = "Task đã bị từ chối";
+            var content = !string.IsNullOrWhiteSpace(evt.DomainEvent.Reason) 
+                ? $"Task {task.Name} đã bị từ chối bởi Technician {technician.Name} với lý do {evt.DomainEvent.Reason}." 
+                : $"Task {task.Name} đã bị từ chối bởi Technician {technician.Name}.";
+
+            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content);
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
-            await hubService.PushToUserAsync(evt.DomainEvent.ResearcherId, noti.Title, noti.Content);
+            await notificationService.PushToSingleUserAsync(evt.DomainEvent.ResearcherId, noti.Title, noti.Content);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
 using orchid_backend_net.Infrastructure.Persistence;
@@ -7,6 +8,10 @@ namespace orchid_backend_net.Infrastructure.Repository
 {
     public class UserRepository(OrchidDbContext context, IMapper mapper) : RepositoryBase<Users, Users, OrchidDbContext>(context, mapper), IUserRepository
     {
+        public async Task<Users> GetByIdAsync(string Id, CancellationToken cancellationToken)
+           => await FindAsync(u => u.ID.Equals(Id), cancellationToken)
+                ?? throw new NotFoundException("Không tìm thấy user này");
+
         public string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password, BCrypt.Net.BCrypt.GenerateSalt(12));

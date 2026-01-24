@@ -14,7 +14,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public string Status { get; set; } = default!;
         public void Mapping(Profile profile)
         {
-            throw new NotImplementedException();
+            profile.CreateMap<Samples, SampleDetailDto>();
         }
     }
 }

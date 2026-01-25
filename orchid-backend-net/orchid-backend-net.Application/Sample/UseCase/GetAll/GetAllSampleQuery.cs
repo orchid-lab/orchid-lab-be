@@ -7,7 +7,10 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Sample.UseCase.GetAll
 {
-    public record GetAllSampleQuery(int PageNo, int PageSize, string ExperimentLogId)
+    public record GetAllSampleQuery(
+        int PageNo,
+        int PageSize, 
+        string ExperimentLogId)
         : IRequest<PageResult<SampleDto>>;
 
     internal class GetAllSampleQueryHandler(ISampleRepository sampleRepository) : IRequestHandler<GetAllSampleQuery, PageResult<SampleDto>>

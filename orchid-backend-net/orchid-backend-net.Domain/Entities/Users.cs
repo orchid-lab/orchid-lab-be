@@ -25,7 +25,7 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Roles? Role { get; set; }
         public string? RefreshToken { get; set; } = string.Empty;
         public DateTime? RefreshTokenExpiryTime { get; set; }
-        public virtual IEnumerable<TaskAssignment> TaskAssignments { get; set; } = [];
-        public virtual IEnumerable<MonitoringLogs> MonitoringLogs { get; set; } = [];
+        public virtual List<TaskAssignment> TaskAssignments { get; set; } = new();
+        public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
     }
 }

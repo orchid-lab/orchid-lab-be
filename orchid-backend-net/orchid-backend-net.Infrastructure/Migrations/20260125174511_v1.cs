@@ -607,6 +607,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     Status = table.Column<int>(type: "integer", nullable: false),
                     DeletedDate = table.Column<DateOnly>(type: "date", nullable: true),
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    IsNewest = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),

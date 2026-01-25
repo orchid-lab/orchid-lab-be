@@ -6,7 +6,7 @@ namespace orchid_backend_net.Application.SampleRequirementDefinition.Dto
 {
     public class SampleRequirementDefinitionDto : IMapFrom<SamplesRequirementsDefinition>
     {
-        public required string  Id { get; set; }
+        public required string Id { get; set; }
         public string? CharacteristicCode { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }

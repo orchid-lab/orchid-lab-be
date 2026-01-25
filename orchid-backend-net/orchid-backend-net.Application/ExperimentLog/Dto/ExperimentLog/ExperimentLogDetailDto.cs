@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Batch.Dto.Batch;
+using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Application.Method.Dto.Method;
 using orchid_backend_net.Application.Sample.Dto.Sample;
@@ -23,7 +24,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
-        public ExperimentLogStatus Status { get; set; }
+        public string Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public required string CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }
@@ -39,7 +40,9 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
                 .ForMember(dest => dest.Batch,
                 opt => opt.MapFrom(src => src.Batch))
                .ForMember(dest => dest.Samples,
-                opt => opt.MapFrom(src => src.Samples));
+                opt => opt.MapFrom(src => src.Samples))
+               .ForMember(dest => dest.Status,
+               opt => opt.MapFrom(src => src.Status.ToDisplayText()));
         }
     }
 }

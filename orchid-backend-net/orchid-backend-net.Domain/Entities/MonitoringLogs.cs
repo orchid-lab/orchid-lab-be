@@ -25,5 +25,6 @@ namespace orchid_backend_net.Domain.Entities
         public DateOnly? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
         public virtual List<LogDetails> LogDetails { get; set; } = new();
+        public bool IsNewest { get; set; }
     }
 }

@@ -112,6 +112,9 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IExperimentLogRepository, ExperimentLogRepository>();
             services.AddScoped<IBatchesRepository, BatchesRepository>();
             services.AddScoped<ILabRoomRepository, LabRoomRepository>();
+            services.AddScoped<ISampleStageDefinitionRepository, SampleStageDefinitionRepository>();
+
+            //for monitoring log module
             //signalR
             services.AddSignalR();
             return services;

@@ -15,6 +15,7 @@ namespace orchid_backend_net.Domain.Entities
         public DateOnly StartedAt { get; set; }
         public DateOnly? CompletedAt { get; set; }
         public virtual SampleStageDefinition SampleStageDefinition { get; set; }
+        public virtual List<MonitoringLogs> MonitoringLogs { get; set; }
         public SampleStatus Status { get; set; }
         //0 - Mới tạo - technician chưa nhận experiment log để tiến hành lai tạo
         //1 - Đang tiến hành - diễn ra khi technician nhận experiment log

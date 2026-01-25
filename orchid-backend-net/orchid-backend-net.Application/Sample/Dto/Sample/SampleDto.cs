@@ -7,6 +7,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
 {
     public class SampleDto : IMapFrom<Samples>
     {
+        public required string Id { get; set; }
         public string Name { get; set; } = null!;
         public required string ExperimentLogId { get; set; }
         public string? CurrentSampleStage { get;set;  }

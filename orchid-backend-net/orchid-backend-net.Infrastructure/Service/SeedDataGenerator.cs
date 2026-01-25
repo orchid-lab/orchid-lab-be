@@ -30,6 +30,8 @@ namespace orchid_backend_net.Infrastructure.Service
             await SeedLabRooms.SeedAsync(context);
             await SeedBatches.SeedAsync(context);   
             await SeedTemplateTask.SeedAsync(context);
+
+            await SeedExperimentLogs.SeedAsync(context);
         }
     }
 }

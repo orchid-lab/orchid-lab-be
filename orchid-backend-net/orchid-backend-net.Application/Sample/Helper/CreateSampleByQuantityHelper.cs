@@ -2,15 +2,16 @@
 
 namespace orchid_backend_net.Application.Sample.Helper
 {
-    public static class CreateSampleByQuantity
+    public static class CreateSampleByQuantityHelper
     {
         public static List<Samples> CreateMultipleSample(
             string experimentLogName,
             string experimentLogId,
+            int firstStageDefinitionId,
             int quantity)
         {
             var sampleList = new List<Samples>();
-            for (int i = 0; i <= quantity; i++)
+            for (int i = 0; i < quantity; i++)
             {
                 var sample = new Samples()
                 {
@@ -18,6 +19,7 @@ namespace orchid_backend_net.Application.Sample.Helper
                     Name = $"Mẫu vật số {i + 1} của thí nghiệm {experimentLogName}",
                 };
                 sampleList.Add(sample);
+                sample.StartOnCreation(firstStageDefinitionId);
             }
             return sampleList;
         }

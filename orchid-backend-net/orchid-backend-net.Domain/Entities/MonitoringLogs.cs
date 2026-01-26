@@ -26,5 +26,15 @@ namespace orchid_backend_net.Domain.Entities
         public string? DeletedBy { get; set; }
         public virtual List<LogDetails> LogDetails { get; set; } = new();
         public bool IsNewest { get; set; }
+
+        public void WaitingForApproval()
+        {
+            Status = MonitoringLogStatus.WaitingForApproval;
+        }
+
+        public void Approved()
+        {
+            Status = MonitoringLogStatus.Approved;
+        }
     }
 }

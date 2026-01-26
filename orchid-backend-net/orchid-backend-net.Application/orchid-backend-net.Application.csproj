@@ -30,7 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MonitoringLog\Dto\MonitoringLogDto\" />
+    <Folder Include="MonitoringLog\UseCase\" />
   </ItemGroup>
 
 </Project>

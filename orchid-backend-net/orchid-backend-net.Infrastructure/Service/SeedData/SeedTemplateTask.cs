@@ -218,6 +218,70 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
 
             await context.Set<Tasks>().AddRangeAsync(tasks);
             await context.SaveChangesAsync();
+
+            // =========================
+            // ATTACH CHECKLIST TO EACH TEMPLATE TASK
+            // =========================
+
+            // Attach checklist to each template task
+            var allTasks = await context.Set<Tasks>()
+                .Where(t => t.StageId != null)
+                .ToListAsync();
+
+            foreach (var t in allTasks)
+            {
+                var checklist = new TaskCheckList
+                {
+                    TaskId = t.ID
+                };
+
+                var items = new List<TaskCheckListItem>();
+
+                // Stage-based default checklist definitions
+                var stageName = stages.First(s => s.ID == t.StageId!).Name;
+                if (stageName.StartsWith(StageNames.SAMPLING))
+                {
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Chuẩn bị dụng cụ", IsRequired = true, Order = 1 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Cắt mẫu đúng vị trí", IsRequired = true, Order = 2 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Ghi chú kích thước mẫu", IsRequired = false, Order = 3, ExpectedUnit = "mm" });
+                }
+                else if (stageName.StartsWith(StageNames.STERILIZATION))
+                {
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Rửa sơ bộ", IsRequired = true, Order = 1 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Ngâm EtOH 70%", IsRequired = true, Order = 2, ExpectedUnit = "%", ExpectedMinValue = 70, ExpectedMaxValue = 70 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Ngâm NaOCl", IsRequired = true, Order = 3, ExpectedUnit = "%", ExpectedMinValue = 0.5m, ExpectedMaxValue = 1.5m });
+                }
+                else if (stageName.StartsWith(StageNames.INITIATION))
+                {
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Pha môi trường đúng công thức", IsRequired = true, Order = 1 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Điều chỉnh pH", IsRequired = true, Order = 2, ExpectedUnit = "pH", ExpectedMinValue = 5.6m, ExpectedMaxValue = 5.8m });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Khử trùng autoclave", IsRequired = true, Order = 3 });
+                }
+                else if (stageName.StartsWith(StageNames.MULTIPLICATION))
+                {
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Chia cắt chồi đúng kỹ thuật", IsRequired = true, Order = 1 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Số lượng chai đúng kế hoạch", IsRequired = false, Order = 2 });
+                }
+                else if (stageName.StartsWith(StageNames.ROOTING))
+                {
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Chuẩn bị chất kích rễ", IsRequired = true, Order = 1 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Cấy chuyển sang môi trường tạo rễ", IsRequired = true, Order = 2 });
+                }
+                else if (stageName.StartsWith(StageNames.ACCLIMATIZATION))
+                {
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Chuẩn bị giá thể", IsRequired = true, Order = 1 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Chuyển cây ra giá thể", IsRequired = true, Order = 2 });
+                    items.Add(new TaskCheckListItem { TaskCheckListId = checklist.ID, Name = "Phun ẩm ban đầu", IsRequired = false, Order = 3 });
+                }
+
+                await context.Set<TaskCheckList>().AddAsync(checklist);
+                if (items.Count > 0)
+                {
+                    await context.Set<TaskCheckListItem>().AddRangeAsync(items);
+                }
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

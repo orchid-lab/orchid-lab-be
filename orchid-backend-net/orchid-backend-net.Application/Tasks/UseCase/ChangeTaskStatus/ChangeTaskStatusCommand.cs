@@ -26,11 +26,12 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus
     {
         public async Task<string> Handle(ChangeTaskStatusCommand request, CancellationToken cancellationToken)
         {
-            var task = await taskRepository.FindAsync(t => t.ID == request.TodoTaskId, cancellationToken);
-
-            if (task == null)
-                throw new NotFoundException("Không tìm thấy task này.");
-
+            var task = await taskRepository.FindProjectToAsync<Domain.Entities.Tasks>(
+                queryOptions: q => 
+                    q.Where(t => t.ID.Equals(request.TodoTaskId)), 
+                cancellationToken)
+                ?? throw new NotFoundException("Không tìm thấy task này.");
+            
             var parsedStatus = TaskPolicy.ValidateTaskStatusChange(task, request, dateTimeProvider);
 
             //information

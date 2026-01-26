@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260125174511_v1")]
+    [Migration("20260126183702_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -855,6 +855,76 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("TaskAttributes");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskCheckList", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TaskId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TaskId")
+                        .IsUnique();
+
+                    b.ToTable("TaskChecks");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskCheckListItem", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("Evaluated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal?>("ExpectedMaxValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<decimal?>("ExpectedMinValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("ExpectedUnit")
+                        .HasColumnType("text");
+
+                    b.Property<bool?>("IsPass")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsRequired")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("MeasurementUnit")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("MesuredValue")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TaskCheckListId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("TaskCheckListId");
+
+                    b.ToTable("TaskCheckListItems");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Tasks", b =>
                 {
                     b.Property<string>("ID")
@@ -1243,6 +1313,28 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Tasks");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskCheckList", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Tasks", "Task")
+                        .WithOne("CheckList")
+                        .HasForeignKey("orchid_backend_net.Domain.Entities.TaskCheckList", "TaskId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskCheckListItem", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.TaskCheckList", "TaskCheckList")
+                        .WithMany("Items")
+                        .HasForeignKey("TaskCheckListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TaskCheckList");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Users", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Roles", "Role")
@@ -1321,8 +1413,15 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("SeedlingsTraits");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskCheckList", b =>
+                {
+                    b.Navigation("Items");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Tasks", b =>
                 {
+                    b.Navigation("CheckList");
+
                     b.Navigation("TaskAssignment")
                         .IsRequired();
 

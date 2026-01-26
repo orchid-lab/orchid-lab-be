@@ -420,6 +420,24 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "TaskChecks",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    TaskId = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskChecks", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_TaskChecks_Tasks_TaskId",
+                        column: x => x.TaskId,
+                        principalTable: "Tasks",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ExperimentLogs",
                 columns: table => new
                 {
@@ -542,6 +560,36 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TaskCheckListItems",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    TaskCheckListId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsRequired = table.Column<bool>(type: "boolean", nullable: false),
+                    Order = table.Column<int>(type: "integer", nullable: false),
+                    ExpectedUnit = table.Column<string>(type: "text", nullable: true),
+                    ExpectedMinValue = table.Column<decimal>(type: "numeric", nullable: true),
+                    ExpectedMaxValue = table.Column<decimal>(type: "numeric", nullable: true),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    MeasurementUnit = table.Column<string>(type: "text", nullable: true),
+                    MesuredValue = table.Column<decimal>(type: "numeric", nullable: true),
+                    IsPass = table.Column<bool>(type: "boolean", nullable: true),
+                    Evaluated = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TaskCheckListItems", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_TaskCheckListItems_TaskChecks_TaskCheckListId",
+                        column: x => x.TaskCheckListId,
+                        principalTable: "TaskChecks",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -839,6 +887,17 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "TaskId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_TaskCheckListItems_TaskCheckListId",
+                table: "TaskCheckListItems",
+                column: "TaskCheckListId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TaskChecks_TaskId",
+                table: "TaskChecks",
+                column: "TaskId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_Email",
                 table: "Users",
                 column: "Email",
@@ -884,6 +943,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "TaskAttributes");
 
             migrationBuilder.DropTable(
+                name: "TaskCheckListItems");
+
+            migrationBuilder.DropTable(
                 name: "MonitoringLogs");
 
             migrationBuilder.DropTable(
@@ -902,7 +964,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Materials");
 
             migrationBuilder.DropTable(
-                name: "Tasks");
+                name: "TaskChecks");
 
             migrationBuilder.DropTable(
                 name: "AnalyticResults");
@@ -921,6 +983,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "MethodStageDefinition");
+
+            migrationBuilder.DropTable(
+                name: "Tasks");
 
             migrationBuilder.DropTable(
                 name: "SampleStageDefinition");

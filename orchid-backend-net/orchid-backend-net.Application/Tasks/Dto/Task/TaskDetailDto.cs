@@ -3,6 +3,7 @@ using orchid_backend_net.Application.Common.Mappings;
 using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
+using orchid_backend_net.Application.Tasks.Dto.TaskCheckList;
 
 namespace orchid_backend_net.Application.Tasks.Dto.Task
 {
@@ -22,6 +23,7 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
         public string? DeletedBy { get; set; }
         public List<TaskAttributesDto> TaskAttributes { get; set; }
         public TaskAssignmentsDto TaskAssignments { get; set; }
+        public TaskCheckListDto? TaskCheckList { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.Tasks, TaskDetailDto>()

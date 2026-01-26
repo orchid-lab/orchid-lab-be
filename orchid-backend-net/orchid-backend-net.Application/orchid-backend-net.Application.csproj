@@ -31,6 +31,7 @@
 
   <ItemGroup>
     <Folder Include="MonitoringLog\Dto\MonitoringLogDto\" />
+    <Folder Include="MonitoringLogs\" />
   </ItemGroup>
 
 </Project>

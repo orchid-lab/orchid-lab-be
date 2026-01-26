@@ -17,7 +17,7 @@ namespace orchid_backend_net.Domain.Entities
         public Domain.Common.Enum.TaskStatus Status { get; set; }
         public virtual TaskAssignment TaskAssignment { get; set; } = null!;
         public virtual List<TaskAttributes> TaskAttributes { get; set; } = new();
-
+        public virtual TaskCheckList? CheckList { get; set; }
         public void AddTaskAssignment(
             string technicianId,
             TaskTargetType targetType,
@@ -101,6 +101,10 @@ namespace orchid_backend_net.Domain.Entities
             if (string.IsNullOrWhiteSpace(ResearcherId))
                 throw new DomainException("Task hiện tại đang lỗi.");
 
+
+            var checkList = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
+            if(checkList.HasAnyRequiredItemIncomplete())
+                throw new DomainException("Checklist còn mục bắt buộc chưa hoàn thành.");
 
             Status = Common.Enum.TaskStatus.WaitingForApproval;
 
@@ -206,5 +210,15 @@ namespace orchid_backend_net.Domain.Entities
             taskAttribute.Unit = unit;
             taskAttribute.Value = value;
         }
+
+        public TaskCheckList EnsureChecklist()
+        {
+            CheckList ??= new TaskCheckList
+                {
+                    TaskId = ID
+                };
+            return CheckList;
+        }
+
     }
 }

@@ -21,16 +21,13 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
             profile.CreateMap<Samples, SampleDetailDto>()
                 .ForMember(dest => dest.Status,
                 opt => opt.MapFrom(src => src.SampleStages
-                    .Select(s => s.Status.ToDisplayText()
-                    )))
-                .ForMember(dest => dest.SampleStageDto,
-                    opt => opt.MapFrom(src => 
+                    .Select(s => s.Status.ToDisplayText())
+                    .FirstOrDefault() ?? string.Empty))
+                 .ForMember(dest => dest.SampleStageDto,
+                    opt => opt.MapFrom(src =>
                         src.SampleStages
-                            .Where(s => s.Status
-                                .Equals(Domain.Common.Enum.SampleStatus.InProgressed)
-                            )
-                    )
-                );
+                            .FirstOrDefault(s => s.Status
+                                .Equals(Domain.Common.Enum.SampleStatus.InProgressed))));
         }
     }
 }

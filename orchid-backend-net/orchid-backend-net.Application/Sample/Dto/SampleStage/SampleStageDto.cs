@@ -16,11 +16,14 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStage
                 .ForMember(dest => dest.CurrentSampleStage,
                     opt => opt.MapFrom(
                         src => src.SampleStageDefinition.Name))
+                .ForMember(dest => dest.StartAt,
+                    opt => opt.MapFrom(
+                        src => src.StartedAt))
                 .ForMember(dest => dest.LogDetailDtos,
                     opt => opt.MapFrom(
                         src => src.MonitoringLogs
                             .Where(m => m.IsNewest)
-                            .Select(m => m.LogDetails)
+                            .SelectMany(m => m.LogDetails)
                     )
                 );
         }

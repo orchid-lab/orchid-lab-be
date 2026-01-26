@@ -18,22 +18,26 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
         public MonitoringLogStatus Status { get; set; }
         public DateOnly? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
-        public DateOnly? UpdateBy { get; set; }
+        public DateOnly? UpdatedDate { get; set; }
         public string? UpdatedBy { get; set; }
         public bool IsNewest { get; set; }
         public List<LogDetailDto> LogDetails { get; set; } = new();
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.MonitoringLogs, MonitoringLogDetailDto>()
-                .ForMember(dest => dest.SampleName, 
+                .ForMember(dest => dest.SampleName,
                     opt => opt.MapFrom(
                         src => src.SampleStage.Samples.Name))
-                .ForMember(dest => dest.CreatedDate, 
+                .ForMember(dest => dest.CreatedDate,
                     opt => opt.MapFrom(
                         src => DateOnly.FromDateTime(src.CreatedDate)))
-                .ForMember(dest => dest.SampleStageDefinitionName, 
+                .ForMember(dest => dest.SampleStageDefinitionName,
                     opt => opt.MapFrom(
-                        src => src.SampleStage.SampleStageDefinition.Name));
+                        src => src.SampleStage.SampleStageDefinition.Name))
+                .ForMember(dest => dest.UpdatedDate,
+                    opt => opt.MapFrom(src => src.UpdatedDate.HasValue
+                        ? DateOnly.FromDateTime(src.UpdatedDate.Value)
+                        : (DateOnly?)null));
         }
     }
 }

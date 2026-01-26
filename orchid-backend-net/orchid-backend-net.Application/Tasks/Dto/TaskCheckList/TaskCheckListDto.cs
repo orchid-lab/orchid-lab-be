@@ -11,7 +11,12 @@ namespace orchid_backend_net.Application.Tasks.Dto.TaskCheckList
 
         public void Mapping(Profile profile)
         {
-            throw new NotImplementedException();
+            profile.CreateMap<Domain.Entities.TaskCheckList, TaskCheckListDto>()
+                .ForMember(dest => dest.CheckListItemDtos,
+                    opt => opt.MapFrom(
+                        src => src.Items
+                    )
+                );
         }
     }
 }

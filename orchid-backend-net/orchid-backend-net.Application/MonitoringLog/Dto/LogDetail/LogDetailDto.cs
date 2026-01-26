@@ -13,7 +13,9 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.LogDetail
         public StageRequirementDefinitionDto StageRequirementDefinitionDto { get; set; } = default!;
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<LogDetails, LogDetailDto>();
+            profile.CreateMap<LogDetails, LogDetailDto>()
+                .ForMember(dest => dest.StageRequirementDefinitionDto, 
+                    opt => opt.MapFrom(src => src.StageRequirementDefinition));
         }
     }
 }

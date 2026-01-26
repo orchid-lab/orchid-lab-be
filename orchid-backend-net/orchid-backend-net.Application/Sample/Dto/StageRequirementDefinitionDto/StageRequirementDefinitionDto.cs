@@ -14,7 +14,9 @@ namespace orchid_backend_net.Application.Sample.Dto.StageRequirementDefinitionDt
         public required decimal ExpectedValue { get; set; }
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<StageRequirementDefinition, StageRequirementDefinitionDto>();
+            profile.CreateMap<StageRequirementDefinition, StageRequirementDefinitionDto>()
+                .ForMember(dest => dest.SampleRequirementDefinitionDto, 
+                    opt => opt.MapFrom(src => src.SampleRequirementsDefinition));
         }
     }
 }

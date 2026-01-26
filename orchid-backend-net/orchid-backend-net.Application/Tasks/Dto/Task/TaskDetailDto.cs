@@ -29,7 +29,8 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
             profile.CreateMap<Domain.Entities.Tasks, TaskDetailDto>()
                 .ForMember(dest => dest.TaskAttributes, opt => opt.MapFrom(src => src.TaskAttributes))
                 .ForMember(dest => dest.TaskAssignments, opt => opt.MapFrom(src => src.TaskAssignment))
-                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToDisplayText()));
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToDisplayText()))
+                .ForMember(dest => dest.TaskCheckList, opt => opt.MapFrom(src => src.CheckList));
         }
     }
 }

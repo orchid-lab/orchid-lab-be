@@ -29,8 +29,4 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="MonitoringLog\UseCase\" />
-  </ItemGroup>
-
 </Project>

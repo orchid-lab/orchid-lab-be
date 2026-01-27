@@ -9,5 +9,6 @@ namespace orchid_backend_net.Domain.Entities
         public string Description { get; set; }
         public int? MinDurationDays { get; set; }
         public int? MaxDurationDays { get; set; }
+        public virtual List<StageRequirementDefinition> StageRequirementDefinitions { get; set; } = new();
     }
 }

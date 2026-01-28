@@ -9,6 +9,7 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
     public class MonitoringLogDetailDto : IMapFrom<Domain.Entities.MonitoringLogs>
     {
         public required string Id { get; set; }
+        public string Name { get; set; } = null!;
         public required string CreatedBy { get; set; }
         public required DateOnly CreatedDate { get; set; }
         public string SampleName { get; set; } = null!;

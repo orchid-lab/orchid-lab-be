@@ -3,6 +3,7 @@
 ## General Guidelines
 - First general instruction
 - Second general instruction
+- Prefer senior-level code review and clean architecture. Refactor to split concerns for cleaner code, aiming for stable, reasonable solutions.
 
 ## Code Style
 - Use specific formatting rules

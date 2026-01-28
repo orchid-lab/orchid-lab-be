@@ -73,6 +73,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Code = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
@@ -651,6 +652,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     AnalyticResultId = table.Column<string>(type: "text", nullable: true),
                     SampleStageId = table.Column<string>(type: "text", nullable: false),
                     DiseaseId = table.Column<int>(type: "integer", nullable: true),
+                    Name = table.Column<string>(type: "text", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     DeletedDate = table.Column<DateOnly>(type: "date", nullable: true),

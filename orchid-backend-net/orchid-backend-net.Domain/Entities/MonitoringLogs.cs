@@ -9,15 +9,19 @@ namespace orchid_backend_net.Domain.Entities
         public required string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public virtual Users User { get; set; }
+        //after analytic done
         public string? AnalyticResultId { get; set; }
         [ForeignKey(nameof(AnalyticResultId))]
         public virtual AnalyticResults? AnalyticResult { get; set; }
+        //Input in api
         public required string SampleStageId { get; set; }
         [ForeignKey(nameof(SampleStageId))]
         public virtual SampleStage SampleStage { get; set; }
+        //after analytic done
         public int? DiseaseId { get; set; }
         [ForeignKey(nameof(DiseaseId))]
         public virtual Disease? Disease { get; set; }
+        public string Name { get; set; } = string.Empty;
         public string? Notes { get; set; }
         public required MonitoringLogStatus Status { get; set; }
         //0 - Đang chờ duyệt
@@ -35,6 +39,17 @@ namespace orchid_backend_net.Domain.Entities
         public void Approved()
         {
             Status = MonitoringLogStatus.Approved;
+        }
+
+        public void AddLogDetails(string stageRequirementDefinitionId, decimal measuredValue, bool isMatch)
+        {
+            LogDetails.Add(new LogDetails
+            {
+                MonitoringLogsId = ID,
+                StageRequirementDefinitionId = stageRequirementDefinitionId,
+                MeasuredValue = measuredValue,
+                IsMatch = isMatch
+            });
         }
     }
 }

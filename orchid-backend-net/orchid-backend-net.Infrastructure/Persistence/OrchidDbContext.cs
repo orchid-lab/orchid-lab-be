@@ -1,5 +1,5 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.Entities.Base;
@@ -7,8 +7,20 @@ using orchid_backend_net.Infrastructure.Persistence.Configuration;
 
 namespace orchid_backend_net.Infrastructure.Persistence
 {
-    public class OrchidDbContext(DbContextOptions<OrchidDbContext> options, IDomainEventDispatcher dispatcher) : DbContext(options), IUnitOfWork
+    public class OrchidDbContext : DbContext, IUnitOfWork
     {
+        private readonly IDomainEventDispatcher _dispatcher;
+        private readonly ILogger<OrchidDbContext>? _logger;
+
+        public OrchidDbContext(
+            DbContextOptions<OrchidDbContext> options, 
+            IDomainEventDispatcher dispatcher,
+            ILogger<OrchidDbContext>? logger = null) 
+            : base(options)
+        {
+            _dispatcher = dispatcher;
+            _logger = logger;
+        }
         public virtual DbSet<AnalyticResults> AnalyticResults { get; set; }
         public virtual DbSet<Batches> Batches { get; set; }
         public virtual DbSet<Characteristic> Characteristics { get; set; }
@@ -52,6 +64,8 @@ namespace orchid_backend_net.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            _logger?.LogDebug("SaveChangesAsync started - tracking {EntryCount} entities", ChangeTracker.Entries().Count());
+            
             var domainEntities = ChangeTracker
                 .Entries<BaseEntity<Guid>>()
                 .Where(e => e.Entity.DomainEvents.Count != 0)
@@ -61,13 +75,28 @@ namespace orchid_backend_net.Infrastructure.Persistence
                 .SelectMany(e => e.Entity.DomainEvents)
                 .ToList();
 
-            var result = await base.SaveChangesAsync(cancellationToken);
+            if (domainEvents.Any())
+            {
+                _logger?.LogDebug("Saving changes with {EventCount} domain events to dispatch", domainEvents.Count);
+            }
 
-            await dispatcher.DispatchAsync(domainEvents);
+            try
+            {
+                var result = await base.SaveChangesAsync(cancellationToken);
+                _logger?.LogDebug("SaveChangesAsync completed - {ChangesCount} changes persisted", result);
 
-            domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+                await _dispatcher.DispatchAsync(domainEvents);
+                _logger?.LogDebug("Domain events dispatched successfully");
 
-            return result;
+                domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError(ex, "Error occurred while saving changes to database");
+                throw;
+            }
         }
     }
 }

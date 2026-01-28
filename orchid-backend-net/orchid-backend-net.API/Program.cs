@@ -18,8 +18,6 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .Enrich.WithProperty("Application", "OrchidLab-Backend")
     .Enrich.WithProperty("Environment", builder.Environment.EnvironmentName)
-    .Enrich.WithMachineName()
-    .Enrich.WithThreadId()
     .WriteTo.Console(
         outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{CorrelationId}] {Message:lj}{NewLine}{Exception}")
     .WriteTo.File(
@@ -83,6 +81,8 @@ builder.Services.AddLogging(opt =>
     opt.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
     opt.AddFilter("Microsoft.AspNetCore.Hosting", LogLevel.Information);
 });
+
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 Log.Information("Configuring HTTP request pipeline");

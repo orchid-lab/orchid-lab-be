@@ -13,7 +13,7 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="logger"></param>
-    [Route("api/sample-requirement")]
+    [Route("api/sample-requirement-definitions")] // Fixed: RESTful convention uses plural form and full entity name
     [ApiController]
     public class SampleRequirementDefinitionController(ISender sender, ILogger<SampleRequirementDefinitionController> logger) : BaseController(sender)
     {

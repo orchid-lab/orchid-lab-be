@@ -2,46 +2,67 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Infrastructure.Repository
 {
-    public class RepositoryBase<TDomain, TPersistence, TDbContext>(TDbContext _context, IMapper _mapper) : IEFRepository<TDomain, TPersistence>
+    public class RepositoryBase<TDomain, TPersistence, TDbContext> : IEFRepository<TDomain, TPersistence>
     where TDomain : class
     where TPersistence : class, TDomain
     where TDbContext : DbContext, IUnitOfWork
     {
+        protected readonly TDbContext _context;
+        protected readonly IMapper _mapper;
+        protected readonly ILogger? _logger;
+
+        // Constructor with optional logger for backward compatibility
+        public RepositoryBase(TDbContext context, IMapper mapper, ILogger? logger = null)
+        {
+            _context = context;
+            _mapper = mapper;
+            _logger = logger;
+        }
 
         public IUnitOfWork UnitOfWork => _context;
 
         public virtual void Remove(TDomain entity)
         {
+            _logger?.LogDebug("Removing entity of type {EntityType}", typeof(TPersistence).Name);
             GetSet().Remove((TPersistence)entity);
         }
 
         public virtual void Add(TDomain entity)
         {
+            _logger?.LogDebug("Adding entity of type {EntityType}", typeof(TPersistence).Name);
             GetSet().Add((TPersistence)entity);
         }
 
         public virtual void Update(TDomain entity)
         {
+            _logger?.LogDebug("Updating entity of type {EntityType}", typeof(TPersistence).Name);
             GetSet().Update((TPersistence)entity);
         }
 
         public virtual void AddRange(IEnumerable<TDomain> entities)
         {
+            var count = entities.Count();
+            _logger?.LogDebug("Adding {Count} entities of type {EntityType}", count, typeof(TPersistence).Name);
             GetSet().AddRange(entities.Cast<TPersistence>());
         }
 
         public virtual void RemoveRange(IEnumerable<TDomain> entities)
         {
+            var count = entities.Count();
+            _logger?.LogDebug("Removing {Count} entities of type {EntityType}", count, typeof(TPersistence).Name);
             GetSet().RemoveRange(entities.Cast<TPersistence>());
         }
 
         public virtual void UpdateRange(IEnumerable<TDomain> entities)
         {
+            var count = entities.Count();
+            _logger?.LogDebug("Updating {Count} entities of type {EntityType}", count, typeof(TPersistence).Name);
             GetSet().UpdateRange(entities.Cast<TPersistence>());
         }
 

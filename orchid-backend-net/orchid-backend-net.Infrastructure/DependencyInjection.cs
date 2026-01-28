@@ -28,15 +28,40 @@ namespace orchid_backend_net.Infrastructure
             //event dispatcher for db context
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
-            //db context connection string
-            services.AddDbContext<OrchidDbContext>(options =>
+            //db context connection string with connection resilience
+            services.AddDbContext<OrchidDbContext>((serviceProvider, options) =>
             {
+                var logger = serviceProvider.GetRequiredService<ILogger<OrchidDbContext>>();
+                
                 options.UseNpgsql(configuration.GetConnectionString("Server"), b =>
                 {
                     b.MigrationsAssembly(typeof(OrchidDbContext).Assembly.FullName);
                     b.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    
+                    // Enable connection resilience (automatic retry on transient failures)
+                    b.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorCodesToAdd: null);
+                    
+                    // Command timeout for long-running queries
+                    b.CommandTimeout(60);
                 });
+                
                 options.UseLazyLoadingProxies();
+                
+                // Enable detailed errors and sensitive data logging in development only
+                if (configuration.GetValue<string>("ASPNETCORE_ENVIRONMENT") == "Development")
+                {
+                    options.EnableSensitiveDataLogging();
+                    options.EnableDetailedErrors();
+                }
+                
+                // Log SQL queries at Debug level
+                options.LogTo(
+                    message => logger.LogDebug("EF Core: {Message}", message),
+                    new[] { Microsoft.EntityFrameworkCore.Diagnostics.RelationalEventId.CommandExecuting },
+                    Microsoft.Extensions.Logging.LogLevel.Debug);
             });
             services.AddScoped<IUnitOfWork>(provider => (IUnitOfWork)provider.GetRequiredService<OrchidDbContext>());
 
@@ -178,19 +203,75 @@ namespace orchid_backend_net.Infrastructure
                .OrResult(r => (int)r.StatusCode >= 500)
                .WaitAndRetryAsync(3, retryAttempt =>
                    TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(Random.Shared.Next(0, 100)),
-                   onRetry: (outcome, delay, attempt, ctx) => { /* add logging if needed */ });
+                   onRetry: (outcome, delay, attempt, ctx) => 
+                   { 
+                       // Log retry attempts for debugging
+                       var logger = ctx.GetLogger();
+                       if (logger != null)
+                       {
+                           logger.LogWarning("HTTP request retry attempt {Attempt} after {Delay}ms. Reason: {Reason}", 
+                               attempt, delay.TotalMilliseconds, outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase);
+                       }
+                   });
         }
 
         private static IAsyncPolicy<HttpResponseMessage> GetTimeOutPolicy()
         {
-            return Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(3));
+            return Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(3), 
+                onTimeoutAsync: (ctx, delay, task) =>
+                {
+                    var logger = ctx.GetLogger();
+                    if (logger != null)
+                    {
+                        logger.LogWarning("HTTP request timeout after {Timeout}s", delay.TotalSeconds);
+                    }
+                    return Task.CompletedTask;
+                });
         }
 
         private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
         {
             return HttpPolicyExtensions
                .HandleTransientHttpError()
-               .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+               .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30),
+                   onBreak: (outcome, duration) =>
+                   {
+                       // Circuit breaker opened - log critical error
+                       var logger = outcome.Exception?.Data["Logger"] as ILogger;
+                       if (logger != null)
+                       {
+                           logger.LogError("Circuit breaker opened for {Duration}s. Reason: {Reason}", 
+                               duration.TotalSeconds, outcome.Exception?.Message ?? outcome.Result?.ReasonPhrase);
+                       }
+                   },
+                   onReset: () =>
+                   {
+                       // Circuit breaker closed - service recovered
+                   },
+                   onHalfOpen: () =>
+                   {
+                       // Circuit breaker testing if service recovered
+                   });
+        }
+    }
+    
+    // Extension method to get logger from Polly context
+    internal static class PollyContextExtensions
+    {
+        private const string LoggerKey = "ILogger";
+        
+        public static ILogger? GetLogger(this Polly.Context context)
+        {
+            if (context.TryGetValue(LoggerKey, out var logger))
+            {
+                return logger as ILogger;
+            }
+            return null;
+        }
+        
+        public static void SetLogger(this Polly.Context context, ILogger logger)
+        {
+            context[LoggerKey] = logger;
         }
     }
 }

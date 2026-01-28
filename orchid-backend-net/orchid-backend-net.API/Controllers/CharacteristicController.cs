@@ -13,7 +13,7 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="logger"></param>
-    [Route("api/characteristic")]
+    [Route("api/characteristics")] // Fixed: RESTful convention uses plural form
     [ApiController]
     public class CharacteristicController(ISender sender, ILogger<CharacteristicController> logger) : BaseController(sender)
     {

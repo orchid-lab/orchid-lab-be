@@ -17,7 +17,7 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="logger"></param>
-    [Route("api/monitoring-log")]
+    [Route("api/monitoring-logs")] // Fixed: RESTful convention uses plural form
     [ApiController]
     public class MonitoringLogController(ISender sender, ILogger<MonitoringLogController> logger) : BaseController(sender)
     {

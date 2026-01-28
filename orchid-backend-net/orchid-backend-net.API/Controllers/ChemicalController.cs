@@ -18,7 +18,7 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="logger"></param>
-    [Route("api/chemical")]
+    [Route("api/chemicals")] // Fixed: RESTful convention uses plural form
     [ApiController]
     public class ChemicalController(ISender sender, ILogger<ChemicalController> logger) : BaseController(sender)
     {

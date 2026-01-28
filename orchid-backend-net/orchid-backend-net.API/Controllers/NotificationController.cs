@@ -14,7 +14,7 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="sender"></param>
     /// <param name="logger"></param>
-    [Route("api/notification")]
+    [Route("api/notifications")] // Fixed: RESTful convention uses plural form
     [ApiController]
     public class NotificationController(ISender sender, ILogger<NotificationController> logger) : BaseController(sender)
     {

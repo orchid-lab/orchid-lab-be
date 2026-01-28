@@ -36,7 +36,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while getting all characteristics.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
@@ -60,7 +60,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while getting characteristics.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
     }

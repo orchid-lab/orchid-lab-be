@@ -21,7 +21,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="image"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("/user")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 201)]
         public async Task<ActionResult<JsonResponse<string>>> UploadUserImage(IFormFile image, CancellationToken cancellationToken)
@@ -50,7 +50,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "User update failed", Detail = ex.Message });
+                return BadRequest(new ProblemDetails { Title = "Người dùng cập nhật hình thất bại", Detail = ex.Message });
             }
         }
     }

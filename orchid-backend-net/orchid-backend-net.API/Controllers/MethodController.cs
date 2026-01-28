@@ -49,7 +49,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
@@ -74,7 +74,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
@@ -102,7 +102,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Tạo thất bại", Detail = ex.Message });
             }
         }
 
@@ -128,7 +128,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -161,7 +161,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -194,7 +194,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -219,7 +219,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Xóa thất bại", Detail = ex.Message });
             }
         }
 
@@ -250,7 +250,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Xóa thất bại", Detail = ex.Message });
             }
         }
 
@@ -281,7 +281,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Xóa thất bại", Detail = ex.Message });
             }
         }
 

@@ -4,6 +4,6 @@ namespace orchid_backend_net.Application.Common.Interfaces
 {
     public interface IOrchidAnalyzerService
     {
-        Task<OrchidAnalysisResult> AnalyzeAsync(byte[] imageBytes);
+        Task<OrchidAnalysisResult> AnalyzeAsync(byte[] imageBytes, CancellationToken cancellationToken);
     }
 }

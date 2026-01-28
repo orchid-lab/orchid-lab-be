@@ -1,5 +1,4 @@
-﻿using Humanizer;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
@@ -12,7 +11,6 @@ using orchid_backend_net.Application.Sample.UseCase.DestroyBecauseOfDisease;
 using orchid_backend_net.Application.Sample.UseCase.GetAll;
 using orchid_backend_net.Application.Sample.UseCase.GetById;
 using orchid_backend_net.Application.Sample.UseCase.UpdateSampleInformation;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -23,6 +21,15 @@ namespace orchid_backend_net.API.Controllers
     [ApiController]
     public class SampleController(ISender sender, ILogger<SampleController> logger) : BaseController(sender)
     {
+        /// <summary>
+        /// use to get all samples of experiment log
+        /// </summary>
+        /// <param name="pageNo"></param>
+        /// <param name="pageSize"></param>
+        /// <param name="experimentLogId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         [HttpGet]
         [ProducesResponseType(typeof(PageResult<SampleDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSamples(
@@ -40,10 +47,17 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
+        /// <summary>
+        /// get sample detail by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(SampleDetailDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSampleById(
@@ -56,10 +70,10 @@ namespace orchid_backend_net.API.Controllers
                 var result = await Sender.Send(new GetSampleByIdQuery(id), cancellationToken);
                 return Ok(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "An error ocurred while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Láy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
@@ -74,7 +88,7 @@ namespace orchid_backend_net.API.Controllers
         [Authorize(Roles = "Technician")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> Create(
-            [FromBody] CreateSampleForExperimentLogByQuantityCommand command, 
+            [FromBody] CreateSampleForExperimentLogByQuantityCommand command,
             CancellationToken cancellationToken = default)
         {
             try
@@ -83,10 +97,10 @@ namespace orchid_backend_net.API.Controllers
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "An error ocurred while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Tạo thất bại", Detail = ex.Message });
             }
         }
 
@@ -113,7 +127,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error ocurred while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -142,7 +156,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error ocurred while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -170,7 +184,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error ocurred while processing the request at {Time}", DateTime.UtcNow);
-                throw new InvalidOperationException(ex.Message);
+                return BadRequest(new ProblemDetails { Title = "Hủy thất bại", Detail = ex.Message });
             }
         }
     }

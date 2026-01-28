@@ -5,6 +5,7 @@ namespace orchid_backend_net.Domain.Entities
     public class Disease : BaseIntEntity
     {
         public string Name { get; set; }
+        public string Code { get; set; }
         public string Description { get; set; }
         public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
     }

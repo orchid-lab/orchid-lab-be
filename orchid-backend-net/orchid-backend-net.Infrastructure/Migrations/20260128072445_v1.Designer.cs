@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260126183702_v1")]
+    [Migration("20260128072445_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -173,6 +173,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -450,6 +454,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<bool>("IsNewest")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
@@ -1261,7 +1269,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("orchid_backend_net.Domain.Entities.SampleStageDefinition", "SampleStage")
-                        .WithMany()
+                        .WithMany("StageRequirementDefinitions")
                         .HasForeignKey("SampleStageDefinitionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1399,6 +1407,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
                 {
                     b.Navigation("MonitoringLogs");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStageDefinition", b =>
+                {
+                    b.Navigation("StageRequirementDefinitions");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Samples", b =>

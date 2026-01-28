@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Interfaces;
@@ -13,6 +14,9 @@ using orchid_backend_net.Infrastructure.Service;
 using orchid_backend_net.Infrastructure.Service.CloudinarySettings;
 using orchid_backend_net.Infrastructure.Service.GmailSettings;
 using orchid_backend_net.Infrastructure.Service.RedisSettings;
+using Polly;
+using Polly.Extensions.Http;
+using System.Net;
 
 namespace orchid_backend_net.Infrastructure
 {
@@ -23,6 +27,7 @@ namespace orchid_backend_net.Infrastructure
             //database context
             //event dispatcher for db context
             services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
             //db context connection string
             services.AddDbContext<OrchidDbContext>(options =>
             {
@@ -53,7 +58,11 @@ namespace orchid_backend_net.Infrastructure
                     options.ApiKey,
                     options.ApiSecret
                 );
-                return new Cloudinary(account);
+
+                var cloudinary = new Cloudinary(account);
+                cloudinary.Api.Timeout = 5000;
+                cloudinary.Api.Secure = true;
+                return cloudinary;
             });
 
             //refactor: all configure must be in programcs to take the appsettings not in here
@@ -84,6 +93,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IDateTimeProvider, VietNamDateTimeProvider>();
             services.AddScoped<IHubnotificationService, HubNotificationService>();
             services.AddScoped<INotificationPushService, NotificationPushService>();
+            services.AddScoped<IOrchidAnalyzerService, OrchidAnalyzerService>();
             //Add repositories
 
             //for notification module
@@ -118,9 +128,69 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IMonitoringLogRepository, MonitoringLogRepository>();    
             services.AddScoped<IDiseaseRepository, DiseaseRepository>();
             services.AddScoped<IAnalyticResultRepository, AnalyticResultRepository>();
+            
             //signalR
             services.AddSignalR();
+
+
+            //httpclient for some service required 3rd parties with tune handler + polly
+            services.AddHttpClient<OrchidAnalyzerService>((sp, client) =>
+            {
+                var pythonApiUrl = configuration["OrchidAnalyzer:PythonApiUrl"];
+                if(string.IsNullOrWhiteSpace(pythonApiUrl))
+                    throw new InvalidOperationException("OrchidAnalyzer:PythonApiUrl is not configured.");
+
+                client.BaseAddress = new Uri(pythonApiUrl);
+                client.Timeout = TimeSpan.FromSeconds(5); // tight per-request timeout, maybe tune later
+                client.DefaultRequestHeaders.ConnectionClose = false;
+                client.DefaultRequestHeaders.ExpectContinue = false;
+                client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip, deflate, br");
+
+                //prefer http/2 for all request
+                client.DefaultRequestVersion = HttpVersion.Version20;
+                client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new SocketsHttpHandler
+                {
+                    PooledConnectionLifetime = TimeSpan.FromMinutes(2),   // rotate connections
+                    PooledConnectionIdleTimeout = TimeSpan.FromMinutes(1),
+                    MaxConnectionsPerServer = 100,                        // tune based on load
+                    EnableMultipleHttp2Connections = true,
+                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
+                    AllowAutoRedirect = false,
+                    KeepAlivePingDelay = TimeSpan.FromSeconds(30),
+                    KeepAlivePingTimeout = TimeSpan.FromSeconds(5),
+                    KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
+                };
+            })
+            .AddPolicyHandler(GetRetryPolicy())
+            .AddPolicyHandler(GetTimeOutPolicy())
+            .AddPolicyHandler(GetCircuitBreakerPolicy());
             return services;
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+               .HandleTransientHttpError()
+               .OrResult(r => (int)r.StatusCode >= 500)
+               .WaitAndRetryAsync(3, retryAttempt =>
+                   TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(Random.Shared.Next(0, 100)),
+                   onRetry: (outcome, delay, attempt, ctx) => { /* add logging if needed */ });
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetTimeOutPolicy()
+        {
+            return Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(3));
+        }
+
+        private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        {
+            return HttpPolicyExtensions
+               .HandleTransientHttpError()
+               .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
         }
     }
 }

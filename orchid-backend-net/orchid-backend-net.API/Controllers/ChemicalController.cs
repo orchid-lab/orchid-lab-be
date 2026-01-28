@@ -41,7 +41,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while getting all chemical.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
@@ -65,7 +65,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while getting chemical.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }
 
@@ -90,8 +90,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while creating chemical.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
-
+                return BadRequest(new ProblemDetails { Title = "Tạo thất bại", Detail = ex.Message });
             }
         }
 
@@ -115,7 +114,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while deleting chemical.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+                return BadRequest(new ProblemDetails { Title = "Xóa thất bại", Detail = ex.Message });
             }
         }
 
@@ -143,7 +142,7 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error occurred while deleting chemical.");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = "An error occurred while processing your request." });
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
     }

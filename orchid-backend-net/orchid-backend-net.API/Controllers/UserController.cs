@@ -16,7 +16,7 @@ namespace orchid_backend_net.API.Controllers
     /// </summary>
     /// <param name="logger"></param>
     /// <param name="sender"></param>
-    [Route("api/user")]
+    [Route("api/users")] // Fixed: RESTful convention uses plural form
     [ApiController]
     public class UserController(ILogger<UserController> logger, ISender sender) : BaseController(sender)
     {

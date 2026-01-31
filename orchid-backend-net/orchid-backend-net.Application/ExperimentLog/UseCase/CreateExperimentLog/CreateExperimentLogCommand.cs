@@ -29,7 +29,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
             var method = await methodRepository.FindAsync(m => m.ID == request.MethodId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy method này.");
 
-            var batch = await batchesRepository.FindAsync(b => b.ID == request.BatchesId && b.Status != BatchStatus.Ready, cancellationToken)
+            var batch = await batchesRepository.FindAsync(b => b.ID == request.BatchesId && b.Status == BatchStatus.Ready, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy batch này.");
 
             var parent = await seedlingRepository.FindAsync(pA => pA.ID == request.ParentAId, cancellationToken)

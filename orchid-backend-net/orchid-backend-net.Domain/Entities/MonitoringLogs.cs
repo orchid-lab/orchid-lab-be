@@ -23,13 +23,18 @@ namespace orchid_backend_net.Domain.Entities
         public virtual Disease? Disease { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Notes { get; set; }
-        public required MonitoringLogStatus Status { get; set; }
+        public MonitoringLogStatus Status { get; set; }
         //0 - Đang chờ duyệt
         //1 - Đã duyệt
         public DateOnly? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
         public virtual List<LogDetails> LogDetails { get; set; } = new();
         public bool IsNewest { get; set; }
+
+        public void Created()
+        {
+            Status = MonitoringLogStatus.Created;
+        }
 
         public void WaitingForApproval()
         {

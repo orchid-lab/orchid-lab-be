@@ -41,7 +41,7 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.AnalyticResult
         }
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Domain.Entities.AnalyticResults, AnalyticResultDto>();
+            profile.CreateMap<AnalyticResults, AnalyticResultDto>();
         }
     }
 }

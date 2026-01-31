@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.ExperimentLog.Helper.CreateExperimentLogHelperInjection;
 using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
+using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.Entities;
 
 namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentLog
@@ -12,11 +14,12 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
         string ParentAId,
         string Name,
         int ExpectedSampleCount,
-        string AssignedToTechnicianId) : IRequest<string>;
+        string AssignedToTechnicianId) : IRequest<string>, ICommand;
 
     internal class CreateExperimentLogCommandHandler(
         CreateExperimentLogRepositories repo,
-        CreateExperimentLogServices services)
+        CreateExperimentLogServices services,
+        IUnitOfWork unitOfWork)
         : IRequestHandler<CreateExperimentLogCommand, string>
     {
         public async Task<string> Handle(CreateExperimentLogCommand request, CancellationToken cancellationToken)
@@ -65,6 +68,12 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
             };
 
             repo.NotificationRepository.Add(noti);
+
+            var saved = await unitOfWork.SaveChangesAsync(cancellationToken) > 0;
+            if (!saved)
+            {
+                return "Tạo thất bại";
+            }
             await services.PushService.PushToSingleUserAsync(noti.UserId, noti.Title, noti.Content);
 
             return eL.ID.ToString();

@@ -53,7 +53,7 @@ namespace orchid_backend_net.API.Service
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: "https://net-api.orchid-lab.systems/",
+                issuer: "https://net-api.tissuex.me/",
                 audience: "api",
                 claims: claims,
                 expires: DateTime.Now.AddYears(1),

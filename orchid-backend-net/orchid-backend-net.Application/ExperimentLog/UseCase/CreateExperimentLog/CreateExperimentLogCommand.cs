@@ -21,6 +21,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
          ISeedlingRepository seedlingRepository,
          IUserRepository userRepository,
          IBatchesRepository batchesRepository,
+         INotificationRepository notificationRepository,
+         INotificationPushService pushService,
          ICurrentUserService currentUserService)
         : IRequestHandler<CreateExperimentLogCommand, string>
     {
@@ -59,6 +61,19 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
             };
 
             experimentLogRepository.Add(eL);
+
+            var noti = new Domain.Entities.Notification()
+            {
+                Title = "Được phân công thí nghiệm mới",
+                Content = $"Bạn được phân công thí nghiệm {eL.Name} cho phương pháp {method.Name}",
+                UserId = technicianAssigned.ID,
+                IsRead = false,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            notificationRepository.Add(noti);
+            await pushService.PushToSingleUserAsync(noti.UserId, noti.Title, noti.Content);
+
             return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? "Tạo thành công"
                 : "Tạo thất bại";

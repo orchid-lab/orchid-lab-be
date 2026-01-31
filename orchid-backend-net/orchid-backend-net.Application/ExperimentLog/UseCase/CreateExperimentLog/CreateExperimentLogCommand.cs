@@ -1,9 +1,8 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.ExperimentLog.Helper.CreateExperimentLogHelperInjection;
 using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
-using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentLog
 {
@@ -16,31 +15,25 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
         string AssignedToTechnicianId) : IRequest<string>;
 
     internal class CreateExperimentLogCommandHandler(
-        IExperimentLogRepository experimentLogRepository,
-         IMethodRepository methodRepository,
-         ISeedlingRepository seedlingRepository,
-         IUserRepository userRepository,
-         IBatchesRepository batchesRepository,
-         INotificationRepository notificationRepository,
-         INotificationPushService pushService,
-         ICurrentUserService currentUserService)
+        CreateExperimentLogRepositories repo,
+        CreateExperimentLogServices services)
         : IRequestHandler<CreateExperimentLogCommand, string>
     {
         public async Task<string> Handle(CreateExperimentLogCommand request, CancellationToken cancellationToken)
         {
-            var method = await methodRepository.FindAsync(m => m.ID == request.MethodId, cancellationToken)
+            var method = await repo.MethodRepository.FindAsync(m => m.ID == request.MethodId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy method này.");
 
-            var batch = await batchesRepository.FindAsync(b => b.ID == request.BatchesId && b.Status == BatchStatus.Ready, cancellationToken)
+            var batch = await repo.BatchesRepository.FindAsync(b => b.ID == request.BatchesId && b.Status == BatchStatus.Ready, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy batch này.");
 
-            var parent = await seedlingRepository.FindAsync(pA => pA.ID == request.ParentAId, cancellationToken)
+            var parent = await repo.SeedlingRepository.FindAsync(pA => pA.ID == request.ParentAId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy seedling này");
 
-            var technicianAssigned = await userRepository.FindAsync(u => u.ID == request.AssignedToTechnicianId  && u.RoleID == 3, cancellationToken)
+            var technicianAssigned = await repo.UserRepository.FindAsync(u => u.ID == request.AssignedToTechnicianId && u.RoleID == 3, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy technician");
 
-            var isDuplicatedExperimentLogName = await experimentLogRepository.AnyAsync(
+            var isDuplicatedExperimentLogName = await repo.ExperimentLogRepository.AnyAsync(
                 el => el.Name == request.Name, cancellationToken);
             if (isDuplicatedExperimentLogName)
             {
@@ -56,11 +49,11 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 ExpectedSampleCount = request.ExpectedSampleCount,
                 AssignedTo = technicianAssigned.ID,
                 CreatedDate = DateTime.UtcNow,
-                CreatedBy = currentUserService.UserId!,
+                CreatedBy = services.CurrentUserService.UserId!,
                 Status = ExperimentLogStatus.Created,
             };
 
-            experimentLogRepository.Add(eL);
+            repo.ExperimentLogRepository.Add(eL);
 
             var noti = new Domain.Entities.Notification()
             {
@@ -71,12 +64,10 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 CreatedAt = DateTime.UtcNow,
             };
 
-            notificationRepository.Add(noti);
-            await pushService.PushToSingleUserAsync(noti.UserId, noti.Title, noti.Content);
+            repo.NotificationRepository.Add(noti);
+            await services.PushService.PushToSingleUserAsync(noti.UserId, noti.Title, noti.Content);
 
-            return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
-                ? "Tạo thành công"
-                : "Tạo thất bại";
+            return eL.ID.ToString();
         }
     }
 }

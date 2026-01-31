@@ -32,7 +32,7 @@ namespace orchid_backend_net.API.Configuration
                         ValidateIssuer = true,
                         ValidateIssuerSigningKey = true,
                         ValidateLifetime = true,
-                        ValidIssuer = "https://net-api.orchid-lab.systems/",
+                        ValidIssuer = "https://net-api.tissuex.me/",
                         ValidAudience = "api",
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("OrchidLabManagementSystemsDotNetApi")),
                         NameClaimType = ClaimTypes.NameIdentifier,
@@ -42,13 +42,12 @@ namespace orchid_backend_net.API.Configuration
                     {
                         OnMessageReceived = context =>
                         {
-                            var accessToken = context.Request.Query["access_token"];
-                            // If the request is for our hub...
                             var path = context.HttpContext.Request.Path;
+                            var accessToken = context.Request.Query["access_token"];
+
                             if (!string.IsNullOrEmpty(accessToken) &&
-                                (path.StartsWithSegments("/hubs/notification")))
+                                path.StartsWithSegments("/hubs/notifications"))
                             {
-                                // Read the token out of the query string
                                 context.Token = accessToken;
                             }
                             return Task.CompletedTask;

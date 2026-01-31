@@ -123,6 +123,8 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IBatchesRepository, BatchesRepository>();
             services.AddScoped<ILabRoomRepository, LabRoomRepository>();
             services.AddScoped<ISampleStageDefinitionRepository, SampleStageDefinitionRepository>();
+            services.AddScoped<IStageRequirementDefinitionRepository, StageRequirementDefinitionRepository>();
+            services.AddScoped<ISampleStageRepository, SampleStageRepository>();
 
             //for monitoring log module
             services.AddScoped<IMonitoringLogRepository, MonitoringLogRepository>();    

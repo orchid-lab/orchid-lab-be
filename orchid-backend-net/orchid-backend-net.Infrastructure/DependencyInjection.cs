@@ -1,4 +1,5 @@
 ﻿using CloudinaryDotNet;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -87,6 +88,7 @@ namespace orchid_backend_net.Infrastructure
             }
 
             //service
+            services.AddSingleton<LoggingFilter>();
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddScoped<ICacheService, RedisCacheService>();
             services.AddScoped<IImageUploaderService, CloudinaryImageUploaderService>();
@@ -132,7 +134,11 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IAnalyticResultRepository, AnalyticResultRepository>();
             
             //signalR
-            services.AddSignalR();
+            services.AddSignalR(opt =>
+            {
+                opt.AddFilter<LoggingFilter>();
+                opt.EnableDetailedErrors = true;
+            });
 
 
             //httpclient for some service required 3rd parties with tune handler + polly

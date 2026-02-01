@@ -26,28 +26,20 @@ namespace orchid_backend_net.API.Controllers
         /// <summary>
         /// get all experiment logs with pagination and filtering
         /// </summary>
-        /// <param name="pageSize">page size</param>
-        /// <param name="pageNo">page number</param>
-        /// <param name="nameSearchTerm">name of experiment log</param>
-        /// <param name="methodNameSearchTerm">method name</param>
-        /// <param name="currentStageOrder">current stage of experiment log</param>
+        /// <param name="query"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpGet]
         [ProducesResponseType(typeof(PageResult<ExperimentLogDto>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll(
-            [FromQuery]int pageSize, 
-            [FromQuery]int pageNo,
-            [FromQuery]string? nameSearchTerm,
-            [FromQuery]string? methodNameSearchTerm,
-            [FromQuery]int? currentStageOrder,
+            [FromQuery] GetAllExperimentLogQuery query,
             CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(new GetAllExperimentLogQuery(pageNo, pageSize, nameSearchTerm, methodNameSearchTerm, currentStageOrder), cancellationToken);
+                var result = await Sender.Send(query, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

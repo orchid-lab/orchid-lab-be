@@ -7,8 +7,16 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.ExperimentLog.UseCase.GetAllExperimentLog
 {
-    public record GetAllExperimentLogQuery(int PageNo, int PageSize, string? NameSearchTerm, string? MethodNameSearchTerm, int? CurrentStageOrder) : IRequest<PageResult<ExperimentLogDto>>;
-    internal class GetAllExperimentLogQueryHandler(IExperimentLogRepository experimentLogRepository) : IRequestHandler<GetAllExperimentLogQuery, PageResult<ExperimentLogDto>>
+    public record GetAllExperimentLogQuery(
+        int PageNo, 
+        int PageSize, 
+        string? NameSearchTerm, 
+        string? MethodNameSearchTerm, 
+        string? ResearcherId,
+        string? TechnicianId,
+        int? CurrentStageOrder) : IRequest<PageResult<ExperimentLogDto>>;
+    internal class GetAllExperimentLogQueryHandler(
+        IExperimentLogRepository experimentLogRepository) : IRequestHandler<GetAllExperimentLogQuery, PageResult<ExperimentLogDto>>
     {
         public async Task<PageResult<ExperimentLogDto>> Handle(GetAllExperimentLogQuery request, CancellationToken cancellationToken)
         {
@@ -25,6 +33,14 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.GetAllExperimentL
                 if(request.CurrentStageOrder is not null)
                 {
                     query = query.Where(el => el.CurrentStageOrder ==  request.CurrentStageOrder);
+                }
+                if(!string.IsNullOrWhiteSpace(request.ResearcherId))
+                {
+                    query = query.Where(el => el.CreatedBy.Equals(request.ResearcherId));
+                }
+                if(!string.IsNullOrWhiteSpace(request.TechnicianId))
+                {
+                    query = query.Where(el => el.AssignedTo.Equals(request.TechnicianId));
                 }
                 return query;
             }

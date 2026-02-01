@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Common.Mappings;
+using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Entities;
 
 namespace orchid_backend_net.Application.Batch.Dto.Batch
@@ -9,13 +9,13 @@ namespace orchid_backend_net.Application.Batch.Dto.Batch
     {
         public int Id { get; set; }
         public int LabRoomId { get; set; }  
-        public string LabRoomName { get; set; }
+        public string LabRoomName { get; set; } = default!;
         public string BatchName { get; set; } = default!;
         public decimal BatchSizeWidth { get; set; } = default!;
         public decimal BatchSizeHeight { get; set; } = default!;
         public string WidthUnit { get; set; } = default!;
         public string HeightUnit { get; set; } = default!;
-        public string Status { get; set; }
+        public BatchStatus Status { get; set; }
 
         public void Mapping(Profile profile)
         {
@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.Batch.Dto.Batch
                 .ForMember(dest => dest.LabRoomName,
                 opt => opt.MapFrom(src => src.LabRoom.Name))
                 .ForMember(dest => dest.Status,
-                opt => opt.MapFrom(src => src.Status.ToDisplayText()));
+                opt => opt.MapFrom(src => src.Status));
         }
     }
 }

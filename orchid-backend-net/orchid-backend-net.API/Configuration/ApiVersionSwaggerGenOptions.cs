@@ -5,10 +5,18 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace orchid_backend_net.API.Configuration
 {
+    /// <summary>
+    /// configure dependency injection for swagger gen options with api versioning
+    /// </summary>
+    /// <param name="provider"></param>
     public class ApiVersionSwaggerGenOptions(IApiVersionDescriptionProvider provider) : IConfigureOptions<SwaggerGenOptions>
     {
         private readonly IApiVersionDescriptionProvider _provider = provider;
 
+        /// <summary>
+        /// configure with swagger gen options
+        /// </summary>
+        /// <param name="options"></param>
         public void Configure(SwaggerGenOptions options)
         {
             foreach (var description in _provider.ApiVersionDescriptions.OrderByDescending(o => o.ApiVersion))

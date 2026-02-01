@@ -117,6 +117,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<MethodStageDefinition, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
 
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         var command = new CreateTaskCommand(
             new CreateTaskDto
             {
@@ -134,6 +135,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 }
             ],
             null);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act
         var result = await CreateCommandHandler.Handle(command, CancellationToken.None);

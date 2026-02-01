@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Extension;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -27,8 +26,8 @@ namespace orchid_backend_net.Application.Batch.Event.BatchStatusChangedNotificat
             //determine title and conent for notification
             var title = $"Batch {batch.BatchName} thay đổi trạng thái";
 
-            var oldStatus = evt.DomainEvent.OldStatus.ToDisplayText();
-            var newStatus = evt.DomainEvent.NewStatus.ToDisplayText();
+            var oldStatus = evt.DomainEvent.OldStatus;
+            var newStatus = evt.DomainEvent.NewStatus;
             var content = $"Trạng thái của batch {batch.BatchName} đã thay đổi từ {oldStatus} sang {newStatus}";
 
             List<Domain.Entities.Notification> notifications = CreateNotificationHelper.CreateForMultipleUsers(researchers, title, content);

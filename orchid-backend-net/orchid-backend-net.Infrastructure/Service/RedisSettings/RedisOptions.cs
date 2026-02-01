@@ -2,7 +2,7 @@
 {
     public class RedisOptions
     {
-        public string Configuration { get; set; }
-        public string InstanceName { get; set; }
+        public string Configuration { get; set; } = default!;
+        public string InstanceName { get; set; } = default!;
     }
 }

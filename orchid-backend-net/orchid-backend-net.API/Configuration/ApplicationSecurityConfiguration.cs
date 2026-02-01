@@ -9,8 +9,17 @@ using orchid_backend_net.Application.Common.Interfaces;
 
 namespace orchid_backend_net.API.Configuration
 {
+    /// <summary>
+    /// appilication security configuration extension
+    /// </summary>
     public static class ApplicationSecurityConfiguration
     {
+        /// <summary>
+        /// configure application security
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static IServiceCollection ConfigureApplicationSecurity(
             this IServiceCollection services,
             IConfiguration configuration)
@@ -60,7 +69,10 @@ namespace orchid_backend_net.API.Configuration
             return services;
         }
 
-
+        /// <summary>
+        /// Configures authorization policies and options for the application.
+        /// </summary>
+        /// <param name="options">The authorization options to be configured. Cannot be null.</param>
         private static void ConfigureAuthorization(AuthorizationOptions options)
         {
 

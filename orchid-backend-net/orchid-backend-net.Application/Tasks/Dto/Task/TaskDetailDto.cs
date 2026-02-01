@@ -20,8 +20,8 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
         public string? UpdatedBy { get; set; }
         public DateTime? DeletedDate { get; set; }
         public string? DeletedBy { get; set; }
-        public List<TaskAttributesDto> TaskAttributes { get; set; } = new();
-        public TaskAssignmentsDto TaskAssignments { get; set; } = new();
+        public List<TaskAttributesDto> TaskAttributes { get; set; }
+        public TaskAssignmentsDto TaskAssignments { get; set; }
         public TaskCheckListDto? TaskCheckList { get; set; }
         public void Mapping(Profile profile)
         {

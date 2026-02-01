@@ -21,7 +21,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                     },
                     new() {
                         ID = 3,
-                        Name = "Lab Technician"
+                        Name = "Technician"
                     }
                 };
 

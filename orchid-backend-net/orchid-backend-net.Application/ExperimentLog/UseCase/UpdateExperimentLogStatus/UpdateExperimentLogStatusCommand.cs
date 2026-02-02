@@ -26,8 +26,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
 
             //get experiment logs to change status  
             var experimentLogs = await experimentLogRepository.FindAsync(
-                el => el.ID == request.Id
-                && el.CreatedBy == currentUserService.UserId,
+                el => el.ID == request.Id,
                 cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy thí nghiệm này");
 

@@ -67,6 +67,20 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Configs",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    ConfigName = table.Column<string>(type: "text", nullable: false),
+                    Key = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<decimal>(type: "numeric", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Configs", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Diseases",
                 columns: table => new
                 {
@@ -166,6 +180,20 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Roles", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SafeProcedures",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    ProcedureName = table.Column<string>(type: "text", nullable: false),
+                    StepNumber = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SafeProcedures", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -921,6 +949,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "Configs");
+
+            migrationBuilder.DropTable(
                 name: "Imgs");
 
             migrationBuilder.DropTable(
@@ -928,6 +959,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "SafeProcedures");
 
             migrationBuilder.DropTable(
                 name: "SeedlingsTraits");

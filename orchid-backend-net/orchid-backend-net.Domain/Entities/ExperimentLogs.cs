@@ -155,6 +155,17 @@ namespace orchid_backend_net.Domain.Entities
             Batch.FinishBatching(CreatedBy);
         }
 
+        public void Cancel(string? reason)
+        {
+            EnsureNotDestroyed();
+            EnsureInStart();
+            Status = ExperimentLogStatus.Cancelled;
+            EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            Reason = reason;
+            AddDomainEvent(new ExperimentLogCancel(ID, reason));
+            Batch.FinishBatching(AssignedTo);
+        }
+
         private void EnsureNotDestroyed()
         {
             if (Status == ExperimentLogStatus.Destroyed)
@@ -175,6 +186,12 @@ namespace orchid_backend_net.Domain.Entities
             {
                 throw new InvalidOperationException("Experiment log không trong trạng thái hợp lệ để thực hiện thao tác này.");
             }
+        }
+
+        private void EnsureInStart()
+        {
+            if (Status != ExperimentLogStatus.Created)
+                throw new InvalidOperationException("Experiment log đã được bắt đầu hoặc hoàn thành.");
         }
 
         private void EnsureInWaitingForChangeStage()

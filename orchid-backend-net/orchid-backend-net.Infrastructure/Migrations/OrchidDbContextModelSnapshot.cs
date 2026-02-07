@@ -163,6 +163,27 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("Chemicals");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Config", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConfigName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Value")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Configs");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Disease", b =>
                 {
                     b.Property<int>("ID")
@@ -533,6 +554,27 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SafeProcedure", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProcedureName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("StepNumber")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("SafeProcedures");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>

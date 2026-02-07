@@ -40,6 +40,8 @@ namespace orchid_backend_net.Infrastructure.Persistence
         public virtual DbSet<TaskCheckList> TaskChecks { get; set; }
         public virtual DbSet<TaskCheckListItem> TaskCheckListItems { get; set; }
         public virtual DbSet<Users> Users { get; set; }
+        public virtual DbSet<SafeProcedure> SafeProcedures { get; set; }
+        public virtual DbSet<Config> Configs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

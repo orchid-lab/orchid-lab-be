@@ -14,5 +14,6 @@
         Completed,
         //Destroyed: hủy do toàn bộ sample nhiễm bệnh
         Destroyed,
+        Cancelled
     }
 }

@@ -7,6 +7,8 @@ namespace orchid_backend_net.Infrastructure.Service
     {
         public static async Task SeedAsync(DbContext context)
         {
+            await SeedConfig.SeedAsync(context);
+
             await SeedRoles.SeedAsync(context);
             await SeedUsers.SeedAsync(context);
 

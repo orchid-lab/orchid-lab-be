@@ -29,4 +29,12 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="LabConfig\UseCase\GetAll\" />
+    <Folder Include="LabConfig\UseCase\GetById\" />
+    <Folder Include="LabConfig\UseCase\Create\" />
+    <Folder Include="LabConfig\UseCase\Delete\" />
+    <Folder Include="LabConfig\UseCase\Update\" />
+  </ItemGroup>
+
 </Project>

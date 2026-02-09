@@ -29,4 +29,8 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SafeProcedure\UseCase\" />
+  </ItemGroup>
+
 </Project>

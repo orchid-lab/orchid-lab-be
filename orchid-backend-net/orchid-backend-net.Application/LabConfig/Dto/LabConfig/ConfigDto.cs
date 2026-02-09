@@ -5,6 +5,7 @@ namespace orchid_backend_net.Application.LabConfig.Dto.LabConfig
 {
     public class ConfigDto : IMapFrom<Domain.Entities.Config>
     {
+        public string Id { get; set; } = default!;
         public string ConfigName { get; set; } = default!;
         public string Key { get; set; } = default!;
         public decimal Value { get; set; } = default!;

@@ -30,7 +30,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="SafeProcedure\UseCase\" />
+    <Folder Include="SafeProcedure\UseCase\Delete\" />
+    <Folder Include="SafeProcedure\UseCase\Update\" />
   </ItemGroup>
 
 </Project>

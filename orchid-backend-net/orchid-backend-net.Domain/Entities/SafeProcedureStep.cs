@@ -10,6 +10,6 @@ namespace orchid_backend_net.Domain.Entities
         public virtual SafeProcedure SafeProcedure { get; set; } = default!;
         public string SafeProcedureStepName { get; set; } = default!;
         public int StepNumber { get; set; }
-        public string Description { get; set; } = default!;
+        public string? Description { get; set; } = default!;
     }
 }

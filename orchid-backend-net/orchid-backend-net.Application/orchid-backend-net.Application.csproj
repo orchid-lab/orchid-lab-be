@@ -29,9 +29,4 @@
 	  <EmbeddedResource Include="Authentication\EmailTemplate.html" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="SafeProcedure\UseCase\Delete\" />
-    <Folder Include="SafeProcedure\UseCase\Update\" />
-  </ItemGroup>
-
 </Project>

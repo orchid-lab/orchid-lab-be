@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace orchid_backend_net.Application.SafeProcedure.Dto.SafeProcedureStep
+﻿namespace orchid_backend_net.Application.SafeProcedure.Dto.SafeProcedureStep
 {
-    internal class CreateSafeProcedureStepDto
+    public class CreateSafeProcedureStepDto
     {
+        public string SafeProcedureStepName { get; set; } = default!;
+        public int StepNumber { get; set; }
+        public string Description { get; set; } = default!;
     }
 }

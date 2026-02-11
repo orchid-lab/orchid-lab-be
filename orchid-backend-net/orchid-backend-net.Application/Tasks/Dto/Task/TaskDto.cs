@@ -10,8 +10,8 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
         public string Name { get; set; } = default!;
         public string Description { get; set; } = default!;
         public int? StageId { get; set; }
-        public TaskTargetType TaskTargetType { get; set; }
-        public string TargetId { get; set; } = default!;
+        public TaskTargetType? TaskTargetType { get; set; }
+        public string? TargetId { get; set; } = default!;
         public string? ResearcherId { get; set; }
         public string? TechnicianId { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }

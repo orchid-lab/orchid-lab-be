@@ -34,7 +34,12 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
             await Task.WhenAll(jobs);
         }
 
-        private async Task SeedOneAsync(Domain.Entities.Tasks template, ExperimentLogs experimentLog, SemaphoreSlim semaphore, MethodStages stage, CancellationToken cancellationToken)
+        private async Task SeedOneAsync(
+            Domain.Entities.Tasks template, 
+            ExperimentLogs experimentLog,
+            SemaphoreSlim semaphore, 
+            MethodStages stage,
+            CancellationToken cancellationToken)
         {
             await semaphore.WaitAsync(cancellationToken);
             try
@@ -43,12 +48,17 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
                 var scopedMediator = scope.ServiceProvider.GetRequiredService<IMediator>();
 
                 var assignment = BuildTaskAssignment(experimentLog, stage);
-                await scopedMediator.Send(new ConvertTaskTemplateToToDoTaskCommand(template.ID, assignment), cancellationToken);
+                await scopedMediator.Send(
+                    new ConvertTaskTemplateToToDoTaskCommand(
+                        template.ID, 
+                        assignment,
+                        experimentLog.CreatedBy),
+                    cancellationToken);
             }
             catch (Exception ex)
             {
                 // Log error
-                _logger.LogError(ex, "Failed to seed task from template {template.ID} for experiment log {experimentLog.ID}", template.ID, experimentLog.ID);
+                _logger.LogError(ex, "Failed to seed task from template {TemplateID} for experiment log {ExperimentLogID}", template.ID, experimentLog.ID);
             }
             finally
             {

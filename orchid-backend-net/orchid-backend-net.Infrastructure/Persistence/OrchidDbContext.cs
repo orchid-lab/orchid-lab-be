@@ -70,12 +70,12 @@ namespace orchid_backend_net.Infrastructure.Persistence
                 .Concat(intDomainEntities.SelectMany(e => e.Entity.DomainEvents))
                 .ToList();
 
+            domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+            intDomainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+
             var result = await base.SaveChangesAsync(cancellationToken);
 
             await dispatcher.DispatchAsync(domainEvents);
-
-            domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
-            intDomainEntities.ForEach(e => e.Entity.ClearDomainEvents());
 
             return result;
         }

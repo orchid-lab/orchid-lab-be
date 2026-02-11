@@ -6,10 +6,10 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.SafeProcedure.UseCase.GetAll
 {
-    public record GetAllSafeProcedureQuery(int PageNo, int PageSize, string NameSearchTerm) : IRequest<PageResult<SafeProcedureDto>>;
-    internal class GetAllSafeProcedureQueryHandler(ISafeProcedureRepository safeProcedureRepository) : IRequestHandler<GetAllSafeProcedureQuery, PageResult<SafeProcedureDto>>
+    public record GetAllSafeProcedureQuery(int PageNo, int PageSize, string? NameSearchTerm) : IRequest<PageResult<SafeProcDto>>;
+    internal class GetAllSafeProcedureQueryHandler(ISafeProcedureRepository safeProcedureRepository) : IRequestHandler<GetAllSafeProcedureQuery, PageResult<SafeProcDto>>
     {
-        public async Task<PageResult<SafeProcedureDto>> Handle(GetAllSafeProcedureQuery request, CancellationToken cancellationToken)
+        public async Task<PageResult<SafeProcDto>> Handle(GetAllSafeProcedureQuery request, CancellationToken cancellationToken)
         {
             IQueryable<Domain.Entities.SafeProcedure> queryOptions(IQueryable<Domain.Entities.SafeProcedure> query)
             {
@@ -20,7 +20,7 @@ namespace orchid_backend_net.Application.SafeProcedure.UseCase.GetAll
                 return query;
             }
 
-            var result = await safeProcedureRepository.FindAllProjectToAsync<SafeProcedureDto>(
+            var result = await safeProcedureRepository.FindAllProjectToAsync<SafeProcDto>(
                 request.PageNo,
                 request.PageSize,
                 queryOptions,

@@ -37,7 +37,7 @@ namespace orchid_backend_net.Domain.Entities
             SafeProcedureSteps.Add(newStep);
         }
 
-        public void UpdateStep(string StepId, string Name, int Step, string? Description)
+        public void UpdateStep(string StepId, string? Name, int Step, string? Description)
         {
             var stepToUpdate = SafeProcedureSteps.FirstOrDefault(s => s.ID == StepId)
                 ?? throw new NotFoundException($"Không tìm thấy bước với ID {StepId}.");
@@ -52,9 +52,9 @@ namespace orchid_backend_net.Domain.Entities
             {
                 throw new DuplicateException($"Tên bước '{Name}' đã tồn tại trong quy trình.");
             }
-            stepToUpdate.SafeProcedureStepName = Name;
+            stepToUpdate.SafeProcedureStepName = Name ?? stepToUpdate.SafeProcedureStepName;
             stepToUpdate.StepNumber = Step;
-            stepToUpdate.Description = Description;
+            stepToUpdate.Description = Description ?? stepToUpdate.Description;
         }
 
         public void RemoveStep(string StepId)

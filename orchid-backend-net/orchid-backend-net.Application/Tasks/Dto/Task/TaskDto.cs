@@ -15,7 +15,7 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
         public string? ResearcherId { get; set; }
         public string? TechnicianId { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }
-        public DateOnly ExpectedEndDate { get; set; }
+        public DateOnly? ExpectedEndDate { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.Tasks, TaskDto>()

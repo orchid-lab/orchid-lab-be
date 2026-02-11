@@ -10,7 +10,7 @@ namespace orchid_backend_net.Application.Sample.UseCase.GetAll
     public record GetAllSampleQuery(
         int PageNo,
         int PageSize, 
-        string ExperimentLogId)
+        string? ExperimentLogId)
         : IRequest<PageResult<SampleDto>>;
 
     internal class GetAllSampleQueryHandler(ISampleRepository sampleRepository) : IRequestHandler<GetAllSampleQuery, PageResult<SampleDto>>
@@ -19,7 +19,9 @@ namespace orchid_backend_net.Application.Sample.UseCase.GetAll
         {
             IQueryable<Samples> queryOptions(IQueryable<Samples> query)
             {
-                return query.Where(s => s.ExperimentLogId.Equals(request.ExperimentLogId));
+                if (!string.IsNullOrWhiteSpace(request.ExperimentLogId))
+                    query = query.Where(s => s.ExperimentLogId.Equals(request.ExperimentLogId));
+                return query;
             }
 
             var result = await sampleRepository.FindAllProjectToAsync<SampleDto>(

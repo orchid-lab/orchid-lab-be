@@ -15,13 +15,15 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
         public string? ResearcherId { get; set; }
         public string? TechnicianId { get; set; }
         public Domain.Common.Enum.TaskStatus Status { get; set; }
+        public DateOnly ExpectedEndDate { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.Tasks, TaskDto>()
                 .ForMember(dest => dest.TechnicianId, opt => opt.MapFrom(src => src.TaskAssignment.TechnicianId))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.TaskTargetType, opt => opt.MapFrom(src => src.TaskAssignment.TargetType))
-                .ForMember(dest => dest.TargetId, opt => opt.MapFrom(src => src.TaskAssignment.TargetId));
+                .ForMember(dest => dest.TargetId, opt => opt.MapFrom(src => src.TaskAssignment.TargetId))
+                .ForMember(dest => dest.ExpectedEndDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.TaskAssignment.ExpectedEndDate)));
         }
     }
 }

@@ -10,6 +10,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetAllTask
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public string? TechnicianId { get; set; }
         public string? ResearcherId { get; set; }
         /// <summary>
         /// search term only for names
@@ -35,6 +36,10 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetAllTask
                 if (request.StageId is not null)
                 {
                     query = query.Where(t => t.StageId!.Equals(request.StageId));
+                }
+                if(!string.IsNullOrWhiteSpace(request.TechnicianId))
+                {
+                    query = query.Where(t => t.TaskAssignment.TechnicianId!.Equals(request.TechnicianId));
                 }
                 return query;
             }

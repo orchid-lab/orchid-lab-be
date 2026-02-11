@@ -35,7 +35,7 @@ namespace orchid_backend_net.API.Controllers
         public async Task<IActionResult> GetSamples(
             [FromQuery] int pageNo,
             [FromQuery] int pageSize,
-            [FromQuery] string experimentLogId,
+            [FromQuery] string? experimentLogId,
             CancellationToken cancellationToken = default)
         {
             try

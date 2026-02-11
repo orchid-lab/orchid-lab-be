@@ -32,7 +32,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodo
             {
                 Name = taskTemplate.Name,
                 Description = taskTemplate.Description,
-                ResearcherId = currentUserService.UserId,
+                ResearcherId = researcherId,
                 CreatedDate = DateTime.UtcNow,
                 CreatedBy = researcherId,
             };

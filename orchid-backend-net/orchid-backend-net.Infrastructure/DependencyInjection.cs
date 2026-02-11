@@ -98,6 +98,10 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IOrchidAnalyzerService, OrchidAnalyzerService>();
             //Add repositories
 
+            //for config and safe procedure module
+            services.AddScoped<IConfigRepository, ConfigRepository>();
+            services.AddScoped<ISafeProcedureRepository, SafeProcedureRepository>();
+
             //for notification module
             services.AddScoped<INotificationRepository, NotificationRepository>();
 

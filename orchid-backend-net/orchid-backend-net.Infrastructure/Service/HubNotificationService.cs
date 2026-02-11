@@ -8,7 +8,15 @@ namespace orchid_backend_net.Infrastructure.Service
         public async Task PushToUserAsync(string userId, string title, string content)
         {
             await hub.Clients.User(userId)
-                .SendAsync("notification:new", new { title, content });
+                .SendAsync("notification:new", new
+                {
+                    id = Guid.NewGuid().ToString(),
+                    userId,
+                    title,
+                    content,
+                    isRead = false,
+                    createdAt = DateTime.UtcNow
+                });
         }
     }
 }

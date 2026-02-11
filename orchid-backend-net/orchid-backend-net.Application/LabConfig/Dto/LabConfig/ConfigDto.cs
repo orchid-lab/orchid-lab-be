@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Common.Mappings;
+using orchid_backend_net.Domain.Entities;
 
 namespace orchid_backend_net.Application.LabConfig.Dto.LabConfig
 {
-    public class ConfigDto : IMapFrom<Domain.Entities.Config>
+    public class ConfigDto : IMapFrom<Config>
     {
         public string Id { get; set; } = default!;
         public string ConfigName { get; set; } = default!;
@@ -11,7 +12,7 @@ namespace orchid_backend_net.Application.LabConfig.Dto.LabConfig
         public decimal Value { get; set; } = default!;
         public void Mapping(Profile profile)
         {
-            throw new NotImplementedException();
+            profile.CreateMap<Config, ConfigDto>();
         }
     }
 }

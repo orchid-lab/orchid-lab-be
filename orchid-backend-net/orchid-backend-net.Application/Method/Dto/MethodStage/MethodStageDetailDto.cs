@@ -12,6 +12,7 @@ namespace orchid_backend_net.Application.Method.Dto.MethodStage
         public int Id { get; set; }
         public required int DurationsDays { get; set; }
         public required int Order { get; set; }
+        public bool IsSampleGenerated { get; set; }
         public required MethodStageDefinitionDto StageDefinition { get; set; }
         public required List<StageMaterialDto> StageMaterials { get; set; }
         public required List<StageChemicalDto> StageChemicals { get; set; }

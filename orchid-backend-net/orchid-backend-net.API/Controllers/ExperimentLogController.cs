@@ -92,7 +92,7 @@ namespace orchid_backend_net.API.Controllers
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Tạo thất bại", Detail = ex.Message });
@@ -183,6 +183,32 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
                 var command = new DeleteExperimentLogCommand(id, reason);
+                var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Hủy thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// technician use this api to cancel experiment log if had any reason to stop the experiment
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="reason"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost("cancel/{id}")]
+        [Authorize(Roles = "Technician")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> CancelExperimentLog([FromRoute] string id, [FromBody] string? reason, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var command = new Application.ExperimentLog.UseCase.CancelExperimentLog.CancelExperimentLogCommand(id, reason);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }

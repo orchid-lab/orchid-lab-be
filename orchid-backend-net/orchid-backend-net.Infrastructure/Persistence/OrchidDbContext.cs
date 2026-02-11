@@ -54,13 +54,20 @@ namespace orchid_backend_net.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
+            // Collect domain events from BOTH Guid and int entities
             var domainEntities = ChangeTracker
-                .Entries<BaseEntity<Guid>>()
+                .Entries<BaseEntity<string>>()
+                .Where(e => e.Entity.DomainEvents.Count != 0)
+                .ToList();
+
+            var intDomainEntities = ChangeTracker
+                .Entries<BaseEntity<int>>()
                 .Where(e => e.Entity.DomainEvents.Count != 0)
                 .ToList();
 
             var domainEvents = domainEntities
                 .SelectMany(e => e.Entity.DomainEvents)
+                .Concat(intDomainEntities.SelectMany(e => e.Entity.DomainEvents))
                 .ToList();
 
             var result = await base.SaveChangesAsync(cancellationToken);
@@ -68,6 +75,7 @@ namespace orchid_backend_net.Infrastructure.Persistence
             await dispatcher.DispatchAsync(domainEvents);
 
             domainEntities.ForEach(e => e.Entity.ClearDomainEvents());
+            intDomainEntities.ForEach(e => e.Entity.ClearDomainEvents());
 
             return result;
         }

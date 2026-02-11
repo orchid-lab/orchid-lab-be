@@ -14,6 +14,7 @@
         Completed,
         //Destroyed: hủy do toàn bộ sample nhiễm bệnh
         Destroyed,
+        //Cancelled: hủy do các nguyên nhân khác trước khi bắt đầu thí nghiệm
         Cancelled
     }
 }

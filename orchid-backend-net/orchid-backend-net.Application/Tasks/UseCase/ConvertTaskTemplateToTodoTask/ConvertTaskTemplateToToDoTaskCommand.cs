@@ -9,7 +9,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodoTask
 {
-    public record ConvertTaskTemplateToToDoTaskCommand(string TaskTemplateId, CreateTaskAssignmentDto CreateTaskAssignment) : IRequest<string>;
+    public record ConvertTaskTemplateToToDoTaskCommand(string TaskTemplateId, CreateTaskAssignmentDto CreateTaskAssignment, string? ResearcherId = null) : IRequest<string>;
 
     internal class ConvertTaskTemplateToToDoTaskCommandHandler(
         ITaskRepository taskRepository,
@@ -18,6 +18,9 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodo
     {
         public async Task<string> Handle(ConvertTaskTemplateToToDoTaskCommand request, CancellationToken cancellationToken)
         {
+            var researcherId = request.ResearcherId ?? currentUserService.UserId
+                ?? throw new DomainException("Không xác định được researcher.");
+
             List<CreateTaskAttributeDto> createTaskAttributeList = new();
 
             var taskTemplate = await taskRepository.GetTemplateForConversionAsync(request.TaskTemplateId, cancellationToken)
@@ -31,7 +34,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodo
                 Description = taskTemplate.Description,
                 ResearcherId = currentUserService.UserId,
                 CreatedDate = DateTime.UtcNow,
-                CreatedBy = currentUserService.UserId
+                CreatedBy = researcherId,
             };
 
             if (taskTemplate.TaskAttributes.Count > 0)

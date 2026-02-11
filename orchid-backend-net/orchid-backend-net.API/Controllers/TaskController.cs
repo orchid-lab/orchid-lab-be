@@ -11,6 +11,7 @@ using orchid_backend_net.Application.Tasks.UseCase.DeleteTask;
 using orchid_backend_net.Application.Tasks.UseCase.GetAllTask;
 using orchid_backend_net.Application.Tasks.UseCase.UpdateTask;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -89,6 +90,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
+        [Authorize(Roles = "Researcher")]
         [HttpPost]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
@@ -119,6 +121,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
+        [Authorize(Roles = "Researcher")]
         [HttpPost("template-conversion")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
@@ -152,6 +155,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
+        [Authorize(Roles = "Researcher")]
         [HttpPut]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
@@ -197,6 +201,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
+        [Authorize(Roles = "Researcher,Technician")]
         [HttpPut("change-task-status")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]
@@ -227,6 +232,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
+        [Authorize(Roles = "Researcher")]
         [HttpDelete]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status201Created)]

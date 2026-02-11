@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Events;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Events.ExperimentLogEvents;
@@ -6,17 +7,14 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.ExperimentLog.Event.Complete
 {
-    public record ExperimentLogCompletedNotification(ExperimentLogCompleted DomainEvent)
-        : INotification;
-
     internal class ExperimentLogCompletedNotificationHandler(
         IExperimentLogRepository experimentLogRepository,
         IUserRepository userRepository,
         INotificationRepository notificationRepository,
         INotificationPushService pushService)
-        : INotificationHandler<ExperimentLogCompletedNotification>
+        : INotificationHandler<DomainEventNotification<ExperimentLogCompleted>>
     {
-        public async Task Handle(ExperimentLogCompletedNotification evt, CancellationToken cancellationToken)
+        public async Task Handle(DomainEventNotification<ExperimentLogCompleted> evt, CancellationToken cancellationToken)
         {
             var experiment = await experimentLogRepository.GetExperimentLogByIdAsync(evt.DomainEvent.ExperimentLogId, cancellationToken);
             var researcher = await userRepository.GetByIdAsync(experiment.CreatedBy, cancellationToken);

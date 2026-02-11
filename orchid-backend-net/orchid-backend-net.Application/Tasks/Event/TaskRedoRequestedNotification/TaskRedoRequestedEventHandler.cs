@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Events;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -7,14 +8,13 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.Event.TaskRedoRequestedNotification
 {
-    public record TaskRedoRequestedNotification(TaskRedoRequestedEvent DomainEvent) : INotification;
     internal class TaskRedoRequestedEventHandler(
         INotificationPushService notificationService,
         INotificationRepository notificationRepository,
         IUserRepository userRepository,
-        ITaskRepository taskRepository) : INotificationHandler<TaskRedoRequestedNotification>
+        ITaskRepository taskRepository) : INotificationHandler<DomainEventNotification<TaskRedoRequestedEvent>>
     {
-        public async Task Handle(TaskRedoRequestedNotification evt, CancellationToken cancellationToken)
+        public async Task Handle(DomainEventNotification<TaskRedoRequestedEvent> evt, CancellationToken cancellationToken)
         {
             var researcher = await userRepository.FindAsync(u => u.ID == evt.DomainEvent.ResearcherId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy researcher.");

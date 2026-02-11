@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Events;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -7,14 +8,13 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.Event.TaskAcceptedByTechnicianNotification
 {
-    public record TaskAcceptedByTechnicianNotification(TaskAcceptedByTechnicianEvent DomainEvent) : INotification;
     internal class TaskAcceptedByTechnicianEventHandler
         (INotificationRepository notificationRepository,
         INotificationPushService notificationService,
         IUserRepository userRepository,
-        ITaskRepository taskRepository) : INotificationHandler<TaskAcceptedByTechnicianNotification>
+        ITaskRepository taskRepository) : INotificationHandler<DomainEventNotification<TaskAcceptedByTechnicianEvent>>
     {
-        public async Task Handle(TaskAcceptedByTechnicianNotification evt, CancellationToken cancellationToken)
+        public async Task Handle(DomainEventNotification<TaskAcceptedByTechnicianEvent> evt, CancellationToken cancellationToken)
         {
             var technician = await userRepository.FindAsync(u => u.ID == evt.DomainEvent.TechnicianId, cancellationToken) 
                 ?? throw new NotFoundException("Không tìm thấy technician này.");

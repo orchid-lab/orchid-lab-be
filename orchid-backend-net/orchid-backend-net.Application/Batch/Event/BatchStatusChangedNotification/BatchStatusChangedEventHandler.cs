@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using orchid_backend_net.Application.Common.Events;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Notification.Helper;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -7,14 +8,14 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Batch.Event.BatchStatusChangedNotification
 {
-    public record BatchStatusChangedNotification(BatchStatusChangedEvent DomainEvent) : INotification;
     internal class BatchStatusChangedEventHandler(
         INotificationRepository notificationRepository,
         IUserRepository userRepository,
         IBatchesRepository batchRepository,
-        INotificationPushService notificationService) : INotificationHandler<BatchStatusChangedNotification>
+        INotificationPushService notificationService)
+        : INotificationHandler<DomainEventNotification<BatchStatusChangedEvent>>
     {
-        public async Task Handle(BatchStatusChangedNotification evt, CancellationToken cancellationToken)
+        public async Task Handle(DomainEventNotification<BatchStatusChangedEvent> evt, CancellationToken cancellationToken)
         {
             var batch = await batchRepository.GetByIdAsync(evt.DomainEvent.BatchId, cancellationToken);
 

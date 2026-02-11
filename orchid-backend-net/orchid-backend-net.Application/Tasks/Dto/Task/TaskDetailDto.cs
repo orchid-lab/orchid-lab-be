@@ -13,7 +13,7 @@ namespace orchid_backend_net.Application.Tasks.Dto.Task
         public string Description { get; set; } = default!;
         public int? StageId { get; set; }
         public string? ResearcherId { get; set; }
-        public TaskStatus Status { get; set; }
+        public Domain.Common.Enum.TaskStatus Status { get; set; }
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? UpdatedDate { get; set; }

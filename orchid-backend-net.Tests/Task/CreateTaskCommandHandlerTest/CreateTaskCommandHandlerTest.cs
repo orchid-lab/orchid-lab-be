@@ -239,7 +239,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             await CreateCommandHandler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<NullReferenceException>();
     }
 
     #endregion

@@ -188,8 +188,14 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
                     ProcedureName = table.Column<string>(type: "text", nullable: false),
-                    StepNumber = table.Column<int>(type: "integer", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    ProcedureType = table.Column<string>(type: "text", nullable: false),
+                    DeletedBy = table.Column<string>(type: "text", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -360,6 +366,27 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalTable: "Roles",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SafeProcedureStep",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    SafeProcedureId = table.Column<string>(type: "text", nullable: false),
+                    SafeProcedureStepName = table.Column<string>(type: "text", nullable: false),
+                    StepNumber = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SafeProcedureStep", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_SafeProcedureStep_SafeProcedures_SafeProcedureId",
+                        column: x => x.SafeProcedureId,
+                        principalTable: "SafeProcedures",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -831,6 +858,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SafeProcedureStep_SafeProcedureId",
+                table: "SafeProcedureStep",
+                column: "SafeProcedureId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Samples_ExperimentLogId",
                 table: "Samples",
                 column: "ExperimentLogId");
@@ -961,7 +993,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "Notifications");
 
             migrationBuilder.DropTable(
-                name: "SafeProcedures");
+                name: "SafeProcedureStep");
 
             migrationBuilder.DropTable(
                 name: "SeedlingsTraits");
@@ -986,6 +1018,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "StageRequirementDefinitions");
+
+            migrationBuilder.DropTable(
+                name: "SafeProcedures");
 
             migrationBuilder.DropTable(
                 name: "Characteristics");

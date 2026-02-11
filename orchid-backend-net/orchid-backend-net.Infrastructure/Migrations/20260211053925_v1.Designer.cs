@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260207074503_v1")]
+    [Migration("20260211053925_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -564,11 +564,54 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
                     b.Property<string>("ProcedureName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProcedureType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("SafeProcedures");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SafeProcedureStep", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SafeProcedureId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SafeProcedureStepName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -577,7 +620,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.HasKey("ID");
 
-                    b.ToTable("SafeProcedures");
+                    b.HasIndex("SafeProcedureId");
+
+                    b.ToTable("SafeProcedureStep");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
@@ -1206,6 +1251,17 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SafeProcedureStep", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.SafeProcedure", "SafeProcedure")
+                        .WithMany("SafeProcedureSteps")
+                        .HasForeignKey("SafeProcedureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SafeProcedure");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Samples", "Samples")
@@ -1444,6 +1500,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.MonitoringLogs", b =>
                 {
                     b.Navigation("LogDetails");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.SafeProcedure", b =>
+                {
+                    b.Navigation("SafeProcedureSteps");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>

@@ -10,7 +10,7 @@ namespace orchid_backend_net.Domain.Entities
         public string ProcedureType { get; set; } = default!;
         public string? DeletedBy { get; set; }
         public DateTime? DeletedDate { get; set; }
-        public List<SafeProcedureStep> SafeProcedureSteps { get; set; } = new();
+        public virtual List<SafeProcedureStep> SafeProcedureSteps { get; set; } = new();
 
         public void AddStep(string Name, int Step, string? Description)
         {

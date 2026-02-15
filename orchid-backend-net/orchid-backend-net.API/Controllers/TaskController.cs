@@ -12,6 +12,9 @@ using orchid_backend_net.Application.Tasks.UseCase.GetAllTask;
 using orchid_backend_net.Application.Tasks.UseCase.UpdateTask;
 using System.Net.Mime;
 using Microsoft.AspNetCore.Authorization;
+using orchid_backend_net.Application.Tasks.UseCase.UpdateTaskCheckListItemInformation;
+using orchid_backend_net.API.Dto.Task;
+using orchid_backend_net.Application.Tasks.UseCase.RemoveTaskCheckListItem;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -247,6 +250,80 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Xóa thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// update information of an item in task checklist, only researcher can be used
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="checkListItemId"></param>
+        /// <param name="dto"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Researcher")]
+        [HttpPut("{id}/checklist-items/{checkListItemId}")]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateCheckListItemInformation(
+            [FromRoute] string id,
+            [FromRoute] string checkListItemId,
+            [FromBody] UpdateTaskCheckListItemInformationDto dto,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                if (id is null || checkListItemId is null)
+                {
+                    return BadRequest(new ProblemDetails { Title = "ID không tồn tại", Detail = "ID trong URL phải tồn tại" });
+                }
+                var result = await Sender.Send(new UpdateTaskCheckListItemInformationCommand(
+                    id,
+                    checkListItemId,
+                    dto.Name,
+                    dto.Description,
+                    dto.ExpectedMeasureUnit,
+                    dto.ExpectedMinValue,
+                    dto.ExpectedMaxValue)
+                    , cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// remove the item of task checklist, only researcher can be used
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="checkListItemId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Researcher")]
+        [HttpDelete("{id}/checklist-items/{checkListItemId}")]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> RemoveCheckListItem(
+            [FromRoute] string id,
+            [FromRoute] string checkListItemId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
+                if (id is null || checkListItemId is null)
+                {
+                    return BadRequest(new ProblemDetails { Title = "ID không tồn tại", Detail = "ID trong URL phải tồn tại" });
+                }
+                var result = await Sender.Send(new RemoveTaskCheckListItemCommand(id, checkListItemId), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

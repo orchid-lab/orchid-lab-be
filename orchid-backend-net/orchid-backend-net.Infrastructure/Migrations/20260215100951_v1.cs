@@ -626,7 +626,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     TaskCheckListId = table.Column<string>(type: "text", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    IsRequired = table.Column<bool>(type: "boolean", nullable: false),
                     Order = table.Column<int>(type: "integer", nullable: false),
                     ExpectedUnit = table.Column<string>(type: "text", nullable: true),
                     ExpectedMinValue = table.Column<decimal>(type: "numeric", nullable: true),

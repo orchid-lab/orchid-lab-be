@@ -3,13 +3,18 @@ using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Tasks.Dto.Task;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
+using orchid_backend_net.Application.Tasks.Dto.TaskCheckListItem;
 using orchid_backend_net.Application.Tasks.Helper;
 using orchid_backend_net.Application.Tasks.Policy;
 using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Tasks.UseCase.CreateTask
 {
-    public class CreateTaskCommand(CreateTaskDto parameter, List<CreateTaskAttributeDto>? createTaskAttributes, CreateTaskAssignmentDto createTaskAssignment) : IRequest<string>
+    public class CreateTaskCommand(
+        CreateTaskDto parameter, 
+        List<CreateTaskAttributeDto>? createTaskAttributes,
+        CreateTaskAssignmentDto createTaskAssignment,
+        List<CreateTaskCheckListItemDto> createTaskCheckListItems) : IRequest<string>
     {
         public string Name { get; set; } = parameter.Name;
         public string? Description { get; set; } = parameter.Description;
@@ -24,6 +29,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.CreateTask
         /// </summary>
         public int? StageId { get; set; } = parameter.StageId;
         public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
+        public List<CreateTaskCheckListItemDto> CreateTaskCheckListItemDtos { get; set; } = createTaskCheckListItems;
     }
 
     internal class CreateTaskCommandHandler(
@@ -59,6 +65,8 @@ namespace orchid_backend_net.Application.Tasks.UseCase.CreateTask
                     request.CreateTaskAssignment.ExpectedEndDate,
                     DateTime.UtcNow);
             }
+
+            TaskCheckListHelper.AddCheckListItemsToTask(tasks, request.CreateTaskCheckListItemDtos);
             taskRepository.Add(tasks);
             return await taskRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
                 ? "Tạo task thành công" : "Tạo task thất bại";

@@ -9,7 +9,6 @@ namespace orchid_backend_net.Application.Tasks.Dto.TaskCheckListItem
         public required string Id { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
-        public bool IsRequired { get; set; }
         public int Order { get; set; }
 
         //Optional standard metadata

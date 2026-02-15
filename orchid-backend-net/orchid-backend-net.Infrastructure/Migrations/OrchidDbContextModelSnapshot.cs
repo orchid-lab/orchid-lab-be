@@ -987,9 +987,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<bool?>("IsPass")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsRequired")
-                        .HasColumnType("boolean");
-
                     b.Property<string>("MeasurementUnit")
                         .HasColumnType("text");
 

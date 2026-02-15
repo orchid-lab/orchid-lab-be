@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260211053925_v1")]
+    [Migration("20260215100951_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -988,9 +988,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool?>("IsPass")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsRequired")
                         .HasColumnType("boolean");
 
                     b.Property<string>("MeasurementUnit")

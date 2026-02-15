@@ -13,7 +13,7 @@ namespace orchid_backend_net.Domain.Entities
         public virtual List<TaskCheckListItem> Items { get; set; } = new();
         
         // use the for validation
-        public bool HasAnyRequiredItemIncomplete()
+        public bool HasAnyItemIncomplete()
             => Items.Any(i => i.Status == TaskCheckListItemStatus.InProgress 
             || i.Status == TaskCheckListItemStatus.Pending);
 
@@ -27,7 +27,7 @@ namespace orchid_backend_net.Domain.Entities
         internal void AddItem(
             string name, 
             string? description,
-            int oder,
+            int order,
             string? expectedUnit,
             decimal? expectedMinvalue,
             decimal? expectedMaxValue)
@@ -40,7 +40,7 @@ namespace orchid_backend_net.Domain.Entities
             {
                 Name = name,
                 Description = description,
-                Order = oder,
+                Order = order,
                 ExpectedUnit = expectedUnit,
                 ExpectedMinValue = expectedMinvalue,
                 ExpectedMaxValue = expectedMaxValue,
@@ -58,7 +58,8 @@ namespace orchid_backend_net.Domain.Entities
             decimal? expectedMinValue,
             decimal? expectedMaxValue)
         {
-            var itemExist = Items.SingleOrDefault(i => i.ID.Equals(id))
+            var itemExist = Items.SingleOrDefault(i => i.ID.Equals(id) 
+            && i.Status == TaskCheckListItemStatus.Pending)
                 ?? throw new DomainException("Item này không tồn tại");
 
             itemExist.Name = name ?? itemExist.Name;

@@ -18,6 +18,8 @@ namespace orchid_backend_net.Domain.Entities
         public virtual TaskAssignment TaskAssignment { get; set; } = null!;
         public virtual List<TaskAttributes> TaskAttributes { get; set; } = new();
         public virtual TaskCheckList? CheckList { get; set; }
+
+        // ===== Task Assignment =====
         public void AddTaskAssignment(
             string technicianId,
             TaskTargetType targetType,
@@ -103,7 +105,7 @@ namespace orchid_backend_net.Domain.Entities
 
 
             var checkList = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
-            if(checkList.HasAnyRequiredItemIncomplete())
+            if (checkList.HasAnyItemIncomplete())
                 throw new DomainException("Checklist còn mục bắt buộc chưa hoàn thành.");
 
             Status = Common.Enum.TaskStatus.WaitingForApproval;
@@ -143,7 +145,7 @@ namespace orchid_backend_net.Domain.Entities
                 throw new DomainException("Task chưa chờ duyệt.");
 
             Status = Common.Enum.TaskStatus.ReworkRequired;
-
+            CheckList?.ResetAllItemsForRework();
             AddDomainEvent(new TaskRedoRequestedEvent(
                 ID,
                 researcherId,
@@ -175,6 +177,7 @@ namespace orchid_backend_net.Domain.Entities
             TaskAssignment.EndDate = endDate ?? TaskAssignment.EndDate;
         }
 
+        // ==== Task Attributes =====
         public void AddTaskAttribute(int? chemicalId, int? materialId, string unit, decimal value)
         {
             var isDuplicatedAttributes = TaskAttributes.Any(x =>
@@ -211,6 +214,8 @@ namespace orchid_backend_net.Domain.Entities
             taskAttribute.Value = value;
         }
 
+
+        // ===== Checklist =====
         public TaskCheckList EnsureChecklist()
         {
             CheckList ??= new TaskCheckList()
@@ -220,5 +225,93 @@ namespace orchid_backend_net.Domain.Entities
             return CheckList;
         }
 
+        /// <summary>
+        /// Researcher use this to add one more item into checklist. If checklist is not created yet, it will be created first then add item into it.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="order"></param>
+        /// <param name="expectedUnit"></param>
+        /// <param name="expectedMinValue"></param>
+        /// <param name="expectedMaxValue"></param>
+        public void AddCheckListItem(
+            string name,
+            string? description,
+            int order,
+            string? expectedUnit,
+            decimal? expectedMinValue,
+            decimal? expectedMaxValue)
+        {
+            var checklist = EnsureChecklist();
+            checklist.AddItem(name, description, order, expectedUnit, expectedMinValue, expectedMaxValue);
+        }
+
+        /// <summary>
+        /// researcher remove the checklist item only when the checklist item is not required or the checklist item is required but not completed yet. If the checklist item is required and already completed, researcher have to request rework to technician, then after technician rework and complete the task again, researcher can remove the checklist item.
+        /// </summary>
+        /// <param name="checklistItemId"></param>
+        public void RemoveCheckListItem(string checklistItemId)
+        {
+            var checklist = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
+            checklist.RemoveItem(checklistItemId);
+        }
+
+        /// <summary>
+        /// update checklist item only use when the item is not started to change the information
+        /// </summary>
+        /// <param name="checklistItemId"></param>
+        /// <param name="name"></param>
+        /// <param name="description"></param>
+        /// <param name="expectedUnit"></param>
+        /// <param name="expectedMinValue"></param>
+        /// <param name="expectedMaxValue"></param>
+        public void UpdateCheckListItem(string checklistItemId, string? name, string? description, string? expectedUnit, decimal? expectedMinValue, decimal? expectedMaxValue)
+        {
+            var checklist = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
+            checklist.UpdateItem(checklistItemId, name, description, expectedUnit, expectedMinValue, expectedMaxValue);
+        }
+
+        /// <summary>
+        /// Submits the result for a specific checklist item as performed by a technician.
+        /// </summary>
+        /// <param name="checklistItemId">The unique identifier of the checklist item for which the result is being submitted.</param>
+        /// <param name="technicianId">The unique identifier of the technician submitting the result. Must match the technician assigned to the
+        /// task.</param>
+        /// <param name="actualValue">The measured or observed value to record for the checklist item.</param>
+        /// <param name="actualUnit">The unit of measurement associated with the actual value.</param>
+        /// <exception cref="DomainException">Thrown if the specified technician is not assigned to the current task.</exception>
+        public void SubmitCheckListItemResult(
+            string technicianId,
+            string itemId,
+            string measurementUnit,
+            decimal measuredValue)
+        {
+            if(TaskAssignment?.TechnicianId != technicianId)
+                throw new DomainException("Không phải task của bạn.");
+
+            if(Status != Common.Enum.TaskStatus.InProgress && Status != Common.Enum.TaskStatus.ReworkRequired)
+                throw new DomainException("Task chưa được thực hiện.");
+            _ = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
+
+            var item = CheckList.GetItem(itemId);
+
+            item.SubmitByTechnician(measuredValue, measurementUnit);
+        }
+
+        public void EvaluateCheckListItem(
+            string researcherId,
+            string itemId,
+            bool isPass)
+        {
+            if (ResearcherId != researcherId)
+                throw new DomainException("Không có quyền đánh giá task này");
+            if(Status != Common.Enum.TaskStatus.WaitingForApproval)
+                throw new DomainException("Task chưa chờ duyệt.");
+
+            _ = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
+
+            var item = CheckList.GetItem(itemId);
+            item.EvaluateByResearcher(isPass);
+        }
     }
 }

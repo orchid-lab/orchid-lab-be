@@ -36,6 +36,8 @@ namespace orchid_backend_net.Domain.Entities
         {
             if (Status != TaskCheckListItemStatus.Pending)
                 throw new InvalidOperationException("Checklist item đã được submit hoặc đánh giá.");
+            if(ExpectedUnit != null && measurementUnit != ExpectedUnit)
+                throw new InvalidOperationException($"Đơn vị đo lường không hợp lệ. Yêu cầu: {ExpectedUnit}.");
             MesuredValue = measuredValue;
             MeasurementUnit = measurementUnit;
             Status = TaskCheckListItemStatus.Complete;
@@ -51,6 +53,8 @@ namespace orchid_backend_net.Domain.Entities
             if (Status != TaskCheckListItemStatus.Complete)
                 throw new InvalidOperationException("Checklist item chưa được submit bởi technician.");
             IsPass = isPass;
+            if(!isPass)
+                Status = TaskCheckListItemStatus.Failed;
             Evaluated = DateTime.UtcNow;
         }
 

@@ -213,10 +213,10 @@ namespace orchid_backend_net.Domain.Entities
 
         public TaskCheckList EnsureChecklist()
         {
-            CheckList ??= new TaskCheckList
-                {
-                    TaskId = ID
-                };
+            CheckList ??= new TaskCheckList()
+            {
+                TaskId = this.ID
+            };
             return CheckList;
         }
 

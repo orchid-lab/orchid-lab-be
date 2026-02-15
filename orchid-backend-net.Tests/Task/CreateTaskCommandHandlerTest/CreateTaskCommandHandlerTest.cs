@@ -8,6 +8,7 @@ using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
 using orchid_backend_net.Application.Tests.Config.TaskConfig;
 using System.Linq.Expressions;
 using orchid_backend_net.Domain.Entities;
+using orchid_backend_net.Application.Tasks.Dto.TaskCheckListItem;
 
 namespace orchid_backend_net.Application.Tests.Tasks.CreateTaskCommandHandlerTest;
 
@@ -61,7 +62,19 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TargetId = "sample-1",
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
                 ExpectedEndDate = DateTime.UtcNow.AddDays(3)
-            });
+            },
+            createTaskCheckListItems:
+            [
+                new CreateTaskCheckListItemDto
+                {
+                    Name = "Weigh chemicals",
+                    Description = "Weigh 4g of MS powder and 30g of sucrose",
+                    Order = 1,
+                    ExpectedUnit = "g",
+                    ExpectedMinValue = 34,
+                    ExpectedMaxValue = 34
+                },
+            ]);
 
         // Act
         var result = await CreateCommandHandler.Handle(command, CancellationToken.None);
@@ -134,7 +147,19 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                     Unit = "mg/L"
                 }
             ],
-            null);
+            null,
+            createTaskCheckListItems:
+            [
+                new CreateTaskCheckListItemDto
+                {
+                    Name = "Weigh chemicals",
+                    Description = "Weigh 4g of MS powder and 30g of sucrose",
+                    Order = 1,
+                    ExpectedUnit = "g",
+                    ExpectedMinValue = 34,
+                    ExpectedMaxValue = 34
+                },
+            ]);
 #pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
         // Act
@@ -197,7 +222,19 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TechnicianId = "tech-1",
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
                 ExpectedEndDate = DateTime.UtcNow.AddDays(1)
-            });
+            },
+            createTaskCheckListItems:
+            [
+                new CreateTaskCheckListItemDto
+                {
+                    Name = "Weigh chemicals",
+                    Description = "Weigh 4g of MS powder and 30g of sucrose",
+                    Order = 1,
+                    ExpectedUnit = "g",
+                    ExpectedMinValue = 34,
+                    ExpectedMaxValue = 34
+                },
+            ]);
 
         // Act
         var result = await CreateCommandHandler.Handle(command, CancellationToken.None);
@@ -232,7 +269,19 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TechnicianId = null!, // invalid
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
                 ExpectedEndDate = DateTime.UtcNow.AddDays(-1)
-            });
+            },
+            createTaskCheckListItems:
+            [
+                new CreateTaskCheckListItemDto
+                {
+                    Name = "Weigh chemicals",
+                    Description = "Weigh 4g of MS powder and 30g of sucrose",
+                    Order = 1,
+                    ExpectedUnit = "g",
+                    ExpectedMinValue = 34,
+                    ExpectedMaxValue = 34
+                },
+            ]);
 
         // Act
         Func<Task> act = async () =>

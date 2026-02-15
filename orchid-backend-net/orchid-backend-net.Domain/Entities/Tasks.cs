@@ -216,7 +216,7 @@ namespace orchid_backend_net.Domain.Entities
 
 
         // ===== Checklist =====
-        public TaskCheckList EnsureChecklist()
+        private TaskCheckList EnsureChecklist()
         {
             CheckList ??= new TaskCheckList()
             {
@@ -234,7 +234,7 @@ namespace orchid_backend_net.Domain.Entities
         /// <param name="expectedUnit"></param>
         /// <param name="expectedMinValue"></param>
         /// <param name="expectedMaxValue"></param>
-        public void AddCheckListItem(
+        public void AddSingleCheckListItem(
             string name,
             string? description,
             int order,

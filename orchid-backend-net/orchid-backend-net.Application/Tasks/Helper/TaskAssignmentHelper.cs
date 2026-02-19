@@ -25,11 +25,12 @@ namespace orchid_backend_net.Application.Tasks.Helper
             TaskTargetType targetType, 
             string targetId, 
             DateTime expectedEndDate, 
-            DateTime startDate)
+            DateTime startDate,
+            bool isSeeding = false)
         {
             if (string.IsNullOrWhiteSpace(technicianId))
                 return;
-            task.AddTaskAssignment(technicianId, targetType, targetId, expectedEndDate, startDate);
+            task.AddTaskAssignment(technicianId, targetType, targetId, expectedEndDate, startDate, isSeeding);
         }
     }
 }

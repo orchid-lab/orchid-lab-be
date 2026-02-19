@@ -26,13 +26,19 @@ namespace orchid_backend_net.Domain.Entities
         public DateTime? Evaluated { get; set; }
 
 
+        internal void Start()
+        {
+            Status = TaskCheckListItemStatus.InProgress;
+        }
+
+
         /// <summary>
         /// technician submit measurment result, this action will set status to complete, and update mesured value and unit
         /// </summary>
         /// <param name="measuredValue"></param>
         /// <param name="measurementUnit"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        internal void SubmitByTechnician(decimal measuredValue, string measurementUnit)
+        internal void SubmitByTechnician(decimal? measuredValue, string? measurementUnit)
         {
             if (Status != TaskCheckListItemStatus.Pending)
                 throw new InvalidOperationException("Checklist item đã được submit hoặc đánh giá.");

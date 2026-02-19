@@ -25,7 +25,8 @@ namespace orchid_backend_net.Domain.Entities
             TaskTargetType targetType,
             string targetId,
             DateTime expectedEndDate,
-            DateTime startDate)
+            DateTime startDate,
+            bool isSeeding = false)
         {
             if (string.IsNullOrWhiteSpace(ResearcherId))
                 throw new DomainException("Task không biết ai giao cho technician nào.");
@@ -36,7 +37,12 @@ namespace orchid_backend_net.Domain.Entities
             if (string.IsNullOrEmpty(technicianId))
                 throw new DomainException("Người nhận task không được để trống.");
 
-            Status = Common.Enum.TaskStatus.Assigned;
+            if (isSeeding)
+                Status = Common.Enum.TaskStatus.InProgress;
+            else
+                Status = Common.Enum.TaskStatus.Assigned;
+
+
 
             TaskAssignment = new TaskAssignment
             {
@@ -286,10 +292,10 @@ namespace orchid_backend_net.Domain.Entities
             string measurementUnit,
             decimal measuredValue)
         {
-            if(TaskAssignment?.TechnicianId != technicianId)
+            if (TaskAssignment?.TechnicianId != technicianId)
                 throw new DomainException("Không phải task của bạn.");
 
-            if(Status != Common.Enum.TaskStatus.InProgress && Status != Common.Enum.TaskStatus.ReworkRequired)
+            if (Status != Common.Enum.TaskStatus.InProgress && Status != Common.Enum.TaskStatus.ReworkRequired)
                 throw new DomainException("Task chưa được thực hiện.");
             _ = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
 
@@ -305,7 +311,7 @@ namespace orchid_backend_net.Domain.Entities
         {
             if (ResearcherId != researcherId)
                 throw new DomainException("Không có quyền đánh giá task này");
-            if(Status != Common.Enum.TaskStatus.WaitingForApproval)
+            if (Status != Common.Enum.TaskStatus.WaitingForApproval)
                 throw new DomainException("Task chưa chờ duyệt.");
 
             _ = CheckList ?? throw new DomainException("Checklist chưa được tạo.");

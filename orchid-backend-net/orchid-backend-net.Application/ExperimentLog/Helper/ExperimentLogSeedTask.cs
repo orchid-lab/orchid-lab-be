@@ -52,7 +52,8 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
                     new ConvertTaskTemplateToToDoTaskCommand(
                         template.ID, 
                         assignment,
-                        experimentLog.CreatedBy),
+                        experimentLog.CreatedBy,
+                        true),
                     cancellationToken);
             }
             catch (Exception ex)

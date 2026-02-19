@@ -63,7 +63,8 @@ namespace orchid_backend_net.Application.Tasks.UseCase.CreateTask
                     request.CreateTaskAssignment.TargetType,
                     request.CreateTaskAssignment.TargetId,
                     request.CreateTaskAssignment.ExpectedEndDate,
-                    DateTime.UtcNow);
+                    DateTime.UtcNow,
+                    false);
             }
 
             TaskCheckListHelper.AddCheckListItemsToTask(tasks, request.CreateTaskCheckListItemDtos);

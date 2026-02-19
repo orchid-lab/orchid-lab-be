@@ -40,7 +40,7 @@ namespace orchid_backend_net.Domain.Entities
         /// <exception cref="InvalidOperationException"></exception>
         internal void SubmitByTechnician(decimal? measuredValue, string? measurementUnit)
         {
-            if (Status != TaskCheckListItemStatus.Pending)
+            if (Status != TaskCheckListItemStatus.InProgress)
                 throw new InvalidOperationException("Checklist item đã được submit hoặc đánh giá.");
             if(ExpectedUnit != null && measurementUnit != ExpectedUnit)
                 throw new InvalidOperationException($"Đơn vị đo lường không hợp lệ. Yêu cầu: {ExpectedUnit}.");

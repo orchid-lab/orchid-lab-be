@@ -8,8 +8,8 @@ namespace orchid_backend_net.Application.Tasks.UseCase.TechnicianSubmitTaskCheck
     public record TechnicianSubmitTaskCheckListItemCommand(
         string TaskId,
         string ItemId,
-        string MeasurementUnit,
-        decimal MeasuredValue)
+        string? MeasurementUnit,
+        decimal? MeasuredValue)
         : IRequest<string>;
 
     internal class TechnicianSubmitTaskChecklistItemCommandHandler(

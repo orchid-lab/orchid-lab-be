@@ -231,6 +231,17 @@ namespace orchid_backend_net.Domain.Entities
             return CheckList;
         }
 
+        public void StartChecklist(string technicianId, string checkListItemId)
+        {
+            if (TaskAssignment?.TechnicianId != technicianId)
+                throw new DomainException("Không phải task của bạn.");
+            if (Status != Common.Enum.TaskStatus.InProgress)
+                throw new DomainException("Task chưa được thực hiện.");
+            _ = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
+            var item = CheckList.GetItem(checkListItemId);
+            item.Start();
+        }
+
         /// <summary>
         /// Researcher use this to add one more item into checklist. If checklist is not created yet, it will be created first then add item into it.
         /// </summary>
@@ -289,8 +300,8 @@ namespace orchid_backend_net.Domain.Entities
         public void SubmitCheckListItemResult(
             string technicianId,
             string itemId,
-            string measurementUnit,
-            decimal measuredValue)
+            string? measurementUnit,
+            decimal? measuredValue)
         {
             if (TaskAssignment?.TechnicianId != technicianId)
                 throw new DomainException("Không phải task của bạn.");

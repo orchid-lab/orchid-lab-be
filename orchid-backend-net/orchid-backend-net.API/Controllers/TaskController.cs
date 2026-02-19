@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authorization;
 using orchid_backend_net.Application.Tasks.UseCase.UpdateTaskCheckListItemInformation;
 using orchid_backend_net.API.Dto.Task;
 using orchid_backend_net.Application.Tasks.UseCase.RemoveTaskCheckListItem;
+using orchid_backend_net.Application.Tasks.UseCase.TechnicianSubmitTaskCheckList;
+using orchid_backend_net.Application.Tasks.UseCase.StartCheckListItem;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -291,6 +293,79 @@ namespace orchid_backend_net.API.Controllers
                     dto.ExpectedMeasureUnit,
                     dto.ExpectedMinValue,
                     dto.ExpectedMaxValue)
+                    , cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// start checklist item for working
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="checkListItemId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [Authorize(Roles = "Technician")]
+        [HttpPost("{id}/checklist-items/{checkListItemId}")]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> StartCheckListItem(
+            [FromRoute] string id,
+            [FromRoute] string checkListItemId,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                if (id is null || checkListItemId is null)
+                {
+                    return BadRequest(new ProblemDetails { Title = "ID không tồn tại", Detail = "ID trong URL phải tồn tại" });
+                }
+                var result = await Sender.Send(new StartCheckListItemCommand(checkListItemId, id), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Updates the actual measured value and unit for a specific checklist item associated with a task.
+        /// </summary>
+        /// <remarks>This method requires the caller to have the 'Technician' role. Returns a BadRequest
+        /// response if either identifier is null or if an error occurs during processing.</remarks>
+        /// <param name="id">The unique identifier of the task containing the checklist item. This value cannot be null.</param>
+        /// <param name="checkListItemId">The unique identifier of the checklist item to update. This value cannot be null.</param>
+        /// <param name="dto">An object containing the new measurement unit and measured value for the checklist item.</param>
+        /// <param name="cancellationToken">A token to monitor for cancellation requests while the asynchronous operation is in progress.</param>
+        /// <returns>A JSON response containing a string message that indicates the result of the update operation.</returns>
+        [Authorize(Roles = "Technician")]
+        [HttpPut("{id}/checklist-items/{checkListItemId}/update-actual-value")]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateCheckListItemActualValue(
+            [FromRoute] string id,
+            [FromRoute] string checkListItemId,
+            [FromBody] SubmitTaskChecklistItemDto dto,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                if (id is null || checkListItemId is null)
+                {
+                    return BadRequest(new ProblemDetails { Title = "ID không tồn tại", Detail = "ID trong URL phải tồn tại" });
+                }
+                var result = await Sender.Send(new TechnicianSubmitTaskCheckListItemCommand(
+                    id,
+                    checkListItemId,
+                    dto.MeasurementUnit,
+                    dto.MeasuredValue)
                     , cancellationToken);
                 return Ok(result);
             }

@@ -57,6 +57,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
             experimentLogs.UpdatedBy = currentUserService.UserId!;
             experimentLogs.UpdatedDate = DateTime.UtcNow;
 
+            //validate if experiment log task has any incomplete subtask before moving to completed status
+
             //update and save changes
             experimentLogRepository.Update(experimentLogs);
             return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ?

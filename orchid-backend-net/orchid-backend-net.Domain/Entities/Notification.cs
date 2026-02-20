@@ -1,4 +1,5 @@
-﻿using orchid_backend_net.Domain.Entities.Base;
+﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Entities.Base;
 
 namespace orchid_backend_net.Domain.Entities
 {

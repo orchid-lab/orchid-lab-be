@@ -136,7 +136,10 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IMonitoringLogRepository, MonitoringLogRepository>();    
             services.AddScoped<IDiseaseRepository, DiseaseRepository>();
             services.AddScoped<IAnalyticResultRepository, AnalyticResultRepository>();
-            
+
+            //for image module
+            services.AddScoped<IImageRepository, ImageRepository>();
+
             //signalR
             services.AddSignalR(opt =>
             {

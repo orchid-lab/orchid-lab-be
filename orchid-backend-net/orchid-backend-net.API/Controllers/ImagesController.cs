@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
+using orchid_backend_net.API.Dto.Image;
 using orchid_backend_net.Application.Images.UseCase.UploadImage;
 using orchid_backend_net.Application.Images.UseCase.UploadUserAvatarCommand;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -23,7 +24,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="image"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost("/user")]
+        [HttpPost("user")]
         [ProducesResponseType(typeof(string), 200)]
         [ProducesResponseType(typeof(string), 201)]
         public async Task<ActionResult<JsonResponse<string>>> UploadUserImage(IFormFile image, CancellationToken cancellationToken)
@@ -57,46 +58,68 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
-        /// upload image based on the targetType and targetId, for example: targetType = "MonitoringLog", targetId = "123" => image will be uploaded for MonitoringLog with id 123
-        /// <remarks>
-        /// Target type has only 2 type
-        /// <ul>
-        /// <li><c>MonitoringLog</c></li>
-        /// <li><c>Task</c></li>
-        /// </ul>
-        /// </remarks>
+        /// Upload image with polymorphic association.
         /// </summary>
-        /// <param name="image"></param>
-        /// <param name="targetType"></param>
-        /// <param name="targetId"></param>
+        /// <param name="request">Upload request containing image, target type and target ID</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        [HttpPost("upload")]
+        /// <returns>Image URL from Cloudinary</returns>
+        /// <remarks>
+        /// Target type allowed values:
+        /// <ul>
+        /// <li><c>MonitoringLog</c> or <c>0</c></li>
+        /// <li><c>Task</c> or <c>1</c></li>
+        /// </ul>
+        /// 
+        /// Sample request:
+        /// 
+        ///     POST /api/images
+        ///     Content-Type: multipart/form-data
+        ///     
+        ///     image: [binary file]
+        ///     targetType: MonitoringLog
+        ///     targetId: 123e4567-e89b-12d3-a456-426614174000
+        /// 
+        /// </remarks>
+        [HttpPost]
+        [Consumes("multipart/form-data")]
         [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(ProblemDetails), 400)]
+        [ProducesResponseType(typeof(ProblemDetails), 404)]
         public async Task<ActionResult<JsonResponse<string>>> UploadImage(
-            [FromForm] IFormFile image,
-            [FromForm] string targetType, 
-            [FromForm] string targetId, 
+            [FromForm] UploadImageRequest request,
             CancellationToken cancellationToken)
         {
             try
             {
-                logger.LogInformation("Uploading image for {TargetType}:{TargetId}", targetType, targetId);
+                logger.LogInformation("Uploading image for {TargetType}:{TargetId}",
+                    request.TargetType, request.TargetId);
 
-                if (image == null || image.Length == 0)
-                    return BadRequest("Image file is required.");
+                if (request.Image == null || request.Image.Length == 0)
+                    return BadRequest(new ProblemDetails
+                    {
+                        Title = "Dữ liệu không hợp lệ",
+                        Detail = "Image file is required."
+                    });
 
-                if (string.IsNullOrWhiteSpace(targetType))
-                    return BadRequest("TargetType is required.");
+                if (string.IsNullOrWhiteSpace(request.TargetType))
+                    return BadRequest(new ProblemDetails
+                    {
+                        Title = "Dữ liệu không hợp lệ",
+                        Detail = "TargetType is required."
+                    });
 
-                if (string.IsNullOrWhiteSpace(targetId))
-                    return BadRequest("TargetId is required.");
+                if (string.IsNullOrWhiteSpace(request.TargetId))
+                    return BadRequest(new ProblemDetails
+                    {
+                        Title = "Dữ liệu không hợp lệ",
+                        Detail = "TargetId is required."
+                    });
 
                 // Convert IFormFile to byte array
                 byte[] originalBytes;
-                await using (var ms = new MemoryStream((int)image.Length))
+                await using (var ms = new MemoryStream((int)request.Image.Length))
                 {
-                    await image.CopyToAsync(ms, cancellationToken);
+                    await request.Image.CopyToAsync(ms, cancellationToken);
                     originalBytes = ms.ToArray();
                 }
 
@@ -106,10 +129,10 @@ namespace orchid_backend_net.API.Controllers
 
                 // Create command
                 var command = new UploadImageCommand(
-                    image.FileName,
+                    request.Image.FileName,
                     resizedBytes,
-                    targetType,    // Pass as string
-                    targetId
+                    request.TargetType,
+                    request.TargetId
                 );
 
                 var imageUrl = await Sender.Send(command, cancellationToken);

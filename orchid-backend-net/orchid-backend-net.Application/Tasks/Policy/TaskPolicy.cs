@@ -96,16 +96,9 @@ namespace orchid_backend_net.Application.Tasks.Policy
             if (!AllowedNextStatuses.Contains(parsedStatus))
                 throw new InvalidOperationException("Không thể chuyển trạng thái về lại mới tạo hoặc xóa.");
 
-            // If completed → must specify assignment
-            if (IsCompletedStatus(parsedStatus) &&
-                string.IsNullOrWhiteSpace(request.TaskAssignmentId))
-                throw new InvalidOperationException(
-                    "Thiếu TaskAssignmentId khi hoàn thành task.");
-
-            if (IsCompletedStatus(parsedStatus) &&
-                request.EndDate == null)
-                throw new InvalidOperationException(
-                    "Thiếu ngày kết thúc.");
+            // If completing → must have EndDate
+            if (IsCompletedStatus(parsedStatus) && request.EndDate == null)
+                throw new InvalidOperationException("Thiếu ngày kết thúc khi hoàn thành task.");
 
             // Validate working hour only when completing
             if (IsCompletedStatus(parsedStatus))

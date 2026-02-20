@@ -201,6 +201,7 @@ namespace orchid_backend_net.API.Controllers
         /// <li><c>CompletedOutTime</c> - when technician completed task out of time</li>
         /// <li><c>ReworkRequired</c> - when technician is need to rework</li>
         /// </ul>
+        /// **Note**: EndDate is REQUIRED when status is CompletedInTime or CompletedOutTime.
         /// </remarks>
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>

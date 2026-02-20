@@ -15,9 +15,8 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus
     {
         public required string TodoTaskId { get; set; }
         public required string Status { get; set; }
-        public string? TaskAssignmentId { get; set; }
         /// <summary>
-        /// only has value when status is waiting for approval
+        /// Actual completion date. Required when status is CompletedInTime or CompletedOutTime.
         /// </summary>
         public DateTime? EndDate { get; set; }
     }
@@ -26,7 +25,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ChangeTaskStatus
     {
         public async Task<string> Handle(ChangeTaskStatusCommand request, CancellationToken cancellationToken)
         {
-            var task = await taskRepository.FindProjectToAsync<Domain.Entities.Tasks>(
+            var task = await taskRepository.FindAsync(
                 queryOptions: q => 
                     q.Where(t => t.ID.Equals(request.TodoTaskId)), 
                 cancellationToken)

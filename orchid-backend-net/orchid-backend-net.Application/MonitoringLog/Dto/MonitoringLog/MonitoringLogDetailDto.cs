@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Common.Mappings;
+using orchid_backend_net.Application.Images.Dto.Img;
 using orchid_backend_net.Application.MonitoringLog.Dto.AnalyticResult;
 using orchid_backend_net.Application.MonitoringLog.Dto.LogDetail;
 using orchid_backend_net.Domain.Common.Enum;
@@ -23,6 +24,7 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
         public string? UpdatedBy { get; set; }
         public bool IsNewest { get; set; }
         public List<LogDetailDto> LogDetails { get; set; } = new();
+        public List<ImageDto> Images { get; set; } = new();
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.MonitoringLogs, MonitoringLogDetailDto>()
@@ -38,7 +40,8 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
                 .ForMember(dest => dest.UpdatedDate,
                     opt => opt.MapFrom(src => src.UpdatedDate.HasValue
                         ? DateOnly.FromDateTime(src.UpdatedDate.Value)
-                        : (DateOnly?)null));
+                        : (DateOnly?)null))
+                .ForMember(dest => dest.Images, opt => opt.Ignore());
         }
     }
 }

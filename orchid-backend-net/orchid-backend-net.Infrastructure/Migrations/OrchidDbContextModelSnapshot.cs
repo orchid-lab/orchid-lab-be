@@ -282,17 +282,18 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<string>("MonitoringLogsId")
+                    b.Property<string>("TargetId")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("TargetType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("MonitoringLogsId");
 
                     b.ToTable("Imgs");
                 });
@@ -1163,17 +1164,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("Method");
 
                     b.Navigation("SeedlingParent");
-                });
-
-            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Imgs", b =>
-                {
-                    b.HasOne("orchid_backend_net.Domain.Entities.MonitoringLogs", "MonitoringLogs")
-                        .WithMany()
-                        .HasForeignKey("MonitoringLogsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("MonitoringLogs");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.LogDetails", b =>

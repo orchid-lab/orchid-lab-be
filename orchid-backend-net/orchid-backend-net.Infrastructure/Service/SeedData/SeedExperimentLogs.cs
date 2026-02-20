@@ -272,8 +272,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
 
             // Optional images for monitoring logs
             await context.Set<Imgs>().AddRangeAsync(
-                new Imgs { ID = Guid.NewGuid().ToString(), MonitoringLogsId = monitoring1.ID, Url = "https://example.com/img/monitoring1.jpg" },
-                new Imgs { ID = Guid.NewGuid().ToString(), MonitoringLogsId = monitoring2.ID, Url = "https://example.com/img/monitoring2.jpg" }
+                new Imgs { ID = Guid.NewGuid().ToString(), TargetId = monitoring1.ID, Url = "https://example.com/img/monitoring1.jpg", TargetType = ImageTargetType.MonitoringLog },
+                new Imgs { ID = Guid.NewGuid().ToString(), TargetId = monitoring2.ID, Url = "https://example.com/img/monitoring2.jpg", TargetType = ImageTargetType.MonitoringLog }
             );
             await context.SaveChangesAsync();
         }

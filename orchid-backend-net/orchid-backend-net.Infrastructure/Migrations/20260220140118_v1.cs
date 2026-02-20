@@ -96,6 +96,20 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Imgs",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    TargetType = table.Column<int>(type: "integer", nullable: false),
+                    TargetId = table.Column<string>(type: "text", nullable: false),
+                    Url = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Imgs", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "LabRooms",
                 columns: table => new
                 {
@@ -745,25 +759,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Imgs",
-                columns: table => new
-                {
-                    ID = table.Column<string>(type: "text", nullable: false),
-                    MonitoringLogsId = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Imgs", x => x.ID);
-                    table.ForeignKey(
-                        name: "FK_Imgs_MonitoringLogs_MonitoringLogsId",
-                        column: x => x.MonitoringLogsId,
-                        principalTable: "MonitoringLogs",
-                        principalColumn: "ID",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MonitoringLogDetails",
                 columns: table => new
                 {
@@ -809,11 +804,6 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_ExperimentLogs_SeedlingParentId",
                 table: "ExperimentLogs",
                 column: "SeedlingParentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Imgs_MonitoringLogsId",
-                table: "Imgs",
-                column: "MonitoringLogsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MethodStages_MethodId",

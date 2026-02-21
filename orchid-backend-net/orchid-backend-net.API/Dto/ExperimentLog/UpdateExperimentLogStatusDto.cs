@@ -5,7 +5,9 @@
     /// </summary>
     /// <param name="Status">status string follow up with experiment log status enum</param>
     /// <param name="BatchId">batch id if user change experiment log stage into different batch require</param>
+    /// <param name="Reason"></param>
     public record UpdateExperimentLogStatusDto(
         string Status,
-        int? BatchId);
+        int? BatchId,
+        string? Reason);
 }

@@ -18,6 +18,15 @@ namespace orchid_backend_net.Application.Tasks.Policy
             Domain.Common.Enum.TaskStatus.DeclinedByTechnician,
         ];
 
+        /// <summary>
+        /// validate for task update, check that task is template or TO-DO
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="request"></param>
+        /// <param name="dateTimeProvider"></param>
+        /// <param name="stageDefinitionRepository"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async static Task ValidateTaskUpdate(
             Domain.Entities.Tasks task,
             UpdateTaskCommand request,
@@ -56,6 +65,14 @@ namespace orchid_backend_net.Application.Tasks.Policy
         }
 
 
+        /// <summary>
+        /// validate for create task 
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="dateTimeProvider"></param>
+        /// <param name="stageDefinitionRepository"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public static async Task ValidateTaskCreate(CreateTaskCommand request, IDateTimeProvider dateTimeProvider, IStageDefinitionRepository stageDefinitionRepository)
         {
             bool isTemplateTask = request.StageId is not null;
@@ -82,6 +99,14 @@ namespace orchid_backend_net.Application.Tasks.Policy
             }
         }
 
+        /// <summary>
+        /// validate for task change status
+        /// </summary>
+        /// <param name="tasks"></param>
+        /// <param name="request"></param>
+        /// <param name="dateTimeProvider"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public static Domain.Common.Enum.TaskStatus ValidateTaskStatusChange(Domain.Entities.Tasks tasks, ChangeTaskStatusCommand request, IDateTimeProvider dateTimeProvider)
         {
             ValidateTaskWorkingHour(null, dateTimeProvider);
@@ -109,6 +134,12 @@ namespace orchid_backend_net.Application.Tasks.Policy
             return parsedStatus;
         }
 
+        /// <summary>
+        /// validate working hour
+        /// </summary>
+        /// <param name="expectedEndDate"></param>
+        /// <param name="dateTimeProvider"></param>
+        /// <exception cref="InvalidOperationException"></exception>
         public static void ValidateTaskWorkingHour(DateTime? expectedEndDate, IDateTimeProvider dateTimeProvider)
         {
             DateTime currentTime = dateTimeProvider.Now;

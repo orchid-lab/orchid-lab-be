@@ -154,7 +154,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId);
+                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId, dto.Reason);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }

@@ -10,12 +10,14 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
     public record UpdateExperimentLogStatusCommand(
         string Id,
         string Status,
-        int? BatchId) : IRequest<string>;
+        int? BatchId,
+        string? Reason) : IRequest<string>;
 
     internal class UpdateExperimentLogStatusCommandHandler(
         IExperimentLogRepository experimentLogRepository,
         IMethodRepository methodRepository,
         IBatchesRepository batchesRepository,
+        ITaskRepository taskRepository,
         ICurrentUserService currentUserService
         ) : IRequestHandler<UpdateExperimentLogStatusCommand, string>
     {
@@ -48,12 +50,16 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
                 batch.StartBatching();
             }
 
+            //validate if technician want to move status to completed but there are still incomplete subtask
+            if(nextStatus == Domain.Common.Enum.ExperimentLogStatus.WaitingForChangeStage) 
+                await ExperimentLogPolicy.ValidateForChangeStage(experimentLogs.ID, taskRepository, cancellationToken);
+
             //update experiment log status and stage
             ExperimentLogStatusDispatcher.Dispatch(
                 experimentLogs,
                 nextStatus,
                 nextStage,
-                currentUserService.UserId!);
+                request.Reason);
             experimentLogs.UpdatedBy = currentUserService.UserId!;
             experimentLogs.UpdatedDate = DateTime.UtcNow;
 

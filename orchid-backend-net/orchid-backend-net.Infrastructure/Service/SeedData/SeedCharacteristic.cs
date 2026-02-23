@@ -21,9 +21,8 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                     new() { Code = "FLOWER_DIAMETER", Name = "Đường kính hoa", Unit = "cm" },
                     new() { Code = "FLOWER_COUNT_PER_SPIKE", Name = "Số hoa trên phát hoa", Unit = "hoa" },
 
-                    new() { Code = "FLOWER_COLOR_R", Name = "Màu hoa - Red", Unit = "0-255" },
-                    new() { Code = "FLOWER_COLOR_G", Name = "Màu hoa - Green", Unit = "0-255" },
-                    new() { Code = "FLOWER_COLOR_B", Name = "Màu hoa - Blue", Unit = "0-255" },
+                    new() { Code = "FLOWER_COLOR_PRIMARY", Name = "Màu hoa chính", Unit = "RGB" },
+                    new() { Code = "FLOWER_COLOR_SECONDARY", Name = "Màu hoa phụ", Unit = "RGB" },
 
                     new() { Code = "DAYS_TO_FLOWERING", Name = "Thời gian đến ra hoa", Unit = "ngày" },
                     new() { Code = "FLOWER_LIFESPAN", Name = "Thời gian hoa bền", Unit = "ngày" },

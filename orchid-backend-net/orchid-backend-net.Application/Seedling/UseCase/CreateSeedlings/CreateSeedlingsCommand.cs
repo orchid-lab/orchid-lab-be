@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Seedling.Dto;
 using orchid_backend_net.Domain.Entities;
@@ -12,13 +11,13 @@ namespace orchid_backend_net.Application.Seedling.UseCase.CreateSeedlings
         string scientificName,
         string? description,
         string? parentAId,
-        List<CreateSeedlingTraistDto> createSeedlingTraistDtos) : IRequest<string>
+        List<CreateSeedlingTraistDto> seedlingsTraits) : IRequest<string>
     {
         public required string LocalName { get; set; } = localName;
         public required string ScientificName { get; set; } = scientificName;
         public string? Description { get; set; } = description;
         public string? ParentAId { get; set; } = parentAId;
-        public required List<CreateSeedlingTraistDto> SeedlingsTraits { get; set; } = createSeedlingTraistDtos;
+        public required List<CreateSeedlingTraistDto> SeedlingsTraits { get; set; } = seedlingsTraits;
     }
 
     internal class CreateSeedlingsCommandHandler(ISeedlingRepository seedlingRepository,

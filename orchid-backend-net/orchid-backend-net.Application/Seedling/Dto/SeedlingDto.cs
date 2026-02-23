@@ -12,6 +12,8 @@ namespace orchid_backend_net.Application.Seedling.Dto
         public string? Description { get; set; }
         public string? ParentALocalName { get; set; }
         public string? ParentAScientificName { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public string CreatedBy { get; set; } = string.Empty;
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Seedlings, SeedlingDto>();

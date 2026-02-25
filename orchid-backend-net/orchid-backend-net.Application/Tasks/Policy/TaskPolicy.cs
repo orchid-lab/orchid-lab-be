@@ -142,7 +142,8 @@ namespace orchid_backend_net.Application.Tasks.Policy
         /// <exception cref="InvalidOperationException"></exception>
         public static void ValidateTaskWorkingHour(DateTime? expectedEndDate, IDateTimeProvider dateTimeProvider)
         {
-            DateTime currentTime = dateTimeProvider.Now;
+            //DateTime currentTime = dateTimeProvider.Now;
+            DateTime currentTime = DateTime.UtcNow;
 
             //if (!dateTimeProvider.IsInWorkingHour(currentTime))
             //    throw new InvalidOperationException("Chỉ được thao tác với task trong giờ hành chính (7h - 17h).");

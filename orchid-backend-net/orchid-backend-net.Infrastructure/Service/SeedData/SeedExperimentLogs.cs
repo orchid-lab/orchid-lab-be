@@ -17,6 +17,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 .FirstOrDefaultAsync(m => EF.Functions.ILike(m.Name, "%Invitro%"));
             if (invitroMethod is null) return;
 
+            var tclMethod = await context.Set<Methods>()
+                .FirstOrDefaultAsync(m => EF.Functions.ILike(m.Name, "%TCL%"));
+            if (tclMethod is null) return;
+
             var methodStages = await context.Set<MethodStages>()
                 .Where(ms => ms.MethodId == invitroMethod.ID)
                 .OrderBy(ms => ms.Order)
@@ -24,7 +28,6 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
             if (methodStages.Count == 0) return;
 
             var stageGeneratesSamples = methodStages.FirstOrDefault(ms => ms.IsSampleGenerated);
-            var maxStageOrder = methodStages.Max(ms => ms.Order);
 
             // Any batch and lab room already seeded
             var batch = await context.Set<Batches>().FirstOrDefaultAsync();
@@ -42,7 +45,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
             {
                 ID = Guid.NewGuid().ToString(),
                 Name = "EL-INV-CREATED",
-                MethodId = invitroMethod.ID,
+                MethodId = tclMethod.ID,
                 BatchId = batch.ID,
                 SeedlingParentId = seedlingParent.ID,
                 AssignedTo = technicianUser.ID,

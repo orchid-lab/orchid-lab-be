@@ -191,7 +191,7 @@ namespace orchid_backend_net.Domain.Entities
             if (TaskAssignment?.TechnicianId != technicianId)
                 throw new DomainException("Không phải task của bạn.");
 
-            if (Status != Common.Enum.TaskStatus.InProgress || Status != Common.Enum.TaskStatus.ReworkRequired)
+            if (Status != Common.Enum.TaskStatus.InProgress && Status != Common.Enum.TaskStatus.ReworkRequired)
                 throw new DomainException("Task chưa được thực hiện.");
             if (string.IsNullOrWhiteSpace(ResearcherId))
                 throw new DomainException("Task hiện tại đang lỗi.");

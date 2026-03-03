@@ -84,7 +84,7 @@ namespace orchid_backend_net.Domain.Entities
 
         internal void ResetAllItemsForRework()
         {
-            foreach (var item in Items.Where(i => i.IsPass == false))
+            foreach (var item in Items)
             {
                 item.ResetForRework();
             }

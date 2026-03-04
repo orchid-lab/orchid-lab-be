@@ -14,6 +14,10 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public DateOnly? ExecutionDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public required string CreatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
         public SampleStatus Status { get; set; } = default!;
         public void Mapping(Profile profile)
         {

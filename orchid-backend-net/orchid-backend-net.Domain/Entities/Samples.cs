@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class Samples : BaseGuidEntity
+    public class Samples : AuditableEntity
     {
         public string Name { get; set; } = null!;
         public required string ExperimentLogId { get; set; }

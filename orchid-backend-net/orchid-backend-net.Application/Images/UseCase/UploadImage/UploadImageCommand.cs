@@ -19,12 +19,13 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
         IImageUploaderService imageUploaderService,
         IImageRepository imageRepository,
         IMonitoringLogRepository monitoringLogRepository,
+        ISampleRepository sampleRepository,
         ITaskRepository taskRepository) : IRequestHandler<UploadImageCommand, string>
     {
         public async Task<string> Handle(UploadImageCommand request, CancellationToken cancellationToken)
         {
             //validate target type 
-            var parsedTargetType = await ImagePolicy.ValidateImageTargetType(request, monitoringLogRepository, taskRepository);
+            var parsedTargetType = await ImagePolicy.ValidateImageTargetType(request, monitoringLogRepository, taskRepository, sampleRepository);
             //get folder base on target type
             var folder = GetFolderByTargetType(parsedTargetType);
             //upload image to storage and get url

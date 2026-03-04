@@ -94,6 +94,7 @@ namespace orchid_backend_net.API.Controllers
         /// <ul>
         /// <li><c>MonitoringLog</c> or <c>0</c></li>
         /// <li><c>Task</c> or <c>1</c></li>
+        /// <li><c>Sample</c> or <c>2</c></li>
         /// </ul>
         /// 
         /// Sample request:

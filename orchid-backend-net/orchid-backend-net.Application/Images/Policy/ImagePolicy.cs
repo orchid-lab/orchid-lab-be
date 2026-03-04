@@ -17,7 +17,8 @@ namespace orchid_backend_net.Application.Images.Policy
         public static async Task<ImageTargetType> ValidateImageTargetType(
             UploadImageCommand request,
             IMonitoringLogRepository monitoringLogRepository,
-            ITaskRepository taskRepository)
+            ITaskRepository taskRepository,
+            ISampleRepository sampleRepository)
         {
             if(!Enum.TryParse<ImageTargetType>(request.TargetType, true, out var parsedTargetType))
             {
@@ -33,6 +34,7 @@ namespace orchid_backend_net.Application.Images.Policy
             {
                 ImageTargetType.MonitoringLog => await monitoringLogRepository.AnyAsync(m => m.ID.Equals(request.TargetId), CancellationToken.None),
                 ImageTargetType.Task => await taskRepository.AnyAsync(t => t.ID.Equals(request.TargetId), CancellationToken.None),
+                ImageTargetType.Sample => await sampleRepository.AnyAsync(s => s.ID.Equals(request.TargetId), CancellationToken.None),  
                 _ => false
             };
 

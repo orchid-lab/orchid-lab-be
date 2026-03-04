@@ -10,7 +10,8 @@ namespace orchid_backend_net.Application.Images.Policy
         private static readonly HashSet<ImageTargetType> AllowedImageTargetTypes =
         [
             ImageTargetType.Task,
-            ImageTargetType.MonitoringLog
+            ImageTargetType.MonitoringLog,
+            ImageTargetType.Sample
         ];
 
         public static async Task<ImageTargetType> ValidateImageTargetType(

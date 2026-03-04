@@ -172,13 +172,13 @@ namespace orchid_backend_net.API.Controllers
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> Destroy(
             [FromRoute] string id,
-            [FromBody] string? reason,
+            [FromBody] DestroySampleCommandDto dto,
             CancellationToken cancellationToken = default)
         {
             try
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(new DestroySampleBecauseOfDiseaseCommand(id, reason), cancellationToken);
+                var result = await Sender.Send(new DestroySampleBecauseOfDiseaseCommand(id, dto.Reason), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

@@ -5,6 +5,7 @@ using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.MonitoringLog.Dto.AnalyticResult;
 using orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog;
 using orchid_backend_net.Application.MonitoringLog.UseCase.Analyze;
+using orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringLog;
 using orchid_backend_net.Application.MonitoringLog.UseCase.GetAllMonitoring;
 using orchid_backend_net.Application.MonitoringLog.UseCase.GetMonitoringLogById;
 using orchid_backend_net.Domain.Entities;
@@ -117,6 +118,31 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Phân tích thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// create monitoring log for sample
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> Create(
+            [FromBody] CreateMonitoringLogCommand command,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(command, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Tạo thất bại thất bại", Detail = ex.Message });
             }
         }
     }

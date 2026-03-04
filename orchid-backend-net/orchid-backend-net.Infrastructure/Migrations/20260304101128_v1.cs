@@ -670,7 +670,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ExperimentLogId = table.Column<string>(type: "text", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
-                    ExecutionDate = table.Column<DateOnly>(type: "date", nullable: true)
+                    ExecutionDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -23,7 +23,8 @@ namespace orchid_backend_net.Application.Sample.UseCase.CreateSampleByQuantity
                 experiment.Name,
                 experiment.ID,
                 firstStageDefinition,
-                request.Quantity);
+                request.Quantity,
+                currentUserService.UserId);
             experiment.UpdatedDate = DateTime.UtcNow;
             experiment.UpdatedBy = currentUserService.UserId;
             sampleRepository.AddRange(sampleList);

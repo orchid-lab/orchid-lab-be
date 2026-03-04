@@ -21,6 +21,7 @@ namespace orchid_backend_net.Domain.Entities
         //1 - Đang tiến hành - diễn ra khi technician nhận experiment log
         //2 - Hoàn thành
         //3 - Bị hủy 
+        //4 - Chuyển thành cây giống
         internal void MarkAsCompleted()
         {
             EnsureNotTerminated();

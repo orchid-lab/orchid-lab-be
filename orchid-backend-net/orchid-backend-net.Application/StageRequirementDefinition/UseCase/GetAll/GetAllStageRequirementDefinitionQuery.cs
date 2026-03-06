@@ -7,7 +7,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.StageRequirementDefinition.UseCase.GetAll
 {
-    public record GetAllStageRequirementDefinitionQuery(int PageNo, int PageSize, string? SampleStageId) : IRequest<PageResult<StageRequirementDefinitionDto>>;
+    public record GetAllStageRequirementDefinitionQuery(int PageNo, int PageSize, int? SampleStageDefinitionId) : IRequest<PageResult<StageRequirementDefinitionDto>>;
     internal class GetAllStageRequirementDefinitionQueryHandler(
         IStageRequirementDefinitionRepository stageRequirementDefinitionRepository)
         : IRequestHandler<GetAllStageRequirementDefinitionQuery, PageResult<StageRequirementDefinitionDto>>
@@ -16,10 +16,10 @@ namespace orchid_backend_net.Application.StageRequirementDefinition.UseCase.GetA
         {
             IQueryable<Domain.Entities.StageRequirementDefinition> queryOptions(IQueryable<Domain.Entities.StageRequirementDefinition> query)
             {
-                if (!string.IsNullOrEmpty(request.SampleStageId))
+                if (request.SampleStageDefinitionId.HasValue)
                 {
                     query = query.Where(srd =>
-                        srd.SampleStage.ID.Equals(request.SampleStageId));
+                        srd.SampleStageDefinitionId == request.SampleStageDefinitionId);
                 }
                 return query;
             }

@@ -5,6 +5,7 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStageDefinition
 {
     public class SampleStageDefinitionDto : IMapFrom<Domain.Entities.SampleStageDefinition>
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public int Order { get; set; }
         public string Description { get; set; }

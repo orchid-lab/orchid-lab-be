@@ -22,6 +22,7 @@ namespace orchid_backend_net.Application
                 cfg.AddOpenBehavior(typeof(AuthorizationBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
                 cfg.AddOpenBehavior(typeof(UnitOfWorkBehaviour<,>));
+                cfg.AddOpenBehavior(typeof(UserExistenceValidationBehaviour<,>));
             });
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());

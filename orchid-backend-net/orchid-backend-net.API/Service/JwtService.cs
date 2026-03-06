@@ -50,8 +50,6 @@ namespace orchid_backend_net.API.Service
                 new("RoleName",roles.ToString())
             };
 
-
-            //tf do u means ?
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("OrchidLabManagementSystemsDotNetApi"));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -59,7 +57,8 @@ namespace orchid_backend_net.API.Service
                 issuer: "https://net-api.tissuex.me/",
                 audience: "api",
                 claims: claims,
-                expires: DateTime.Now.AddYears(1),
+                notBefore: DateTime.UtcNow,
+                expires: DateTime.UtcNow.AddMinutes(30),
                 signingCredentials: creds);
             var re = new Token
             {
@@ -67,6 +66,37 @@ namespace orchid_backend_net.API.Service
                 RefreshToken = refreshToken
             };
             return re;
+        }
+
+        /// <summary>
+        /// Get claims from expired access token for refresh
+        /// </summary>
+        public ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidAudience = "api",
+                ValidateIssuer = true,
+                ValidIssuer = "https://net-api.tissuex.me/",
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes("OrchidLabManagementSystemsDotNetApi")),
+                ValidateLifetime = false, // Allow expired tokens for refresh
+                ClockSkew = TimeSpan.Zero
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+
+            if (securityToken is not JwtSecurityToken jwtSecurityToken ||
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
         }
     }
 }

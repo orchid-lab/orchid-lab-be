@@ -30,12 +30,25 @@ namespace orchid_backend_net.Application.Authentication.Refreshtoken.RefreshToke
             }
 
             //Check if the user exists in the database
-            var user = await userRepository.FindAsync(x => x.ID.Equals(userId)
-                        && x.DeletedDate == null
-                        && x.RefreshTokenExpiryTime >= DateTime.UtcNow, cancellationToken);
+            var user = await userRepository.FindAsync(x =>
+                x.ID.Equals(userId) &&
+                x.DeletedDate == null &&
+                x.RefreshTokenExpiryTime >= DateTime.UtcNow,
+                cancellationToken);
 
             if (user is null)
-                throw new UnauthorizedAccessException("Không tìm thấy người dùng hoặc token không hợp lệ.");
+            {
+                // Clean up invalid token from Redis
+                await cacheService.RemoveAsync(redisKey);
+                throw new UnauthorizedAccessException("Người dùng không tồn tại hoặc đã bị vô hiệu hóa. Vui lòng đăng nhập lại.");
+            }
+
+            if (user.RefreshToken != request.RefreshToken)
+            {
+                // Token mismatch - possible attack or token already rotated
+                await cacheService.RemoveAsync(redisKey);
+                throw new UnauthorizedAccessException("Refresh Token không hợp lệ. Vui lòng đăng nhập lại.");
+            }
 
             //Token rotation
             var isRemoveSuccess = await cacheService.RemoveAsync(redisKey);

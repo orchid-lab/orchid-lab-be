@@ -1,4 +1,6 @@
 ﻿using CloudinaryDotNet;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +10,7 @@ using Microsoft.Extensions.Options;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.IRepositories;
+using orchid_backend_net.Infrastructure.BackgroundJobs;
 using orchid_backend_net.Infrastructure.Persistence;
 using orchid_backend_net.Infrastructure.Provider;
 using orchid_backend_net.Infrastructure.Repository;
@@ -65,6 +68,25 @@ namespace orchid_backend_net.Infrastructure
                 cloudinary.Api.Secure = true;
                 return cloudinary;
             });
+
+            //hangfire for cleanup cache and other background task in the future
+            services.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(options =>
+                {
+                    options.UseNpgsqlConnection(
+                    configuration.GetConnectionString("Server"));
+                }));
+
+            // Add Hangfire Server
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = 1;
+                options.ServerName = "OrchidLab-BackgroundWorker";
+            });
+
 
             //refactor: all configure must be in programcs to take the appsettings not in here
 
@@ -146,6 +168,9 @@ namespace orchid_backend_net.Infrastructure
                 opt.AddFilter<LoggingFilter>();
                 opt.EnableDetailedErrors = true;
             });
+
+            //clean up background job
+            services.AddScoped<TokenCleanupJob>();
 
 
             //httpclient for some service required 3rd parties with tune handler + polly

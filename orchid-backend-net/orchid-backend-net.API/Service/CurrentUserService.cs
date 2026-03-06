@@ -1,5 +1,6 @@
 ﻿using IdentityModel;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
 using orchid_backend_net.Application.Common.Interfaces;
 using System.Security.Claims;
 
@@ -18,7 +19,11 @@ namespace orchid_backend_net.API.Service
         /// <summary>
         /// Id of current user using api and service
         /// </summary>
-        public string? UserId => _claimsPrincipal?.FindFirst(JwtClaimTypes.Subject)?.Value;
+        public string? UserId =>
+                    _claimsPrincipal?.FindFirst(JwtClaimTypes.Subject)?.Value
+                    ?? _claimsPrincipal?.FindFirst(JwtRegisteredClaimNames.Sub)?.Value
+                    ?? _claimsPrincipal?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         /// <summary>
         /// Name of current user using api and service
         /// </summary>

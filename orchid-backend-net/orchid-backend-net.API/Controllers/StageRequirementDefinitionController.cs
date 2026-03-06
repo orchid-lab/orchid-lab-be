@@ -31,7 +31,7 @@ namespace orchid_backend_net.API.Controllers
         public async Task<IActionResult> GetAllStageRequirementDefinition(
             [FromQuery] int pageNo,
             [FromQuery] int pageSize,
-            [FromQuery] string? sampleStageId,
+            [FromQuery] int? sampleStageId,
             CancellationToken cancellationToken)
         {
             try

@@ -12,6 +12,9 @@ namespace orchid_backend_net.API.Service
     /// </summary>
     public class JwtService
     {
+        /// <summary>
+        /// jwt token class
+        /// </summary>
         public class Token
         {
             /// <summary>

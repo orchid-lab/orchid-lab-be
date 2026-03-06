@@ -2,7 +2,7 @@
 
 namespace orchid_backend_net.Domain.IRepositories
 {
-    public interface IStageRequirementDefinitionRepository
+    public interface IStageRequirementDefinitionRepository : IEFRepository<StageRequirementDefinition, StageRequirementDefinition>
     {
         Task<StageRequirementDefinition> FindStageRequirementDefinitionById(string id, CancellationToken cancellationToken);
     }

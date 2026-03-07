@@ -20,15 +20,27 @@ namespace orchid_backend_net.Application.Sample.UseCase.GetById
                 ?? throw new NotFoundException("Không tìm thấy sample này");
 
             // only load images if sample stage exists
-            if (result.SampleStageDto != null)
+            if (result.SampleStageDto?.Any() == true)
             {
+                var allStageIds = result.SampleStageDto.Select(s => s.Id).ToArray();
+
+                // Batch load all images
                 var allImages = await sampleRepository.GetLatestImagesByTargetsAsync(
-                    new[] { result.SampleStageDto.Id },  // ← Chỉ lấy SampleStage ID
+                    allStageIds,
                     cancellationToken);
 
-                result.SampleStageDto.LatestImageUrl = allImages
-                    .FirstOrDefault(img => img.TargetId == result.SampleStageDto.Id
-                        && img.TargetType == ImageTargetType.SampleStage)?.Url;
+                // Map images to corresponding stages (only if we have images)
+                if (allImages.Count > 0) //avoid iteratedly searching for images if there are none
+                {
+                    var imageDict = allImages
+                        .Where(img => img.TargetType == ImageTargetType.SampleStage)
+                        .ToDictionary(img => img.TargetId, img => img.Url);  // ← Optimize O(n) lookup
+
+                    foreach (var stage in result.SampleStageDto)
+                    {
+                        stage.LatestImageUrl = imageDict.GetValueOrDefault(stage.Id);
+                    }
+                }
             }
 
             return result;

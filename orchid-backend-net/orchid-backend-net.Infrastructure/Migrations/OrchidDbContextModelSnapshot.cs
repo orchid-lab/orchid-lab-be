@@ -282,6 +282,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsNewest")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("TargetId")
                         .IsRequired()
                         .HasColumnType("text");

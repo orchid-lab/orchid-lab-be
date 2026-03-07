@@ -26,6 +26,11 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
         {
             //validate target type 
             var parsedTargetType = await ImagePolicy.ValidateImageTargetType(request, monitoringLogRepository, taskRepository, sampleRepository);
+
+
+            //set old image
+            await imageRepository.SetOldImagesNotNewest(request.TargetId, parsedTargetType, cancellationToken);
+
             //get folder base on target type
             var folder = GetFolderByTargetType(parsedTargetType);
             //upload image to storage and get url
@@ -36,7 +41,9 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
             {
                 Url = imageUrl,
                 TargetId = request.TargetId,
-                TargetType = Enum.Parse<ImageTargetType>(request.TargetType)
+                TargetType = Enum.Parse<ImageTargetType>(request.TargetType),
+                IsNewest = true,
+                CreatedAt = DateTime.Now,
             };
 
             imageRepository.Add(img);
@@ -51,6 +58,8 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
             {
                 Domain.Common.Enum.ImageTargetType.MonitoringLog => "monitoring-logs",
                 Domain.Common.Enum.ImageTargetType.Task => "tasks",
+                Domain.Common.Enum.ImageTargetType.Sample => "samples",
+                Domain.Common.Enum.ImageTargetType.SampleStage => "sample-stages",
                 _ => "general"
             };
         }

@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260304101128_v1")]
+    [Migration("20260307084507_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -284,6 +284,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 {
                     b.Property<string>("ID")
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsNewest")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("TargetId")
                         .IsRequired()

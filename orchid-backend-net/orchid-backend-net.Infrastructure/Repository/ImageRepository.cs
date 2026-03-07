@@ -16,5 +16,18 @@ namespace orchid_backend_net.Infrastructure.Repository
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<bool> SetOldImagesNotNewest(string targetId, ImageTargetType targetType, CancellationToken cancellationToken)
+        {
+            var oldImages = context.Imgs
+                .Where(img => img.TargetId == targetId
+                && img.TargetType == targetType
+                && img.IsNewest);
+            foreach (var img in oldImages)
+            {
+                img.IsNewest = false;
+            }
+            return true;
+        }
     }
 }

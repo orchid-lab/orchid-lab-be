@@ -102,7 +102,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     TargetType = table.Column<int>(type: "integer", nullable: false),
                     TargetId = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: false)
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    IsNewest = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {

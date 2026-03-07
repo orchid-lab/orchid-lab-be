@@ -4,6 +4,7 @@
     {
         MonitoringLog,
         Task,
-        Sample
+        Sample,
+        SampleStage,
     }
 }

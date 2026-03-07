@@ -12,6 +12,7 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStage
         public required string CurrentSampleStage { get; set; }
         public required SampleStageDefinitionDto SampleStageDefinition { get; set; }
         public List<LogDetailDto> LogDetailDtos { get; set; } = new();
+        public string? LatestImageUrl { get; set; } 
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.SampleStage, SampleStageDto>()
@@ -26,8 +27,8 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStage
                         src => src.MonitoringLogs
                             .Where(m => m.IsNewest)
                             .SelectMany(m => m.LogDetails)
-                    )
-                );
+                    ))
+                .ForMember(dest => dest.LatestImageUrl, opt => opt.Ignore());
         }
     }
 }

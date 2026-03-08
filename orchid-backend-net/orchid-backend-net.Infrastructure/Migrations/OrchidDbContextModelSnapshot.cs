@@ -487,6 +487,15 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<string>("RejectedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("RejectedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("RejectionReason")
+                        .HasColumnType("text");
+
                     b.Property<string>("SampleStageId")
                         .IsRequired()
                         .HasColumnType("text");

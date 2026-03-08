@@ -19,13 +19,14 @@ namespace orchid_backend_net.Infrastructure.Service
     /// </summary>
     public class OnnxOrchidAnalyzerService : IOrchidAnalyzerService, IDisposable
     {
-        // ✅ FIX #2: Declare as nullable to allow null until constructor assigns them
+        //Declare as nullable to allow null until constructor assigns them
         private readonly InferenceSession? _stageSession;
         private readonly InferenceSession? _diseaseSession;
         private readonly ILogger<OnnxOrchidAnalyzerService> _logger;
         private readonly ConcurrentDictionary<string, OrchidAnalysisResult> _cache;
+        private readonly SemaphoreSlim _analyzeSemaphore = new(1, 1);
 
-        // ✅ FIX #3: Dispose pattern field
+        //Dispose pattern field
         private bool _disposed;
 
         private const int ImageSize = 192;
@@ -119,18 +120,24 @@ namespace orchid_backend_net.Infrastructure.Service
                 return cachedResult;
             }
 
+            await _analyzeSemaphore.WaitAsync(cancellationToken);
             try
             {
+                if (_cache.TryGetValue(imageHash, out cachedResult))
+                {
+                    _logger.LogInformation("✓ Cache HIT after gate: {Hash} ({Time}ms)",
+                        imageHash[..12], requestTimer.ElapsedMilliseconds);
+                    return cachedResult;
+                }
+
                 using var image = Image.Load<Rgb24>(imageBytes);
                 var inputTensor = PreprocessImage(image);
 
-                var stageTask = Task.Run(() => RunInference(_stageSession!, inputTensor, StageClasses, "Stage"), cancellationToken);
-                var diseaseTask = Task.Run(() => RunInference(_diseaseSession!, inputTensor, DiseaseClasses, "Disease"), cancellationToken);
-
-                await Task.WhenAll(stageTask, diseaseTask);
-
-                var stageResult = await stageTask;
-                var diseaseResult = await diseaseTask;
+                // Optimize: Run inferences sequentially instead of parallel Task.Run
+                // On 4GB VPS: thread pool overhead > parallelization benefit for ~5µs tasks
+                // Sequential execution eliminates context switching and contention
+                var stageResult = RunInference(_stageSession!, inputTensor, StageClasses, "Stage");
+                var diseaseResult = RunInference(_diseaseSession!, inputTensor, DiseaseClasses, "Disease");
 
                 var result = new OrchidAnalysisResult
                 {
@@ -155,6 +162,10 @@ namespace orchid_backend_net.Infrastructure.Service
             {
                 _logger.LogError(ex, "❌ ONNX analysis failed");
                 throw new ArgumentException(ex.Message);
+            }
+            finally
+            {
+                _analyzeSemaphore.Release();
             }
         }
 
@@ -225,7 +236,7 @@ namespace orchid_backend_net.Infrastructure.Service
                 }
             }
 
-            // ✅ FIX #4: Build dict safely with bounds check to prevent duplicate keys
+            // Build dict safely with bounds check to prevent duplicate keys
             var count = Math.Min(probabilities.Length, classNames.Length);
             var probDict = new Dictionary<string, float>(count);
             for (int i = 0; i < count; i++)
@@ -248,10 +259,37 @@ namespace orchid_backend_net.Infrastructure.Service
         /// </summary>
         private static float[] Softmax(float[] logits)
         {
-            var max = logits.Max();
-            var exps = logits.Select(x => MathF.Exp(x - max)).ToArray();
-            var sum = exps.Sum();
-            return exps.Select(x => x / sum).ToArray();
+            var length = logits.Length;
+            var max = logits[0];
+            for (int i = 1; i < length; i++)
+            {
+                if (logits[i] > max)
+                {
+                    max = logits[i];
+                }
+            }
+
+            var probabilities = new float[length];
+            var sum = 0f;
+            for (int i = 0; i < length; i++)
+            {
+                var value = MathF.Exp(logits[i] - max);
+                probabilities[i] = value;
+                sum += value;
+            }
+
+            if (sum <= 0f)
+            {
+                return probabilities;
+            }
+
+            var invSum = 1f / sum;
+            for (int i = 0; i < length; i++)
+            {
+                probabilities[i] *= invSum;
+            }
+
+            return probabilities;
         }
 
         /// <summary>
@@ -280,7 +318,7 @@ namespace orchid_backend_net.Infrastructure.Service
             }
         }
 
-        // ✅ FIX #3: Proper IDisposable pattern
+        //Proper IDisposable pattern
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed) return;
@@ -289,6 +327,7 @@ namespace orchid_backend_net.Infrastructure.Service
             {
                 _stageSession?.Dispose();
                 _diseaseSession?.Dispose();
+                _analyzeSemaphore.Dispose();
             }
 
             _disposed = true;

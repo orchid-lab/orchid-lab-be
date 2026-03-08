@@ -5,6 +5,7 @@
 - Second general instruction
 - Before suggesting any planning, code changes, or solutions, thoroughly scan and check the entire relevant project context first (related files, dependencies, usages, validators, policies, DI registrations). Gather all necessary information before making recommendations to avoid incomplete or incorrect suggestions.
 - Prefer senior-level code review and clean architecture. Refactor to split concerns for cleaner code, aiming for stable, reasonable solutions.
+- Performance testing should use a configuration that emulates a Linux VPS with 4 GB RAM.
 
 ## Code Style
 - Use specific formatting rules

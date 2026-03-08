@@ -106,15 +106,9 @@ namespace orchid_backend_net.API.Controllers
                 if (image == null || image.Length == 0)
                     return BadRequest("Image file is required.");
 
-                byte[] originalBytes;
-                await using (var ms = new MemoryStream((int)image.Length))
-                {
-                    await image.CopyToAsync(ms, cancellationToken);
-                    originalBytes = ms.ToArray();
-                }
-
+                await using var imageStream = image.OpenReadStream();
                 var resizedBytes = ResizeAndCompressingImage
-                    .ResizeAndCompressImages([.. originalBytes], 512, 512, 70);
+                    .ResizeAndCompressImages(imageStream, 192, 192, 60);
 
                 var command = new AnalyzeOrchidImageCommand(image.FileName, resizedBytes);
                 var result = await Sender.Send(command, cancellationToken);

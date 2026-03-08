@@ -8,7 +8,13 @@ namespace orchid_backend_net.Infrastructure.Service
     {
         public static byte[] ResizeAndCompressImages(byte[] imageBytes, int maxWidth, int maxHeight, int quality = 70)
         {
-            using var image = Image.Load(imageBytes);
+            using var inputStream = new MemoryStream(imageBytes, writable: false);
+            return ResizeAndCompressImages(inputStream, maxWidth, maxHeight, quality);
+        }
+
+        public static byte[] ResizeAndCompressImages(Stream inputStream, int maxWidth, int maxHeight, int quality = 70)
+        {
+            using var image = Image.Load(inputStream);
             var ratioX = (double)maxWidth / image.Width;
             var ratioY = (double)maxHeight / image.Height;
             var ratio = Math.Min(1.0, Math.Min(ratioX, ratioY));

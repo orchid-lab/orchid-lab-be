@@ -26,6 +26,12 @@
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.6" />
   </ItemGroup>
 
+	<ItemGroup>
+		<None Update="Models\*.onnx">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\orchid-backend-net.Application\orchid-backend-net.Application.csproj" />
     <ProjectReference Include="..\orchid-backend-net.Infrastructure\orchid-backend-net.Infrastructure.csproj" />

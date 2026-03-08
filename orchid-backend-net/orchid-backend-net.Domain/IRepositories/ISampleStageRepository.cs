@@ -2,7 +2,7 @@
 
 namespace orchid_backend_net.Domain.IRepositories
 {
-    public interface ISampleStageRepository
+    public interface ISampleStageRepository : IEFRepository<SampleStage, SampleStage>
     {
         Task<SampleStage> FindSampleStageById(string id, CancellationToken cancellationToken);
     }

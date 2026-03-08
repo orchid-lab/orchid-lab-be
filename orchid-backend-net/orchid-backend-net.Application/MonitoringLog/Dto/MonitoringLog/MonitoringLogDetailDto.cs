@@ -25,6 +25,10 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
         public bool IsNewest { get; set; }
         public List<LogDetailDto> LogDetails { get; set; } = new();
         public List<ImageDto> Images { get; set; } = new();
+
+        // Rejection information (populated only when status is Rejected)
+        public string? RejectionReason { get; set; }
+        public DateTime? RejectedDate { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.MonitoringLogs, MonitoringLogDetailDto>()

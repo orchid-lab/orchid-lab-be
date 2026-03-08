@@ -27,7 +27,7 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStage
                 .ForMember(dest => dest.LogDetailDtos,
                     opt => opt.MapFrom(
                         src => src.MonitoringLogs
-                            .Where(m => m.IsNewest)
+                            .Where(m => m.IsNewest && m.Status == MonitoringLogStatus.Approved)
                             .SelectMany(m => m.LogDetails)
                     ))
                 .ForMember(dest => dest.Status,

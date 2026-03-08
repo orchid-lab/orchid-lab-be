@@ -2,13 +2,19 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
+using orchid_backend_net.API.Dto.MonitoringLog;
 using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.MonitoringLog.Dto.AnalyticResult;
+using orchid_backend_net.Application.MonitoringLog.Dto.LogDetail;
 using orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog;
 using orchid_backend_net.Application.MonitoringLog.UseCase.Analyze;
+using orchid_backend_net.Application.MonitoringLog.UseCase.ApproveMonitoringLog;
 using orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringLog;
 using orchid_backend_net.Application.MonitoringLog.UseCase.GetAllMonitoring;
 using orchid_backend_net.Application.MonitoringLog.UseCase.GetMonitoringLogById;
+using orchid_backend_net.Application.MonitoringLog.UseCase.RejectMonitoringLog;
+using orchid_backend_net.Application.MonitoringLog.UseCase.SubmitMonitoringLog;
+using orchid_backend_net.Application.MonitoringLog.UseCase.UpdateMonitoringLogDetail;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Infrastructure.Service;
 
@@ -146,6 +152,116 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Tạo thất bại thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Technician manually submits draft monitoring log for researcher approval.
+        /// Only needed if monitoring log was created with submitImmediately=false.
+        /// Also used to resubmit rejected monitoring logs after updating details.
+        /// </summary>
+        /// <param name="id">Monitoring log ID</param>
+        [HttpPatch("{id}/submit")]
+        [Authorize(Roles = "Technician")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> SubmitMonitoringLog(
+            [FromRoute] string id)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new SubmitMonitoringLogCommand(id));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Researcher approves monitoring log.
+        /// Sets this log as newest (IsNewest=true) and marks all other approved logs as old.
+        /// </summary>
+        /// <param name="id">Monitoring log ID</param>
+        [HttpPatch("{id}/approve")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ApproveMonitoringLog(
+            [FromRoute]string id)
+        {
+            try
+            {
+                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new ApproveMonitoringLogCommand(id));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Researcher rejects monitoring log with reason.
+        /// Technician can then update log details and resubmit.
+        /// </summary>
+        /// <param name="id">Monitoring log ID</param>
+        /// <param name="reason">Rejection reason</param>
+        [HttpPatch("{id}/reject")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> RejectMonitoringLog(
+            [FromRoute] string id,
+            [FromBody] string reason)
+        {
+            try
+            {
+                logger.LogInformation("Received Patch request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new RejectMonitoringLogCommand(id, reason));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing Patch request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Technician updates log details after rejection.
+        /// Can only update monitoring logs with status: Rejected.
+        /// After updating, technician must resubmit for approval.
+        /// </summary>
+        /// <param name="id">Monitoring log ID</param>
+        /// <param name="request">Updated log details</param>
+        [HttpPatch("{id}/update-details")]
+        [Authorize(Roles = "Technician")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateMonitoringLogDetails(
+            string id,
+            [FromBody] UpdateMonitoringLogDetailDto request)
+        {
+            try
+            {
+                logger.LogInformation("Received Patch request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new UpdateMonitoringLogDetailCommand(id, request.UpdatedLogDetails));
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing Patch request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
             }
         }
     }

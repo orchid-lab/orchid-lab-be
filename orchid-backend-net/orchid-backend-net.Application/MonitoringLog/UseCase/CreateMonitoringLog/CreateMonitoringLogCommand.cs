@@ -4,16 +4,23 @@ using orchid_backend_net.Application.MonitoringLog.Dto.LogDetail;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
+using orchid_backend_net.Domain.ValueObjects;
 
 namespace orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringLog
 {
+    /// <summary>
+    /// Creates monitoring log with log details.
+    /// By default, submits immediately for researcher approval.
+    /// Set submitImmediately=false to save as draft.
+    /// </summary>
     public record CreateMonitoringLogCommand(
         string Name,
         string SampleStageId,
         string AnalyticResultId,
         int DiseaseId,
         string Notes,
-        List<AddLogDetailsDto> LogDetailsDtos)
+        List<AddLogDetailsDto> LogDetailsDtos,
+        bool SubmitImmediately = true)
         : IRequest<string>;
 
     internal class CreateMonitoringLogCommandHandler(
@@ -27,12 +34,20 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringL
     {
         public async Task<string> Handle(CreateMonitoringLogCommand request, CancellationToken cancellationToken)
         {
-            var sampleStage = await sampleStageRepository.FindSampleStageById(request.SampleStageId, cancellationToken);
+            // Load SampleStage with navigation properties to access ResearcherId
+            var sampleStage = await sampleStageRepository.FindAsync(
+                s => s.ID == request.SampleStageId,
+                cancellationToken)
+                ?? throw new NotFoundException("Không tìm thấy sample stage.");
 
-            var disease = await diseaseRepository.FindAsync(r => r.ID == request.DiseaseId, cancellationToken)
-            ?? throw new NotFoundException("Không tìm thấy bệnh với ID đã cho.");
+            var disease = await diseaseRepository.FindAsync(
+                r => r.ID == request.DiseaseId, 
+                cancellationToken)
+                ?? throw new NotFoundException("Không tìm thấy bệnh với ID đã cho.");
 
-            var analyticResult = await analyticResultRepository.FindAsync(a => a.ID.Equals(request.AnalyticResultId), cancellationToken)
+            var analyticResult = await analyticResultRepository.FindAsync(
+                a => a.ID.Equals(request.AnalyticResultId), 
+                cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy phân tích này");
 
             var monitoringLogs = new MonitoringLogs()
@@ -45,30 +60,52 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringL
                 UserId = currentUserService.UserId!,
                 CreatedBy = currentUserService.UserId!,
                 CreatedDate = DateTime.UtcNow,
-                IsNewest = true,
+                IsNewest = false, // Will be set to true only when approved
             };
 
+            // Initialize as Created status
             monitoringLogs.Created();
 
+            // Add all log details with validation
             foreach(var logDetailDto in request.LogDetailsDtos)
             {
                 var stageRequirementDefinition = await stageRequirementDefinitionRepository
                     .FindStageRequirementDefinitionById(logDetailDto.StageRequirementDefinitionId, cancellationToken)
                     ?? throw new NotFoundException("Không tìm thấy yêu cầu giai đoạn với ID đã cho.");
                 
-                bool isMatch = logDetailDto.MeasuredValue <= stageRequirementDefinition.MaxValue
-                    && logDetailDto.MeasuredValue >= stageRequirementDefinition.MinValue;
+                // Create MeasurementRange value object
+                var range = MeasurementRange.Create(
+                    stageRequirementDefinition.MinValue,
+                    stageRequirementDefinition.MaxValue);
 
-                monitoringLogs.AddLogDetails(
+                // Use new method with Value Object
+                monitoringLogs.AddLogDetailsWithRange(
                     logDetailDto.StageRequirementDefinitionId,
                     logDetailDto.MeasuredValue,
-                    isMatch);
+                    range);
+            }
+
+            // Submit immediately if requested (default behavior)
+            if (request.SubmitImmediately)
+            {
+                var researcherId = sampleStage.Samples.ExperimentLog.CreatedBy;
+                
+                if (string.IsNullOrWhiteSpace(researcherId))
+                    throw new DomainException("Không tìm thấy researcher cho experiment log này.");
+
+                monitoringLogs.SubmitForApproval(researcherId);
             }
 
             monitoringLogRepository.Add(monitoringLogs);
-            return await monitoringLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0
-                ? monitoringLogs.ID.ToString()
-                : "Tạo thất bại";
+            
+            var success = await monitoringLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0;
+            
+            if (!success)
+                return "Tạo thất bại";
+
+            return request.SubmitImmediately
+                ? $"Tạo và gửi báo cáo thành công. ID: {monitoringLogs.ID}"
+                : $"Tạo báo cáo thành công (bản nháp). ID: {monitoringLogs.ID}";
         }
     }
 }

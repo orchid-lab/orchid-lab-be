@@ -95,7 +95,6 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="image"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [Authorize(Roles = "Technician, Researcher")]
         [HttpPost("analysis")]
         [ProducesResponseType(typeof(AnalyticResultAfterAnalysisDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> Analytic(

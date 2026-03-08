@@ -110,7 +110,16 @@ namespace orchid_backend_net.API.Controllers
                 var resizedBytes = ResizeAndCompressingImage
                     .ResizeAndCompressImages(imageStream, 192, 192, 60);
 
-                var command = new AnalyzeOrchidImageCommand(image.FileName, resizedBytes);
+                var sampleStageId = Request?.HasFormContentType == true
+                    ? Request.Form["sampleStageId"].ToString()
+                    : null;
+
+                if (string.IsNullOrWhiteSpace(sampleStageId))
+                {
+                    sampleStageId = null;
+                }
+
+                var command = new AnalyzeOrchidImageCommand(image.FileName, resizedBytes, sampleStageId);
                 var result = await Sender.Send(command, cancellationToken);
 
                 return Ok(result);

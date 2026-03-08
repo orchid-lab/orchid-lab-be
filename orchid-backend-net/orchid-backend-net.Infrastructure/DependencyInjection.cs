@@ -87,6 +87,11 @@ namespace orchid_backend_net.Infrastructure
                 options.ServerName = "OrchidLab-BackgroundWorker";
             });
 
+            RecurringJob.AddOrUpdate<TokenCleanupJob>(
+                "token-cleanup", 
+                job => job.ExecuteAsync(),
+                "0 0 */3 * *");
+
 
             //refactor: all configure must be in programcs to take the appsettings not in here
 

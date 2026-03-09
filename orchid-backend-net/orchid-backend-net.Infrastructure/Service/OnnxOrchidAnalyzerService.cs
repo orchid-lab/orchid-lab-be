@@ -29,7 +29,9 @@ namespace orchid_backend_net.Infrastructure.Service
         //Dispose pattern field
         private bool _disposed;
 
-        private const int ImageSize = 192;
+        private readonly int _inputWidth;
+        private readonly int _inputHeight;
+        private readonly string _inputName;
         private const int CacheCapacity = 200;
 
         /// <summary>
@@ -94,13 +96,22 @@ namespace orchid_backend_net.Infrastructure.Service
                 _logger.LogInformation("Loading disease model: {Path}", diseaseModelPath);
                 _diseaseSession = new InferenceSession(diseaseModelPath, sessionOptions);
 
+                // ✅ ĐỌC SHAPE TỪ MODEL THAY VÌ HARDCODE
+                var stageInput = _stageSession.InputMetadata.First();
+                _inputName = stageInput.Key;
+                var dims = stageInput.Value.Dimensions;
+                _inputHeight = dims[2];  // NCHW format
+                _inputWidth = dims[3];
+
+                _logger.LogInformation("✅ Model input: {Name} [{H}x{W}]", _inputName, _inputHeight, _inputWidth);
+
                 loadTimer.Stop();
                 _logger.LogInformation("✅ ONNX models loaded in {Time}ms", loadTimer.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Failed to load ONNX models");
-                throw new ArgumentException(ex.Message);
+                throw;
             }
         }
 
@@ -172,32 +183,35 @@ namespace orchid_backend_net.Infrastructure.Service
         /// <summary>
         /// Preprocess image to ONNX input tensor [1, 3, H, W]
         /// </summary>
-        private static Tensor<float> PreprocessImage(Image<Rgb24> image)
+        private Tensor<float> PreprocessImage(Image<Rgb24> image)
         {
-            image.Mutate(x => x.Resize(ImageSize, ImageSize));
+            // Resize về đúng input model (224x224)
+            if (image.Width != _inputWidth || image.Height != _inputHeight)
+            {
+                image.Mutate(x => x.Resize(_inputWidth, _inputHeight));
+            }
 
-            // NCHW flat layout: index = channel * (H * W) + y * W + x
-            // batch = 1, channels = 3 (R/G/B), H = W = ImageSize
-            var buffer = new float[3 * ImageSize * ImageSize];
+            var planeSize = _inputWidth * _inputHeight;
+            var buffer = new float[3 * planeSize];
 
             image.ProcessPixelRows(accessor =>
             {
-                for (int y = 0; y < ImageSize; y++)
+                for (int y = 0; y < _inputHeight; y++)
                 {
-                    var pixelRow = accessor.GetRowSpan(y);
-                    for (int x = 0; x < ImageSize; x++)
+                    var row = accessor.GetRowSpan(y);
+                    for (int x = 0; x < _inputWidth; x++)
                     {
-                        var pixel = pixelRow[x];
-                        var hw = y * ImageSize + x;                      // spatial offset
-                        buffer[0 * ImageSize * ImageSize + hw] = pixel.R / 255f;  // R channel
-                        buffer[1 * ImageSize * ImageSize + hw] = pixel.G / 255f;  // G channel
-                        buffer[2 * ImageSize * ImageSize + hw] = pixel.B / 255f;  // B channel
+                        var pixel = row[x];
+                        var hw = y * _inputWidth + x;
+
+                        buffer[0 * planeSize + hw] = pixel.R / 255f;
+                        buffer[1 * planeSize + hw] = pixel.G / 255f;
+                        buffer[2 * planeSize + hw] = pixel.B / 255f;
                     }
                 }
             });
 
-            // Wrap flat buffer in a DenseTensor with shape [1, 3, H, W]
-            return new DenseTensor<float>(buffer, new[] { 1, 3, ImageSize, ImageSize });
+            return new DenseTensor<float>(buffer, new[] { 1, 3, _inputHeight, _inputWidth });
         }
 
         /// <summary>
@@ -213,7 +227,7 @@ namespace orchid_backend_net.Infrastructure.Service
 
             var inputs = new List<NamedOnnxValue>
             {
-                NamedOnnxValue.CreateFromTensor("images", inputTensor)
+                NamedOnnxValue.CreateFromTensor(_inputName, inputTensor)
             };
 
             using var results = session.Run(inputs);
@@ -223,7 +237,8 @@ namespace orchid_backend_net.Infrastructure.Service
             if (outputTensor == null || outputTensor.Length == 0)
                 throw new InvalidOperationException($"{modelType} model produced no output");
 
-            var probabilities = Softmax(outputTensor);
+            //var probabilities = Softmax(outputTensor);
+            var probabilities = outputTensor;
 
             var maxIdx = 0;
             var maxProb = probabilities[0];

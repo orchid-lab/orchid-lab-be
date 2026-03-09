@@ -19,3 +19,7 @@
 - Method stages and sample biological stages are distinct.
 - Do not emit a domain event for StartBatching; StartBatching is triggered by ExperimentLogs and should not raise a domain event.
 - Use domain events only for FinishBatching, CompleteCleaning, SetToMaintenance, and SetToInactive (for batches).
+- Samples confirmed as infected must be destroyed immediately, followed by emergency sanitation and quarantine actions for nearby samples.
+
+## Image Processing Guidelines
+- For orchid image analysis, preprocess images to maintain a resolution of 512x512 from the controller and avoid extra color normalization that alters the model input distribution.

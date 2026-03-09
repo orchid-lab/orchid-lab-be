@@ -5,6 +5,7 @@
 - Second general instruction
 - Before suggesting any planning, code changes, or solutions, thoroughly scan and check the entire relevant project context first (related files, dependencies, usages, validators, policies, DI registrations). Gather all necessary information before making recommendations to avoid incomplete or incorrect suggestions.
 - Prefer senior-level code review and clean architecture. Refactor to split concerns for cleaner code, aiming for stable, reasonable solutions.
+- Performance testing should use a configuration that emulates a Linux VPS with 4 GB RAM.
 
 ## Code Style
 - Use specific formatting rules
@@ -18,3 +19,7 @@
 - Method stages and sample biological stages are distinct.
 - Do not emit a domain event for StartBatching; StartBatching is triggered by ExperimentLogs and should not raise a domain event.
 - Use domain events only for FinishBatching, CompleteCleaning, SetToMaintenance, and SetToInactive (for batches).
+- Samples confirmed as infected must be destroyed immediately, followed by emergency sanitation and quarantine actions for nearby samples.
+
+## Image Processing Guidelines
+- For orchid image analysis, preprocess images to maintain a resolution of 512x512 from the controller and avoid extra color normalization that alters the model input distribution.

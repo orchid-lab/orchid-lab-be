@@ -19,16 +19,19 @@ namespace orchid_backend_net.Infrastructure.Service
     /// </summary>
     public class OnnxOrchidAnalyzerService : IOrchidAnalyzerService, IDisposable
     {
-        // ✅ FIX #2: Declare as nullable to allow null until constructor assigns them
+        //Declare as nullable to allow null until constructor assigns them
         private readonly InferenceSession? _stageSession;
         private readonly InferenceSession? _diseaseSession;
         private readonly ILogger<OnnxOrchidAnalyzerService> _logger;
         private readonly ConcurrentDictionary<string, OrchidAnalysisResult> _cache;
+        private readonly SemaphoreSlim _analyzeSemaphore = new(1, 1);
 
-        // ✅ FIX #3: Dispose pattern field
+        //Dispose pattern field
         private bool _disposed;
 
-        private const int ImageSize = 192;
+        private readonly int _inputWidth;
+        private readonly int _inputHeight;
+        private readonly string _inputName;
         private const int CacheCapacity = 200;
 
         /// <summary>
@@ -93,13 +96,22 @@ namespace orchid_backend_net.Infrastructure.Service
                 _logger.LogInformation("Loading disease model: {Path}", diseaseModelPath);
                 _diseaseSession = new InferenceSession(diseaseModelPath, sessionOptions);
 
+                // ✅ ĐỌC SHAPE TỪ MODEL THAY VÌ HARDCODE
+                var stageInput = _stageSession.InputMetadata.First();
+                _inputName = stageInput.Key;
+                var dims = stageInput.Value.Dimensions;
+                _inputHeight = dims[2];  // NCHW format
+                _inputWidth = dims[3];
+
+                _logger.LogInformation("✅ Model input: {Name} [{H}x{W}]", _inputName, _inputHeight, _inputWidth);
+
                 loadTimer.Stop();
                 _logger.LogInformation("✅ ONNX models loaded in {Time}ms", loadTimer.ElapsedMilliseconds);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Failed to load ONNX models");
-                throw new ArgumentException(ex.Message);
+                throw;
             }
         }
 
@@ -119,18 +131,24 @@ namespace orchid_backend_net.Infrastructure.Service
                 return cachedResult;
             }
 
+            await _analyzeSemaphore.WaitAsync(cancellationToken);
             try
             {
+                if (_cache.TryGetValue(imageHash, out cachedResult))
+                {
+                    _logger.LogInformation("✓ Cache HIT after gate: {Hash} ({Time}ms)",
+                        imageHash[..12], requestTimer.ElapsedMilliseconds);
+                    return cachedResult;
+                }
+
                 using var image = Image.Load<Rgb24>(imageBytes);
                 var inputTensor = PreprocessImage(image);
 
-                var stageTask = Task.Run(() => RunInference(_stageSession!, inputTensor, StageClasses, "Stage"), cancellationToken);
-                var diseaseTask = Task.Run(() => RunInference(_diseaseSession!, inputTensor, DiseaseClasses, "Disease"), cancellationToken);
-
-                await Task.WhenAll(stageTask, diseaseTask);
-
-                var stageResult = await stageTask;
-                var diseaseResult = await diseaseTask;
+                // Optimize: Run inferences sequentially instead of parallel Task.Run
+                // On 4GB VPS: thread pool overhead > parallelization benefit for ~5µs tasks
+                // Sequential execution eliminates context switching and contention
+                var stageResult = RunInference(_stageSession!, inputTensor, StageClasses, "Stage");
+                var diseaseResult = RunInference(_diseaseSession!, inputTensor, DiseaseClasses, "Disease");
 
                 var result = new OrchidAnalysisResult
                 {
@@ -156,37 +174,44 @@ namespace orchid_backend_net.Infrastructure.Service
                 _logger.LogError(ex, "❌ ONNX analysis failed");
                 throw new ArgumentException(ex.Message);
             }
+            finally
+            {
+                _analyzeSemaphore.Release();
+            }
         }
 
         /// <summary>
         /// Preprocess image to ONNX input tensor [1, 3, H, W]
         /// </summary>
-        private static Tensor<float> PreprocessImage(Image<Rgb24> image)
+        private Tensor<float> PreprocessImage(Image<Rgb24> image)
         {
-            image.Mutate(x => x.Resize(ImageSize, ImageSize));
+            // Resize về đúng input model (224x224)
+            if (image.Width != _inputWidth || image.Height != _inputHeight)
+            {
+                image.Mutate(x => x.Resize(_inputWidth, _inputHeight));
+            }
 
-            // NCHW flat layout: index = channel * (H * W) + y * W + x
-            // batch = 1, channels = 3 (R/G/B), H = W = ImageSize
-            var buffer = new float[3 * ImageSize * ImageSize];
+            var planeSize = _inputWidth * _inputHeight;
+            var buffer = new float[3 * planeSize];
 
             image.ProcessPixelRows(accessor =>
             {
-                for (int y = 0; y < ImageSize; y++)
+                for (int y = 0; y < _inputHeight; y++)
                 {
-                    var pixelRow = accessor.GetRowSpan(y);
-                    for (int x = 0; x < ImageSize; x++)
+                    var row = accessor.GetRowSpan(y);
+                    for (int x = 0; x < _inputWidth; x++)
                     {
-                        var pixel = pixelRow[x];
-                        var hw = y * ImageSize + x;                      // spatial offset
-                        buffer[0 * ImageSize * ImageSize + hw] = pixel.R / 255f;  // R channel
-                        buffer[1 * ImageSize * ImageSize + hw] = pixel.G / 255f;  // G channel
-                        buffer[2 * ImageSize * ImageSize + hw] = pixel.B / 255f;  // B channel
+                        var pixel = row[x];
+                        var hw = y * _inputWidth + x;
+
+                        buffer[0 * planeSize + hw] = pixel.R / 255f;
+                        buffer[1 * planeSize + hw] = pixel.G / 255f;
+                        buffer[2 * planeSize + hw] = pixel.B / 255f;
                     }
                 }
             });
 
-            // Wrap flat buffer in a DenseTensor with shape [1, 3, H, W]
-            return new DenseTensor<float>(buffer, new[] { 1, 3, ImageSize, ImageSize });
+            return new DenseTensor<float>(buffer, new[] { 1, 3, _inputHeight, _inputWidth });
         }
 
         /// <summary>
@@ -202,7 +227,7 @@ namespace orchid_backend_net.Infrastructure.Service
 
             var inputs = new List<NamedOnnxValue>
             {
-                NamedOnnxValue.CreateFromTensor("images", inputTensor)
+                NamedOnnxValue.CreateFromTensor(_inputName, inputTensor)
             };
 
             using var results = session.Run(inputs);
@@ -212,7 +237,8 @@ namespace orchid_backend_net.Infrastructure.Service
             if (outputTensor == null || outputTensor.Length == 0)
                 throw new InvalidOperationException($"{modelType} model produced no output");
 
-            var probabilities = Softmax(outputTensor);
+            //var probabilities = Softmax(outputTensor);
+            var probabilities = outputTensor;
 
             var maxIdx = 0;
             var maxProb = probabilities[0];
@@ -225,7 +251,7 @@ namespace orchid_backend_net.Infrastructure.Service
                 }
             }
 
-            // ✅ FIX #4: Build dict safely with bounds check to prevent duplicate keys
+            // Build dict safely with bounds check to prevent duplicate keys
             var count = Math.Min(probabilities.Length, classNames.Length);
             var probDict = new Dictionary<string, float>(count);
             for (int i = 0; i < count; i++)
@@ -248,10 +274,37 @@ namespace orchid_backend_net.Infrastructure.Service
         /// </summary>
         private static float[] Softmax(float[] logits)
         {
-            var max = logits.Max();
-            var exps = logits.Select(x => MathF.Exp(x - max)).ToArray();
-            var sum = exps.Sum();
-            return exps.Select(x => x / sum).ToArray();
+            var length = logits.Length;
+            var max = logits[0];
+            for (int i = 1; i < length; i++)
+            {
+                if (logits[i] > max)
+                {
+                    max = logits[i];
+                }
+            }
+
+            var probabilities = new float[length];
+            var sum = 0f;
+            for (int i = 0; i < length; i++)
+            {
+                var value = MathF.Exp(logits[i] - max);
+                probabilities[i] = value;
+                sum += value;
+            }
+
+            if (sum <= 0f)
+            {
+                return probabilities;
+            }
+
+            var invSum = 1f / sum;
+            for (int i = 0; i < length; i++)
+            {
+                probabilities[i] *= invSum;
+            }
+
+            return probabilities;
         }
 
         /// <summary>
@@ -280,7 +333,7 @@ namespace orchid_backend_net.Infrastructure.Service
             }
         }
 
-        // ✅ FIX #3: Proper IDisposable pattern
+        //Proper IDisposable pattern
         protected virtual void Dispose(bool disposing)
         {
             if (_disposed) return;
@@ -289,6 +342,7 @@ namespace orchid_backend_net.Infrastructure.Service
             {
                 _stageSession?.Dispose();
                 _diseaseSession?.Dispose();
+                _analyzeSemaphore.Dispose();
             }
 
             _disposed = true;

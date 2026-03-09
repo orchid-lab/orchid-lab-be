@@ -90,50 +90,95 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
-        /// analyze the orchid stage and disease 
+        /// Analyze orchid image for stage and disease classification using ONNX AI models.
         /// </summary>
-        /// <param name="image"></param>
+        /// <param name="image">Image file to analyze (JPEG, PNG, etc.)</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>Analysis result with stage and disease predictions including confidence scores</returns>
+        /// <remarks>
+        /// <ul>
+        /// <li>Accepts common image formats (JPEG, PNG, BMP, etc.)</li>
+        /// <li>Image will be preprocessed to match model requirements (224x224)</li>
+        /// <li>Optional: Include 'sampleStageId' in form data to link analysis to a sample</li>
+        /// <li>Uses lossless preprocessing to maintain image quality for accurate predictions</li>
+        /// </ul>
+        /// 
+        /// Sample request:
+        /// 
+        ///     POST /api/monitoring-log/analysis
+        ///     Content-Type: multipart/form-data
+        ///     
+        ///     image: [binary file]
+        ///     sampleStageId: 123e4567-e89b-12d3-a456-426614174000 (optional)
+        /// 
+        /// </remarks>
         [HttpPost("analysis")]
         [ProducesResponseType(typeof(AnalyticResultAfterAnalysisDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Analytic(
-            IFormFile image, CancellationToken cancellationToken)
+            IFormFile image, 
+            CancellationToken cancellationToken)
         {
             try
             {
-                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                logger.LogInformation("Received analysis request at {Time}", DateTime.UtcNow);
+                
                 if (image == null || image.Length == 0)
-                    return BadRequest("Image file is required.");
+                    return BadRequest(new ProblemDetails
+                    {
+                        Title = "Invalid Input",
+                        Detail = "Image file is required."
+                    });
 
-                byte[] originalBytes;
-                await using (var ms = new MemoryStream((int)image.Length))
+                // ✅ Validate và prepare image (lossless, không compress, không resize)
+                byte[] imageBytes;
+                await using (var imageStream = image.OpenReadStream())
                 {
-                    await image.CopyToAsync(ms, cancellationToken);
-                    originalBytes = ms.ToArray();
+                    imageBytes = ResizeAndCompressingImage.PrepareForInference(imageStream);
                 }
 
-                var resizedBytes = ResizeAndCompressingImage
-                    .ResizeAndCompressImages([.. originalBytes], 512, 512, 70);
+                // Optional: Get sampleStageId from form data
+                var sampleStageId = Request?.HasFormContentType == true
+                    ? Request.Form["sampleStageId"].ToString()
+                    : null;
 
-                var command = new AnalyzeOrchidImageCommand(image.FileName, resizedBytes);
+                if (string.IsNullOrWhiteSpace(sampleStageId))
+                {
+                    sampleStageId = null;
+                }
+
+                // Send to analyzer service
+                var command = new AnalyzeOrchidImageCommand(image.FileName, imageBytes, sampleStageId);
                 var result = await Sender.Send(command, cancellationToken);
 
+                logger.LogInformation("Analysis completed successfully: {Stage}/{Disease} at {Time}", 
+                    result.StageName, result.Disease.Name, DateTime.UtcNow);
+                
                 return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                logger.LogWarning(ex, "Invalid image input at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails 
+                { 
+                    Title = "Invalid Image", 
+                    Detail = ex.Message 
+                });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Phân tích thất bại", Detail = ex.Message });
+                logger.LogError(ex, "Error occurred during analysis at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails 
+                { 
+                    Title = "Phân tích thất bại", 
+                    Detail = ex.Message 
+                });
             }
         }
 
         /// <summary>
         /// create monitoring log for sample
         /// </summary>
-        /// <param name="command"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
         [Authorize(Roles = "Technician")]
         [HttpPost]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
@@ -149,8 +194,8 @@ namespace orchid_backend_net.API.Controllers
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Tạo thất bại thất bại", Detail = ex.Message });
+                logger.LogError(ex, "Error occurred while processing POST request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Tạo thất bại", Detail = ex.Message });
             }
         }
 
@@ -159,7 +204,6 @@ namespace orchid_backend_net.API.Controllers
         /// Only needed if monitoring log was created with submitImmediately=false.
         /// Also used to resubmit rejected monitoring logs after updating details.
         /// </summary>
-        /// <param name="id">Monitoring log ID</param>
         [HttpPatch("{id}/submit")]
         [Authorize(Roles = "Technician")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -170,14 +214,14 @@ namespace orchid_backend_net.API.Controllers
         {
             try
             {
-                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                logger.LogInformation("Received PATCH request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(new SubmitMonitoringLogCommand(id));
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+                logger.LogError(ex, "Error occurred while processing PATCH request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -185,7 +229,6 @@ namespace orchid_backend_net.API.Controllers
         /// Researcher approves monitoring log.
         /// Sets this log as newest (IsNewest=true) and marks all other approved logs as old.
         /// </summary>
-        /// <param name="id">Monitoring log ID</param>
         [HttpPatch("{id}/approve")]
         [Authorize(Roles = "Researcher")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -196,14 +239,14 @@ namespace orchid_backend_net.API.Controllers
         {
             try
             {
-                logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                logger.LogInformation("Received PATCH request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(new ApproveMonitoringLogCommand(id));
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+                logger.LogError(ex, "Error occurred while processing PATCH request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -211,8 +254,6 @@ namespace orchid_backend_net.API.Controllers
         /// Researcher rejects monitoring log with reason.
         /// Technician can then update log details and resubmit.
         /// </summary>
-        /// <param name="id">Monitoring log ID</param>
-        /// <param name="reason">Rejection reason</param>
         [HttpPatch("{id}/reject")]
         [Authorize(Roles = "Researcher")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -224,14 +265,14 @@ namespace orchid_backend_net.API.Controllers
         {
             try
             {
-                logger.LogInformation("Received Patch request at {Time}", DateTime.UtcNow);
+                logger.LogInformation("Received PATCH request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(new RejectMonitoringLogCommand(id, reason));
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing Patch request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+                logger.LogError(ex, "Error occurred while processing PATCH request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
 
@@ -240,8 +281,6 @@ namespace orchid_backend_net.API.Controllers
         /// Can only update monitoring logs with status: Rejected.
         /// After updating, technician must resubmit for approval.
         /// </summary>
-        /// <param name="id">Monitoring log ID</param>
-        /// <param name="request">Updated log details</param>
         [HttpPatch("{id}/update-details")]
         [Authorize(Roles = "Technician")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -253,14 +292,14 @@ namespace orchid_backend_net.API.Controllers
         {
             try
             {
-                logger.LogInformation("Received Patch request at {Time}", DateTime.UtcNow);
+                logger.LogInformation("Received PATCH request at {Time}", DateTime.UtcNow);
                 var result = await Sender.Send(new UpdateMonitoringLogDetailCommand(id, request.UpdatedLogDetails));
                 return Ok(result);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "Error occurred while processing Patch request at {Time}", DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại thất bại", Detail = ex.Message });
+                logger.LogError(ex, "Error occurred while processing PATCH request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
     }

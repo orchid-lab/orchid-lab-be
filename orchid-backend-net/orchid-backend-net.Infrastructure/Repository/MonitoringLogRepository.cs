@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Infrastructure.Persistence;
-using Org.BouncyCastle.Asn1;
 
 namespace orchid_backend_net.Infrastructure.Repository
 {
-    public class MonitoringLogRepository(OrchidDbContext context, IMapper mapper) : RepositoryBase<Domain.Entities.MonitoringLogs, Domain.Entities.MonitoringLogs, OrchidDbContext>(context, mapper), Domain.IRepositories.IMonitoringLogRepository
+    public class MonitoringLogRepository(OrchidDbContext context, IMapper mapper) 
+        : RepositoryBase<Domain.Entities.MonitoringLogs, Domain.Entities.MonitoringLogs, OrchidDbContext>(context, mapper), 
+          Domain.IRepositories.IMonitoringLogRepository
     {
         private readonly OrchidDbContext _context = context;
 
@@ -24,6 +26,18 @@ namespace orchid_backend_net.Infrastructure.Repository
             return await _context.Set<MonitoringLogs>()
                 .Include(m => m.LogDetails)
                 .FirstOrDefaultAsync(m => m.ID == id, cancellationToken);
+        }
+
+        public async Task<MonitoringLogs?> FindLatestApprovedLogWithDetailsBySampleStageIdAsync(
+            string sampleStageId, 
+            CancellationToken cancellationToken = default)
+        {
+            return await _context.Set<MonitoringLogs>()
+                .Include(m => m.LogDetails)
+                .Where(m => m.SampleStageId == sampleStageId
+                            && m.Status == MonitoringLogStatus.Approved
+                            && m.IsNewest)
+                .FirstOrDefaultAsync(cancellationToken);
         }
     }
 }

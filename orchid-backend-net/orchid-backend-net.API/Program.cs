@@ -65,6 +65,10 @@ using (var scope = app.Services.CreateScope())
         "token-cleanup",
         job => job.ExecuteAsync(),
         "0 0 */3 * *"); // Run every 3 days at midnight
+    recurringJobManager.AddOrUpdate<MethodStageOverdueCheckJob>(
+        "method-stage-overdue-check",
+        job => job.ExecuteAsync(),
+        "0 9 * * *"); // Run every day at 8 AM
 }
 
 // Configure the HTTP request pipeline.

@@ -167,6 +167,7 @@ namespace orchid_backend_net.Infrastructure
 
             //clean up background job
             services.AddScoped<TokenCleanupJob>();
+            services.AddScoped<MethodStageOverdueCheckJob>();
             return services;
         }
     }

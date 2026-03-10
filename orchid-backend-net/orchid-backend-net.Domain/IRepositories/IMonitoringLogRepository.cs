@@ -15,5 +15,12 @@ namespace orchid_backend_net.Domain.IRepositories
         /// Used for updating log details.
         /// </summary>
         Task<MonitoringLogs?> FindByIdWithLogDetailsAsync(string id, CancellationToken cancellationToken = default);
+        
+        /// <summary>
+        /// Finds the latest approved monitoring log for a sample stage with its log details.
+        /// </summary>
+        Task<MonitoringLogs?> FindLatestApprovedLogWithDetailsBySampleStageIdAsync(
+            string sampleStageId, 
+            CancellationToken cancellationToken = default);
     }
 }

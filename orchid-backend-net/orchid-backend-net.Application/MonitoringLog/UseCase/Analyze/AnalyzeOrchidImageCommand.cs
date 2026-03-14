@@ -17,6 +17,7 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
         IDiseaseRepository diseaseRepository,
         ISampleStageRepository sampleStageRepository,
         INotificationRepository notificationRepository,
+        IDiseaseIncidentRepository diseaseIncidentRepository,
         INotificationPushService notificationPushService)
         : IRequestHandler<AnalyzeOrchidImageCommand, AnalyticResultAfterAnalysisDto>
     {
@@ -44,6 +45,27 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             // Map ONNX probabilities to AnalyticResults entity
             var analyticResultEntity = OrchidAnalysisMapper.ToAnalyticResult(analyticResult);
             analyticResultRepository.Add(analyticResultEntity);
+
+            // Mục đích: Tự động tạo DiseaseIncident khi AI predict không phải "healthy"
+            // Chỉ chạy khi SampleStageId được cung cấp (có context mẫu vật cụ thể)
+            if (!string.IsNullOrWhiteSpace(request.SampleStageId)
+                && !analyticDisease.Code.Equals("healthy", StringComparison.OrdinalIgnoreCase))
+            {
+                var confidence = analyticResult.Disease.Probability
+                    .GetValueOrDefault(analyticResult.Disease.Predict, 0f);
+
+                    var incident = new Domain.Entities.DiseaseIncident
+                    {
+                        SampleStageId = request.SampleStageId,
+                        MonitoringLogId = analyticResultEntity.MonitoringLog.ID,
+                        DiseaseId = analyticDisease.Id,
+                        AIConfidence = Convert.ToDecimal(confidence),
+                        Status = Domain.Common.Enum.DiseaseIncidentStatus.AIDetected,
+                        CreatedBy = "system",
+                        CreatedDate = DateTime.UtcNow
+                    };
+                    diseaseIncidentRepository.Add(incident);
+            }
 
             string? title = null;
             string? content = null;

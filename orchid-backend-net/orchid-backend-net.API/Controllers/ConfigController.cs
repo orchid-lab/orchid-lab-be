@@ -26,6 +26,7 @@ namespace orchid_backend_net.API.Controllers
         /// </summary>
         /// <param name="pageNo"></param>
         /// <param name="pageSize"></param>
+        /// <param name="searchTerm"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]

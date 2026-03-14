@@ -164,7 +164,7 @@ namespace orchid_backend_net.API.Controllers
         /// when a sample is infected, technician use this api to destroy sample of experiment log
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="reason"></param>
+        /// <param name="dto"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>

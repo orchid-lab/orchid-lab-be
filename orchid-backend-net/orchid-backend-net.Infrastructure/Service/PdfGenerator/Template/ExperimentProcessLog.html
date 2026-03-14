@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Nhật ký theo dõi thí nghiệm - OrchidLab</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; margin: 24px; color: #1a1a1a; font-size: 13px; }
+    h1 { font-size: 20px; text-align: center; color: #1a5c38; margin-bottom: 4px; }
+    .subtitle { text-align: center; color: #555; font-size: 12px; margin-bottom: 24px; }
+    h2 { font-size: 14px; color: #1a5c38; border-left: 4px solid #1a5c38;
+         padding-left: 8px; margin-top: 28px; margin-bottom: 10px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
+    th { background: #e8f5ee; color: #1a5c38; font-weight: 600;
+         padding: 7px 10px; text-align: left; font-size: 12px; border: 1px solid #c8e6d4; }
+    td { padding: 6px 10px; border: 1px solid #e0e0e0; vertical-align: top; }
+    tr:nth-child(even) td { background: #f9fffe; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 10px;
+             font-size: 11px; font-weight: 600; }
+    .badge-green { background: #d4edda; color: #1a5c38; }
+    .badge-red   { background: #f8d7da; color: #8b1a1a; }
+    .badge-amber { background: #fff3cd; color: #7a5c00; }
+    .badge-gray  { background: #e9ecef; color: #444; }
+    .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .stat-card { border: 1px solid #c8e6d4; border-radius: 6px; padding: 10px 14px; text-align: center; }
+    .stat-num { font-size: 22px; font-weight: 700; color: #1a5c38; }
+    .stat-label { font-size: 11px; color: #666; margin-top: 2px; }
+    .footer { margin-top: 32px; border-top: 1px solid #ddd; padding-top: 10px;
+              font-size: 11px; color: #888; text-align: right; }
+  </style>
+</head>
+<body>
+
+<h1>Nhật ký theo dõi thí nghiệm</h1>
+<div class="subtitle">
+  {{ experiment_name }} &nbsp;|&nbsp; {{ method_name }}
+  &nbsp;|&nbsp; {{ start_date }} – {{ end_date }}
+  &nbsp;|&nbsp; Xuất ngày: {{ generated_at }}
+</div>
+
+<!-- Header info -->
+<table>
+  <tr><th width="25%" scope="col">Cây giống</th><td>{{ seedling_local_name }} ({{ seedling_scientific_name }})</td>
+      <th width="25%" scope="col">Researcher</th><td>{{ researcher_name }}</td></tr>
+  <tr><th scope="col">Phương pháp</th><td>{{ method_name }}</td>
+      <th scope="col">Kỹ thuật viên</th><td>{{ technician_name }}</td></tr>
+</table>
+
+<!-- Section 1: Tổng quan mẫu vật -->
+<h2>1. Tổng quan mẫu vật</h2>
+<div class="stat-grid">
+  <div class="stat-card">
+    <div class="stat-num">{{ total_samples }}</div>
+    <div class="stat-label">Tổng mẫu tạo</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#1a5c38">{{ alive_samples }}</div>
+    <div class="stat-label">Mẫu còn sống</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#c0392b">{{ infected_samples }}</div>
+    <div class="stat-label">Mẫu nhiễm bệnh</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" style="color:#1a5c38">{{ survival_rate }}%</div>
+    <div class="stat-label">Tỷ lệ sống</div>
+  </div>
+</div>
+
+<!-- Section 2: Phân bố giai đoạn -->
+<h2>2. Phân bố mẫu theo giai đoạn sinh học</h2>
+<table>
+  <tr><th scope="col">Giai đoạn</th><th scope="col">Số mẫu</th><th scope="col">Tỷ lệ (%)</th></tr>
+  {{ for s in stage_progress }}
+  <tr>
+    <td>{{ s.stage_name }}</td>
+    <td>{{ s.sample_count }}</td>
+    <td>{{ s.percentage }}%</td>
+  </tr>
+  {{ end }}
+</table>
+
+<!-- Section 3: Timeline phương pháp -->
+<h2>3. Timeline thực hiện quy trình</h2>
+<table>
+  <tr><th scope="col">#</th><th scope="col">Giai đoạn</th><th scope="col">Dự kiến (ngày)</th><th scope="col">Thực tế (ngày)</th><th scope="col">Trạng thái</th></tr>
+  {{ for s in method_stage_timeline }}
+  <tr>
+    <td>{{ s.stage_order }}</td>
+    <td>{{ s.stage_name }}</td>
+    <td>{{ s.planned_days }}</td>
+    <td>{{ if s.actual_days }}{{ s.actual_days }}{{ else }}—{{ end }}</td>
+    <td>
+      {{ if s.status == "Completed" }}<span class="badge badge-green">Hoàn thành</span>
+      {{ else if s.status == "InProgress" }}<span class="badge badge-amber">Đang thực hiện</span>
+      {{ else }}<span class="badge badge-gray">Chưa bắt đầu</span>{{ end }}
+    </td>
+  </tr>
+  {{ end }}
+</table>
+
+<!-- Section 4: AI Analysis -->
+<h2>4. Kết quả AI phân tích mẫu</h2>
+{{ if ai_analysis_results.size > 0 }}
+<table>
+  <tr><th scope="col">Mẫu</th><th scope="col">Giai đoạn AI nhận diện</th><th scope="col">Bệnh phát hiện</th>
+      <th scope="col">Độ tin cậy</th><th scope="col">Trạng thái sự cố</th><th scope="col">Thời gian</th></tr>
+  {{ for a in ai_analysis_results }}
+  <tr>
+    <td>{{ a.sample_name }}</td>
+    <td>{{ a.stage_name }}</td>
+    <td>{{ a.detected_disease }}</td>
+    <td>{{ a.confidence }}%</td>
+    <td>
+      {{ if a.incident_status == "Confirmed" }}<span class="badge badge-red">Đã xác nhận</span>
+      {{ else if a.incident_status == "Dismissed" }}<span class="badge badge-green">Bác bỏ (AI sai)</span>
+      {{ else if a.incident_status == "AIDetected" }}<span class="badge badge-amber">Chờ review</span>
+      {{ else }}<span class="badge badge-gray">{{ a.incident_status }}</span>{{ end }}
+    </td>
+    <td>{{ a.analyzed_at }}</td>
+  </tr>
+  {{ end }}
+</table>
+{{ else }}
+<p style="color:#888;font-style:italic">Không có kết quả AI phân tích.</p>
+{{ end }}
+
+<!-- Section 5: Disease Incidents -->
+<h2>5. Sự cố bệnh và hành động xử lý</h2>
+{{ if disease_incidents.size > 0 }}
+<table>
+  <tr><th scope="col">Mẫu</th><th scope="col">Bệnh</th><th scope="col">Tin cậy AI</th><th scope="col">Trạng thái</th>
+      <th scope="col">Ghi chú nhân lực</th><th scope="col">Hành động đã thực hiện</th></tr>
+  {{ for d in disease_incidents }}
+  <tr>
+    <td>{{ d.sample_name }}</td>
+    <td>{{ d.disease_name }}</td>
+    <td>{{ d.ai_confidence }}%</td>
+    <td>
+      {{ if d.incident_status == "Confirmed" }}<span class="badge badge-red">Xác nhận</span>
+      {{ else if d.incident_status == "Dismissed" }}<span class="badge badge-green">Bác bỏ</span>
+      {{ else }}<span class="badge badge-amber">Chờ review</span>{{ end }}
+    </td>
+    <td>{{ d.review_note ?? "—" }}</td>
+    <td>
+      {{ if d.actions.size > 0 }}
+      <ul style="margin:0;padding-left:16px">
+        {{ for act in d.actions }}<li>{{ act }}</li>{{ end }}
+      </ul>
+      {{ else }}—{{ end }}
+    </td>
+  </tr>
+  {{ end }}
+</table>
+{{ else }}
+<p style="color:#888;font-style:italic">Không có sự cố bệnh được ghi nhận.</p>
+{{ end }}
+
+<!-- Section 6: Task summary -->
+<h2>6. Tổng kết công việc</h2>
+<table>
+  <tr>
+    <th scope="col">Tổng task</th><th scope="col">Hoàn thành đúng hạn</th><th scope="col">Hoàn thành trễ</th>
+  </tr>
+  <tr>
+    <td>{{ total_tasks }}</td>
+    <td><span class="badge badge-green">{{ tasks_completed_on_time }}</span></td>
+    <td><span class="badge badge-amber">{{ tasks_completed_late }}</span></td>
+  </tr>
+</table>
+
+<div class="footer">
+  Orchid Research &amp; Lab Management System — DaLatOrchidLab &nbsp;|&nbsp;
+  Xuất ngày {{ generated_at }}
+</div>
+</body>
+</html>

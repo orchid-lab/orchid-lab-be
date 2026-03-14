@@ -17,6 +17,7 @@ using orchid_backend_net.Infrastructure.Repository;
 using orchid_backend_net.Infrastructure.Service;
 using orchid_backend_net.Infrastructure.Service.CloudinarySettings;
 using orchid_backend_net.Infrastructure.Service.GmailSettings;
+using orchid_backend_net.Infrastructure.Service.PdfGenerator;
 using orchid_backend_net.Infrastructure.Service.RedisSettings;
 
 namespace orchid_backend_net.Infrastructure
@@ -114,6 +115,7 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IHubnotificationService, HubNotificationService>();
             services.AddScoped<INotificationPushService, NotificationPushService>();
             services.AddSingleton<IOrchidAnalyzerService, OnnxOrchidAnalyzerService>();
+            services.AddScoped<IPdfReportGenerator, PdfReportGenerator>();
             //Add repositories
 
             //for config and safe procedure module
@@ -157,6 +159,9 @@ namespace orchid_backend_net.Infrastructure
 
             //for image module
             services.AddScoped<IImageRepository, ImageRepository>();
+
+            //for disease module
+            services.AddScoped<IDiseaseIncidentRepository, DiseaseIncidentRepository>();
 
             //signalR
             services.AddSignalR(opt =>

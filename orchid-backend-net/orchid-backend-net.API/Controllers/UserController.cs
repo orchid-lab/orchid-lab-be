@@ -40,7 +40,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(query, cancellationToken);
+                var result = await Sender.Send(query, cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -70,7 +70,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
-                var result = await sender.Send(new GetUserIdQuery(id), cancellationToken);
+                var result = await Sender.Send(new GetUserIdQuery(id), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

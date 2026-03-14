@@ -67,8 +67,9 @@
   </ItemGroup>
 
   <ItemGroup>
-	<EmbeddedResource Include="Service\PdfGenerator\Template\ExperimentReport.html">
-	</EmbeddedResource>
+	<EmbeddedResource Include="Service\PdfGenerator\Template\ExperimentReport.html"/>
+	<EmbeddedResource Include="Service\PdfGenerator\Template\ExperimentProcessLog.html"/>
+	<EmbeddedResource Include="Service\PdfGenerator\Template\ExperimentSummaryReport.html"/>
   </ItemGroup>
 
 </Project>

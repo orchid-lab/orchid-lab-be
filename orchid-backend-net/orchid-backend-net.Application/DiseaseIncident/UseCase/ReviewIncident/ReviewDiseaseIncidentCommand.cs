@@ -1,0 +1,36 @@
+using MediatR;
+using orchid_backend_net.Domain.IRepositories;
+using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Common.Exceptions;
+
+namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
+{
+    public record ReviewDiseaseIncidentCommand(
+        string IncidentId,
+        bool IsConfirmed,   // true = xác nhận bệnh thật, false = AI sai
+        string? Note
+    ) : IRequest<string>;
+
+    internal class ReviewDiseaseIncidentCommandHandler(
+        IDiseaseIncidentRepository diseaseIncidentRepository
+    ) : IRequestHandler<ReviewDiseaseIncidentCommand, string>
+    {
+        public async Task<string> Handle(ReviewDiseaseIncidentCommand request, CancellationToken cancellationToken)
+        {
+            var incident = await diseaseIncidentRepository.FindWithDetailsAsync(request.IncidentId, cancellationToken)
+                ?? throw new NotFoundException($"Không tìm thấy sự cố bệnh với ID: {request.IncidentId}");
+
+            if (request.IsConfirmed)
+            {
+                incident.ConfirmByHuman("researcher", request.Note);
+            }
+            else
+            {
+                incident.DismissByHuman("researcher", request.Note ?? "");
+            }
+
+            await diseaseIncidentRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+            return incident.ID;
+        }
+    }
+}

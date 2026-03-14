@@ -9,7 +9,8 @@ namespace orchid_backend_net.Application.Sample.Helper
             string experimentLogId,
             int firstStageDefinitionId,
             int quantity,
-            string userId)
+            string userId,
+            string? initialCondition = null)
         {
             var sampleList = new List<Samples>();
             for (int i = 0; i < quantity; i++)
@@ -19,7 +20,8 @@ namespace orchid_backend_net.Application.Sample.Helper
                     ExperimentLogId = experimentLogId,
                     Name = $"Mẫu vật số {i + 1} của thí nghiệm {experimentLogName}",
                     CreatedDate = DateTime.Now,
-                    CreatedBy = userId
+                    CreatedBy = userId,
+                    InitialCondition = initialCondition
                 };
                 sampleList.Add(sample);
                 sample.StartOnCreation(firstStageDefinitionId);

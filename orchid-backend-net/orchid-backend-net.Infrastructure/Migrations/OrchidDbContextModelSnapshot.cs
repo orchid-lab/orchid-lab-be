@@ -221,6 +221,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("BatchId")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Conclusion")
+                        .HasColumnType("text");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("text");
@@ -237,6 +240,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<int>("ExpectedSampleCount")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Issues")
+                        .HasColumnType("text");
+
                     b.Property<int>("MethodId")
                         .HasColumnType("integer");
 
@@ -247,7 +253,13 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("text");
 
+                    b.Property<string>("Objective")
+                        .HasColumnType("text");
+
                     b.Property<string>("Reason")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Recommendations")
                         .HasColumnType("text");
 
                     b.Property<string>("SeedlingParentId")
@@ -284,6 +296,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsNewest")
                         .HasColumnType("boolean");
@@ -715,6 +730,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<string>("ExperimentLogId")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("InitialCondition")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")

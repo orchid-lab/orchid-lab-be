@@ -20,6 +20,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public DateOnly? ExecutionDate { get; set; }
         public SampleStatus Status { get; set; } = default!;
         public List<SampleStageDto> SampleStageDto { get; set; } = default!;
+        public string? InitialCondition { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Samples, SampleDetailDto>()
@@ -29,7 +30,8 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                     .FirstOrDefault()))
                  .ForMember(dest => dest.SampleStageDto,
                     opt => opt.MapFrom(src =>
-                        src.SampleStages.ToList()));
+                        src.SampleStages.ToList()))
+                .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition));
         }
     }
 }

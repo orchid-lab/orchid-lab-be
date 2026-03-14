@@ -107,7 +107,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="command"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost("{id}")]
+        [HttpPut("{id}")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(string), StatusCodes.Status201Created)]
         public async Task<ActionResult<JsonResponse<string>>> Update(

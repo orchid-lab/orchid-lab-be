@@ -8,7 +8,10 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
             ExperimentLogs el,
             Domain.Common.Enum.ExperimentLogStatus nextStatus,
             MethodStages nextStage,
-            string? reason)
+            string? reason,
+            string? conclusion = null,
+            string? issues = null,
+            string? recommendations = null)
         {
             switch(nextStatus)
             {
@@ -25,7 +28,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
                     el.DestroyBecauseAllSamplesInfected(reason);
                     break;
                 case Domain.Common.Enum.ExperimentLogStatus.Completed:
-                    el.Complete();
+                    el.Complete(conclusion, issues, recommendations);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(nextStatus), "State không hợp lệ.");

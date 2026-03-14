@@ -19,6 +19,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public DateTime? UpdatedDate { get; set; }
         public string? UpdatedBy { get; set; }
         public SampleStatus Status { get; set; } = default!;
+        public string? InitialCondition { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Samples, SampleDto>()
@@ -34,7 +35,8 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                             .Where(s => s.Status == SampleStatus.InProgressed)
                             .Select(s => s.SampleStageDefinition.Name)
                             .FirstOrDefault()
-                    ));
+                    ))
+                .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition));
         }
     }
 }

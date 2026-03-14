@@ -7,12 +7,13 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Images.UseCase.UploadImage
 {
-    public class UploadImageCommand(string fileName, byte[] fileStream, string targetType, string targetId) : IRequest<string>
+    public class UploadImageCommand(string fileName, byte[] fileStream, string targetType, string targetId, string? description = null) : IRequest<string>
     {
         public string FileName { get; set; } = fileName;
         public byte[] FileStream { get; set; } = fileStream;
         public string TargetType { get; set; } = targetType;
         public string TargetId { get; set; } = targetId;
+        public string? Description { get; set; } = description;
     }
 
     internal class UploadImageCommandHandler(
@@ -44,6 +45,7 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
                 TargetType = Enum.Parse<ImageTargetType>(request.TargetType),
                 IsNewest = true,
                 CreatedAt = DateTime.Now,
+                Description = request.Description
             };
 
             imageRepository.Add(img);

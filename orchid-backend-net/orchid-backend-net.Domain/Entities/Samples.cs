@@ -12,6 +12,7 @@ namespace orchid_backend_net.Domain.Entities
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public DateOnly? ExecutionDate { get; set; }
+        public string? InitialCondition { get; set; }   // Trạng thái ban đầu, vd: "mẫu xanh tươi, dài 2cm"
 
         [ForeignKey(nameof(ExperimentLogId))]
         public virtual ExperimentLogs ExperimentLog { get; set; } = null!;

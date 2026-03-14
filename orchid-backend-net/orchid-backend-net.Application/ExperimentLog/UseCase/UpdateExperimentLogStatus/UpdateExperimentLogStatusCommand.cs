@@ -11,7 +11,11 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
         string Id,
         string Status,
         int? BatchId,
-        string? Reason) : IRequest<string>;
+        string? Reason,
+        string? Conclusion,
+        string? Issues,
+        string? Recommendations
+    ) : IRequest<string>;
 
     internal class UpdateExperimentLogStatusCommandHandler(
         IExperimentLogRepository experimentLogRepository,
@@ -54,18 +58,18 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
             if(nextStatus == Domain.Common.Enum.ExperimentLogStatus.WaitingForChangeStage) 
                 await ExperimentLogPolicy.ValidateForChangeStage(experimentLogs.ID, taskRepository, cancellationToken);
 
-            //update experiment log status and stage
+            // Nếu chuyển sang trạng thái Completed thì truyền các trường kết luận vào dispatcher
             ExperimentLogStatusDispatcher.Dispatch(
                 experimentLogs,
                 nextStatus,
                 nextStage,
-                request.Reason);
+                request.Reason,
+                request.Conclusion,
+                request.Issues,
+                request.Recommendations);
             experimentLogs.UpdatedBy = currentUserService.UserId!;
             experimentLogs.UpdatedDate = DateTime.UtcNow;
 
-            //validate if experiment log task has any incomplete subtask before moving to completed status
-
-            //update and save changes
             experimentLogRepository.Update(experimentLogs);
             return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ?
                 experimentLogs.ID.ToString()

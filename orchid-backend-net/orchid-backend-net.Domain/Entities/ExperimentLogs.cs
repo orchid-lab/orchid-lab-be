@@ -25,6 +25,10 @@ namespace orchid_backend_net.Domain.Entities
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
+        public string? Objective { get; set; }          // Mục tiêu thí nghiệm (Mục 1)
+        public string? Conclusion { get; set; }         // Đánh giá chung (Mục 10)
+        public string? Issues { get; set; }             // Vấn đề gặp phải (Mục 10)
+        public string? Recommendations { get; set; }    // Đề xuất / Điều chỉnh (Mục 10)
         public ExperimentLogStatus Status { get; set; }
         //0 - Created: đã tạo, đã assign technician, CHƯA bắt đầu thực nghiệm
         //1 - InProgressed: đang thực hiện các stage
@@ -152,12 +156,14 @@ namespace orchid_backend_net.Domain.Entities
         /// <param name="name"></param>
         /// <param name="notes"></param>
         /// <param name="expectedSampleCount"></param>
+        /// <param name="objective"></param>
         /// <exception cref="DomainException"></exception>
-        public void UpdateInformation(string? name, string? notes, int? expectedSampleCount)
+        public void UpdateInformation(string? name, string? notes, int? expectedSampleCount, string? objective)
         {
             EnsureStatusIsNotOneOf(ExperimentLogStatus.Completed, ExperimentLogStatus.Destroyed);
             Name = name ?? Name;
             Notes = notes;
+            Objective = objective ?? Objective;
             var currentStage = Method.MethodStages
                 .FirstOrDefault(ms => ms.Order == CurrentStageOrder)
                 ?? throw new DomainException("Không tìm thấy giai đoạn này");
@@ -175,11 +181,13 @@ namespace orchid_backend_net.Domain.Entities
         /// which will set status to completed, 
         /// set end date, and trigger domain event to notify related entities to finish the experiment log.
         /// </summary>
-        public void Complete()
+        public void Complete(string? conclusion, string? issues, string? recommendations)
         {
             EnsureStatusIsNot(ExperimentLogStatus.Destroyed);
             EnsureStatusIsOneOf(ExperimentLogStatus.InProgress, ExperimentLogStatus.WaitingForChangeStage);
-
+            Conclusion = conclusion;
+            Issues = issues;
+            Recommendations = recommendations;
             Status = ExperimentLogStatus.Completed;
             EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
             AddDomainEvent(new ExperimentLogCompleted(this.ID));

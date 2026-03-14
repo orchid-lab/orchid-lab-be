@@ -1,6 +1,7 @@
 using MediatR;
 using orchid_backend_net.Domain.IRepositories;
 using orchid_backend_net.Domain.Common.Exceptions;
+using orchid_backend_net.Application.Common.Interfaces;
 
 namespace orchid_backend_net.Application.DiseaseIncident.UseCase.AddAction
 {
@@ -11,7 +12,8 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.AddAction
     ) : IRequest<string>;
 
     internal class AddDiseaseIncidentActionCommandHandler(
-        IDiseaseIncidentRepository diseaseIncidentRepository
+        IDiseaseIncidentRepository diseaseIncidentRepository,
+        ICurrentUserService currentUserService
     ) : IRequestHandler<AddDiseaseIncidentActionCommand, string>
     {
         public async Task<string> Handle(AddDiseaseIncidentActionCommand request, CancellationToken cancellationToken)
@@ -19,7 +21,7 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.AddAction
             var incident = await diseaseIncidentRepository.FindWithDetailsAsync(request.IncidentId, cancellationToken)
                 ?? throw new NotFoundException($"Không tìm thấy sự cố bệnh với ID: {request.IncidentId}");
 
-            incident.AddAction(request.ActionDescription, "researcher");
+            incident.AddAction(request.ActionDescription, currentUserService.UserId);
             var sample = incident.SampleStage?.Samples;
             if (sample != null)
             {

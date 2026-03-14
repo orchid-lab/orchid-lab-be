@@ -159,7 +159,8 @@ namespace orchid_backend_net.API.Controllers
                     request.Image.FileName,
                     resizedBytes,
                     request.TargetType,
-                    request.TargetId
+                    request.TargetId,
+                    request.Description // truyền description vào command
                 );
 
                 var imageUrl = await Sender.Send(command, cancellationToken);

@@ -16,6 +16,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
         public string CreatedBy { get; set; } = default!;
         public DateTime CreatedDate { get; set; }
         public ExperimentLogStatus Status { get; set; }
+        public string? Objective { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<ExperimentLogs, ExperimentLogDto>()
@@ -24,7 +25,8 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
                 .ForMember(dest => dest.BatcheName,
                 opt => opt.MapFrom(src => src.Batch.BatchName))
                 .ForMember(dest => dest.Status,
-                opt => opt.MapFrom(src => src.Status));
+                opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.Objective, opt => opt.MapFrom(src => src.Objective));
         }
     }
 }

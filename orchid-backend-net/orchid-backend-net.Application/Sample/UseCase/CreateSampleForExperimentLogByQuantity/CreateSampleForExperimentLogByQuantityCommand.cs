@@ -5,7 +5,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Sample.UseCase.CreateSampleByQuantity
 {
-    public record CreateSampleForExperimentLogByQuantityCommand(string ExperimentLogId, int Quantity) : IRequest<string>;
+    public record CreateSampleForExperimentLogByQuantityCommand(string ExperimentLogId, int Quantity, string? InitialCondition) : IRequest<string>;
 
     internal class CreateSampleForExperimentLogByQuantityCommandHandler(
         ISampleRepository sampleRepository,
@@ -24,7 +24,8 @@ namespace orchid_backend_net.Application.Sample.UseCase.CreateSampleByQuantity
                 experiment.ID,
                 firstStageDefinition,
                 request.Quantity,
-                currentUserService.UserId);
+                currentUserService.UserId,
+                request.InitialCondition);
             experiment.UpdatedDate = DateTime.UtcNow;
             experiment.UpdatedBy = currentUserService.UserId;
             sampleRepository.AddRange(sampleList);

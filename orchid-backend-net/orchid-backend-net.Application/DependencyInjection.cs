@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using AutoMapper;
+using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using orchid_backend_net.Application.Common.Behaviours;
@@ -25,7 +26,7 @@ namespace orchid_backend_net.Application
                 cfg.AddOpenBehavior(typeof(UserExistenceValidationBehaviour<,>));
             });
 
-            services.AddAutoMapper(Assembly.GetExecutingAssembly());
+            services.AddAutoMapper(cfg => cfg.AddMaps(Assembly.GetExecutingAssembly()));
             services.AddScoped<IValidationProvider, ValidationProvider>();
             services.AddTransient<ExperimentLogSeedTask>();
             services.AddTransient<CreateExperimentLogServices>();

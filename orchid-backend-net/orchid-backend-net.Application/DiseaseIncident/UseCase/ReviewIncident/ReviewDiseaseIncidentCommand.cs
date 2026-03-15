@@ -3,6 +3,7 @@ using orchid_backend_net.Domain.IRepositories;
 using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.Notification.Helper;
 
 namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
 {
@@ -14,7 +15,9 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
 
     internal class ReviewDiseaseIncidentCommandHandler(
         IDiseaseIncidentRepository diseaseIncidentRepository,
-        ICurrentUserService currentUserService
+        INotificationRepository notificationRepository,
+        ICurrentUserService currentUserService,
+        INotificationPushService notificationPushService
     ) : IRequestHandler<ReviewDiseaseIncidentCommand, string>
     {
         public async Task<string> Handle(ReviewDiseaseIncidentCommand request, CancellationToken cancellationToken)
@@ -24,6 +27,16 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
 
             if (request.IsConfirmed)
             {
+                var technicianId = incident.SampleStage.Samples.ExperimentLog.AssignedTo;
+                var sampleName = incident.SampleStage.Samples.Name;
+                var diseaseName = incident.Disease.Name;
+                var title = "Yêu cầu tiêu hủy mẫu vật";
+                var content = $"Mẫu '{sampleName}' được xác nhận nhiễm {diseaseName}. " +
+                  "Vui lòng tiến hành tiêu hủy mẫu theo quy trình.";
+
+                var noti = CreateNotificationHelper.CreateForSingleUsers(technicianId, title, content);
+                notificationRepository.Add(noti);
+                await notificationPushService.PushToSingleUserAsync(technicianId, title, content);
                 incident.ConfirmByHuman(currentUserService.UserId, request.Note);
             }
             else

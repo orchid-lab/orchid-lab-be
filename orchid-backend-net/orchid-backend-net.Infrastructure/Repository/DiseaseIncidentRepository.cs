@@ -17,6 +17,7 @@ namespace orchid_backend_net.Infrastructure.Repository
             return await _context.Set<DiseaseIncident>()
                 .Include(x => x.SampleStage)
                     .ThenInclude(s => s.Samples)
+                        .ThenInclude(s => s.ExperimentLog)
                 .Include(x => x.Disease)
                 .FirstOrDefaultAsync(x => x.ID == incidentId, cancellationToken);
         }

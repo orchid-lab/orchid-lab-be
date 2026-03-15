@@ -34,6 +34,8 @@ namespace orchid_backend_net.Infrastructure.Repository
         {
             return await _context.Set<MonitoringLogs>()
                 .Include(m => m.LogDetails)
+                    .ThenInclude(ld => ld.StageRequirementDefinition)
+                        .ThenInclude(srd => srd.SampleRequirementsDefinition)
                 .Where(m => m.SampleStageId == sampleStageId
                             && m.Status == MonitoringLogStatus.Approved
                             && m.IsNewest)

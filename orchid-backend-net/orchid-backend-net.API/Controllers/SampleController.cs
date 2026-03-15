@@ -6,6 +6,7 @@ using orchid_backend_net.API.Dto.Sample;
 using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.Sample.Dto.Sample;
 using orchid_backend_net.Application.Sample.UseCase.ChangeSampleStage;
+using orchid_backend_net.Application.Sample.UseCase.ConvertToSeedling;
 using orchid_backend_net.Application.Sample.UseCase.CreateSampleByQuantity;
 using orchid_backend_net.Application.Sample.UseCase.DestroyBecauseOfDisease;
 using orchid_backend_net.Application.Sample.UseCase.GetAll;
@@ -157,6 +158,40 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogError(ex, "An error ocurred while processing the request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Researcher converts a completed healthy sample into a seedling source.
+        /// </summary>
+        /// <remarks>
+        /// <ul>
+        /// <li>Sample must be alive (not destroyed by disease).</li>
+        /// <li>Sample must have at least one Completed stage and no InProgressed stage.</li>
+        /// <li>After conversion, use POST /api/seedlings to register the new seedling in the catalog.</li>
+        /// </ul>
+        /// </remarks>
+        [HttpPut("{id}/convert-to-seedling")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ConvertToSeedling(
+            [FromRoute] string id,
+            [FromBody] ConvertToSeedlingRequest body,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT convert-to-seedling for sample {Id} at {Time}", id, DateTime.UtcNow);
+                var result = await Sender.Send(
+                    new ConvertSampleToSeedlingCommand(id, body.LocalName, body.ScientificName, body.Description),
+                    cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error converting sample {Id} to seedling at {Time}", id, DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Chuyển đổi thất bại", Detail = ex.Message });
             }
         }
 

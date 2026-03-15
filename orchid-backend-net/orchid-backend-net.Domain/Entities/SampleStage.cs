@@ -31,6 +31,18 @@ namespace orchid_backend_net.Domain.Entities
             if (Status != SampleStatus.InProgressed)
                 throw new DomainException("Stage không ở trạng thái đang tiến hành.");
             Status = SampleStatus.Completed;
+            CompletedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        }
+        
+        internal void MarkAsConvertedToSeedling()
+        {
+            EnsureNotTerminated();
+            if (Status == SampleStatus.ConvertedToSeedling)
+                return;
+            if (Status != SampleStatus.Completed)
+                throw new DomainException("Stage không ở trạng thái đã hoàn thành.");
+            Status = SampleStatus.ConvertedToSeedling;
+            CompletedAt = DateOnly.FromDateTime(DateTime.UtcNow);
         }
 
         internal void Start()

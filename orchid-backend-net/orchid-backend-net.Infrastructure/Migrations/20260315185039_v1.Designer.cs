@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260315182257_v1")]
+    [Migration("20260315185039_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -1255,7 +1255,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasForeignKey("MonitoringLogId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.SampleStage", "SampleStage")
-                        .WithMany()
+                        .WithMany("DiseaseIncidents")
                         .HasForeignKey("SampleStageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1621,6 +1621,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
                 {
+                    b.Navigation("DiseaseIncidents");
+
                     b.Navigation("MonitoringLogs");
                 });
 

@@ -14,7 +14,7 @@ namespace orchid_backend_net.Domain.Entities
 
         public string? MonitoringLogId { get; set; }
         [ForeignKey(nameof(MonitoringLogId))]
-        public virtual MonitoringLogs MonitoringLog { get; set; } = null!;
+        public virtual MonitoringLogs? MonitoringLog { get; set; }
 
         public required int DiseaseId { get; set; }
         [ForeignKey(nameof(DiseaseId))]

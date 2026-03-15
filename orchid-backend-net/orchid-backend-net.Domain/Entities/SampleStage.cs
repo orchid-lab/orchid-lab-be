@@ -22,6 +22,7 @@ namespace orchid_backend_net.Domain.Entities
         //2 - Hoàn thành
         //3 - Bị hủy 
         //4 - Chuyển thành cây giống
+        public virtual List<DiseaseIncident> DiseaseIncidents { get; set; }
         internal void MarkAsCompleted()
         {
             EnsureNotTerminated();

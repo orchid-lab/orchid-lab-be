@@ -25,7 +25,7 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.GetByExperiment
 
             IQueryable<Domain.Entities.DiseaseIncident> query(IQueryable<Domain.Entities.DiseaseIncident> q)
             {
-                q = q.Where(x => x.MonitoringLogId == request.ExperimentLogId);
+                q = q.Where(x => x.SampleStage.Samples.ExperimentLogId == request.ExperimentLogId);
                 if (request.StatusFilter.HasValue)
                 {
                     q = q.Where(x => x.Status == request.StatusFilter.Value);

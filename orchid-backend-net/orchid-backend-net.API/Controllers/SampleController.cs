@@ -169,6 +169,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Technician")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> Destroy(
             [FromRoute] string id,

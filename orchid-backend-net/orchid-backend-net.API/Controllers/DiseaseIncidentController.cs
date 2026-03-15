@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using orchid_backend_net.Application.DiseaseIncident.UseCase.AddAction;
 using orchid_backend_net.Application.DiseaseIncident.UseCase.GetByExperimentLog;
 using orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident;
 using orchid_backend_net.API.Controllers.ResponseTypes;
@@ -45,33 +44,6 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "Error in review incident {Id} at {Time}", id, DateTime.UtcNow);
-                return BadRequest(new ProblemDetails { Title = "Xử lý thất bại", Detail = ex.Message });
-            }
-        }
-
-        /// <summary>
-        /// action with that sample
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="request"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        [HttpPut("{id}/actions")]
-        [Authorize(Roles = "Researcher,Technician")]
-        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddAction([FromRoute] string id, [FromBody] AddDiseaseIncidentActionRequest request, CancellationToken cancellationToken)
-        {
-            try
-            {
-                logger.LogInformation("Received PUT add action request for incident {Id} at {Time}", id, DateTime.UtcNow);
-                var command = new AddDiseaseIncidentActionCommand(id, request.ActionDescription, request.Result);
-                var result = await Sender.Send(command, cancellationToken);
-                return Ok(new JsonResponse<string>(result));
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error in add action for incident {Id} at {Time}", id, DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Xử lý thất bại", Detail = ex.Message });
             }
         }

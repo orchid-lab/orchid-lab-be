@@ -18,7 +18,6 @@ namespace orchid_backend_net.Infrastructure.Repository
                 .Include(x => x.SampleStage)
                     .ThenInclude(s => s.Samples)
                 .Include(x => x.Disease)
-                .Include(x => x.Actions)
                 .FirstOrDefaultAsync(x => x.ID == incidentId, cancellationToken);
         }
     }

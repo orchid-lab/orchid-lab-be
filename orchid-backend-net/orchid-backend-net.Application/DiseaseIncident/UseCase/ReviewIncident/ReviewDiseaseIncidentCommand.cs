@@ -2,6 +2,7 @@ using MediatR;
 using orchid_backend_net.Domain.IRepositories;
 using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
+using orchid_backend_net.Application.Common.Interfaces;
 
 namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
 {
@@ -12,7 +13,8 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
     ) : IRequest<string>;
 
     internal class ReviewDiseaseIncidentCommandHandler(
-        IDiseaseIncidentRepository diseaseIncidentRepository
+        IDiseaseIncidentRepository diseaseIncidentRepository,
+        ICurrentUserService currentUserService
     ) : IRequestHandler<ReviewDiseaseIncidentCommand, string>
     {
         public async Task<string> Handle(ReviewDiseaseIncidentCommand request, CancellationToken cancellationToken)
@@ -22,11 +24,11 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
 
             if (request.IsConfirmed)
             {
-                incident.ConfirmByHuman("researcher", request.Note);
+                incident.ConfirmByHuman(currentUserService.UserId, request.Note);
             }
             else
             {
-                incident.DismissByHuman("researcher", request.Note ?? "");
+                incident.DismissByHuman(currentUserService.UserId, request.Note ?? "");
             }
 
             await diseaseIncidentRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

@@ -774,6 +774,46 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DiseaseIncidents",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    SampleStageId = table.Column<string>(type: "text", nullable: false),
+                    MonitoringLogId = table.Column<string>(type: "text", nullable: true),
+                    DiseaseId = table.Column<int>(type: "integer", nullable: false),
+                    AIConfidence = table.Column<decimal>(type: "numeric", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ReviewNote = table.Column<string>(type: "text", nullable: true),
+                    ReviewedBy = table.Column<string>(type: "text", nullable: true),
+                    ReviewedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiseaseIncidents", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_DiseaseIncidents_Diseases_DiseaseId",
+                        column: x => x.DiseaseId,
+                        principalTable: "Diseases",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DiseaseIncidents_MonitoringLogs_MonitoringLogId",
+                        column: x => x.MonitoringLogId,
+                        principalTable: "MonitoringLogs",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_DiseaseIncidents_SampleStages_SampleStageId",
+                        column: x => x.SampleStageId,
+                        principalTable: "SampleStages",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MonitoringLogDetails",
                 columns: table => new
                 {
@@ -804,6 +844,21 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_Batches_LabRoomId",
                 table: "Batches",
                 column: "LabRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiseaseIncidents_DiseaseId",
+                table: "DiseaseIncidents",
+                column: "DiseaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiseaseIncidents_MonitoringLogId",
+                table: "DiseaseIncidents",
+                column: "MonitoringLogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiseaseIncidents_SampleStageId",
+                table: "DiseaseIncidents",
+                column: "SampleStageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentLogs_BatchId",
@@ -986,6 +1041,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Configs");
+
+            migrationBuilder.DropTable(
+                name: "DiseaseIncidents");
 
             migrationBuilder.DropTable(
                 name: "Imgs");

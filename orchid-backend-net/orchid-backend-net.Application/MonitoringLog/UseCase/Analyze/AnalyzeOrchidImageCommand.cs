@@ -49,7 +49,7 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             // Mục đích: Tự động tạo DiseaseIncident khi AI predict không phải "healthy"
             // Chỉ chạy khi SampleStageId được cung cấp (có context mẫu vật cụ thể)
             if (!string.IsNullOrWhiteSpace(request.SampleStageId)
-                && !analyticDisease.Code.Equals("healthy", StringComparison.OrdinalIgnoreCase))
+                && !analyticDisease.Code.ToLower().Equals("healthy"))
             {
                 var confidence = analyticResult.Disease.Probability
                     .GetValueOrDefault(analyticResult.Disease.Predict, 0f);
@@ -57,7 +57,7 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
                     var incident = new Domain.Entities.DiseaseIncident
                     {
                         SampleStageId = request.SampleStageId,
-                        MonitoringLogId = analyticResultEntity.MonitoringLog.ID,
+                        MonitoringLogId = null,
                         DiseaseId = analyticDisease.Id,
                         AIConfidence = Convert.ToDecimal(confidence),
                         Status = Domain.Common.Enum.DiseaseIncidentStatus.AIDetected,

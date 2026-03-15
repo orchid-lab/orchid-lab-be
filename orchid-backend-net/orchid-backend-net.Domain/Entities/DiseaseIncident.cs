@@ -12,7 +12,7 @@ namespace orchid_backend_net.Domain.Entities
         [ForeignKey(nameof(SampleStageId))]
         public virtual SampleStage SampleStage { get; set; } = null!;
 
-        public required string MonitoringLogId { get; set; }
+        public string? MonitoringLogId { get; set; }
         [ForeignKey(nameof(MonitoringLogId))]
         public virtual MonitoringLogs MonitoringLog { get; set; } = null!;
 
@@ -29,8 +29,6 @@ namespace orchid_backend_net.Domain.Entities
         public string? ReviewNote { get; set; }
         public string? ReviewedBy { get; set; }
         public DateTime? ReviewedAt { get; set; }
-
-        public virtual List<DiseaseIncidentAction> Actions { get; set; } = new();
 
         // Domain methods
         public void ConfirmByHuman(string reviewerId, string? note)
@@ -53,19 +51,6 @@ namespace orchid_backend_net.Domain.Entities
             ReviewedBy = reviewerId;
             ReviewedAt = DateTime.UtcNow;
             ReviewNote = reason;
-        }
-
-        public void AddAction(string actionDescription, string performedBy)
-        {
-            if (Status != DiseaseIncidentStatus.Confirmed)
-                throw new DomainException("Chỉ có thể thêm hành động cho sự cố đã xác nhận.");
-            Actions.Add(new DiseaseIncidentAction
-            {
-                DiseaseIncidentId = ID,
-                ActionDescription = actionDescription,
-                PerformedBy = performedBy,
-                PerformedAt = DateTime.UtcNow
-            });
         }
     }
 }

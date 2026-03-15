@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260314160852_v1")]
+    [Migration("20260315182257_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -210,6 +210,60 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Diseases");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.DiseaseIncident", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("AIConfidence")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("DiseaseId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("MonitoringLogId")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ReviewNote")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ReviewedBy")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SampleStageId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("DiseaseId");
+
+                    b.HasIndex("MonitoringLogId");
+
+                    b.HasIndex("SampleStageId");
+
+                    b.ToTable("DiseaseIncidents");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>
@@ -1186,6 +1240,31 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("LabRoom");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.DiseaseIncident", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Disease", "Disease")
+                        .WithMany()
+                        .HasForeignKey("DiseaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.MonitoringLogs", "MonitoringLog")
+                        .WithMany()
+                        .HasForeignKey("MonitoringLogId");
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.SampleStage", "SampleStage")
+                        .WithMany()
+                        .HasForeignKey("SampleStageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Disease");
+
+                    b.Navigation("MonitoringLog");
+
+                    b.Navigation("SampleStage");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.ExperimentLogs", b =>

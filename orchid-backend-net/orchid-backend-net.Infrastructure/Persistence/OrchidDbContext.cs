@@ -43,7 +43,6 @@ namespace orchid_backend_net.Infrastructure.Persistence
         public virtual DbSet<SafeProcedure> SafeProcedures { get; set; }
         public virtual DbSet<Config> Configs { get; set; }
         public virtual DbSet<DiseaseIncident> DiseaseIncidents { get; set; }
-        public virtual DbSet<DiseaseIncidentAction> DiseaseIncidentActions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

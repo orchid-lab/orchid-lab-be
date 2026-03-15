@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.MonitoringLog.Dto.LogDetail;
+using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
@@ -29,6 +30,7 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringL
         IAnalyticResultRepository analyticResultRepository,
         IStageRequirementDefinitionRepository stageRequirementDefinitionRepository,
         IMonitoringLogRepository monitoringLogRepository,
+        IDiseaseIncidentRepository diseaseIncidentRepository,
         ICurrentUserService currentUserService)
         : IRequestHandler<CreateMonitoringLogCommand, string>
     {
@@ -97,7 +99,19 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringL
             }
 
             monitoringLogRepository.Add(monitoringLogs);
-            
+
+            var pendingIncident = await diseaseIncidentRepository.FindAsync(
+                di => di.DiseaseId.Equals(disease.ID) &&
+                di.SampleStageId.Equals(request.SampleStageId) &&
+                di.MonitoringLogId == null &&
+                di.Status.Equals(DiseaseIncidentStatus.AIDetected),
+                cancellationToken);
+            if(pendingIncident is not null)
+            {
+                pendingIncident.MonitoringLogId = monitoringLogs.ID;
+                diseaseIncidentRepository.Update(pendingIncident);
+            }
+
             var success = await monitoringLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0;
             
             if (!success)

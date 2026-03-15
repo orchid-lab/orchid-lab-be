@@ -1252,7 +1252,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasForeignKey("MonitoringLogId");
 
                     b.HasOne("orchid_backend_net.Domain.Entities.SampleStage", "SampleStage")
-                        .WithMany()
+                        .WithMany("DiseaseIncidents")
                         .HasForeignKey("SampleStageId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1618,6 +1618,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.SampleStage", b =>
                 {
+                    b.Navigation("DiseaseIncidents");
+
                     b.Navigation("MonitoringLogs");
                 });
 

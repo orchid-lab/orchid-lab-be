@@ -98,12 +98,26 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
                 StageProgress = stageProgress,
                 MethodStageTimeline = methodStageTimeline,
                 AIAnalysisResults = aiResults,
-                DiseaseIncidents = new List<DiseaseIncidentReportItem>(),
+                DiseaseIncidents = BuildDiseaseIncidentItems(el.Samples),
                 TotalTasks = 0,
                 TasksCompletedOnTime = 0,
                 TasksCompletedLate = 0
             };
         }
+
+        private static List<DiseaseIncidentReportItem> BuildDiseaseIncidentItems(List<Samples> samples)
+            => samples
+                .SelectMany(s => s.SampleStages
+                    .SelectMany(ss => ss.DiseaseIncidents
+                        .Select(di => new DiseaseIncidentReportItem
+                        {
+                            SampleName = s.Name,
+                            DiseaseName = di.Disease?.Name ?? "Unknown",
+                            AIConfidence = (double)di.AIConfidence * 100,
+                            IncidentStatus = di.Status.ToString(),
+                            ReviewNote = di.ReviewNote,
+                        })))
+                .ToList();
 
         private static List<SampleStageProgressItem> BuildStageProgress(
             List<Samples> samples, int totalSamples)

@@ -30,7 +30,11 @@ namespace orchid_backend_net.Infrastructure.Repository
                     .Include(el => el.Samples)
                         .ThenInclude(s => s.SampleStages)
                             .ThenInclude(ss => ss.MonitoringLogs)
-                                .ThenInclude(ml => ml.Disease),
+                                .ThenInclude(ml => ml.Disease)
+                    .Include(el => el.Samples)
+                        .ThenInclude(s => s.SampleStages)
+                            .ThenInclude(ss => ss.DiseaseIncidents)
+                                .ThenInclude(di => di.Disease),
             cancellationToken);
     }
 }

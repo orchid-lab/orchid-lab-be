@@ -135,6 +135,29 @@ namespace orchid_backend_net.Domain.Entities
             return index;
         }
 
+        public void ConvertToSeedling()
+        {
+            EnsureSampleIsActive();
+
+            var hasCompletedStage = SampleStages
+                .Any(s => s.Status == SampleStatus.Completed);
+
+            if (!hasCompletedStage)
+                throw new DomainException("Chỉ có thể chuyển mẫu đã hoàn thành ít nhất một giai đoạn thành cây giống.");
+
+            var stillInProgress = SampleStages
+                .Any(s => s.Status == SampleStatus.InProgressed);
+
+            if (stillInProgress)
+                throw new DomainException("Mẫu vẫn còn đang ở giai đoạn chưa hoàn thành, không thể chuyển thành cây giống.");
+
+            var lastStage = SampleStages
+                .OrderByDescending(s => s.StartedAt)
+                .First();
+
+            lastStage.MarkAsConvertedToSeedling();
+        }
+
         private SampleStage GetCurrentSampleStage()
         {
             var stage = SampleStages.SingleOrDefault(

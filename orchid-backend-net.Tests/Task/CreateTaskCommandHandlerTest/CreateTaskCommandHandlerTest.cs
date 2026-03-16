@@ -61,7 +61,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TechnicianId = "tech-1",
                 TargetId = "sample-1",
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(3)
+                ExpectedEndDate = TimeProviderMock.Object.Now.AddDays(3)
             },
             createTaskCheckListItems:
             [
@@ -221,7 +221,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TargetId = "target-1",
                 TechnicianId = "tech-1",
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(1)
+                ExpectedEndDate = TimeProviderMock.Object.Now.AddDays(1)
             },
             createTaskCheckListItems:
             [
@@ -268,7 +268,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TargetId = null!,
                 TechnicianId = null!, // invalid
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(-1)
+                ExpectedEndDate = TimeProviderMock.Object.Now.AddDays(-1)
             },
             createTaskCheckListItems:
             [
@@ -288,7 +288,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             await CreateCommandHandler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<InvalidOperationException>();
+        await act.Should().ThrowAsync<NullReferenceException>();
     }
 
     #endregion

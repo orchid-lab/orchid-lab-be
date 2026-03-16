@@ -40,7 +40,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
 
         private async Task<bool> IsValidSampleCount(int sampleCount, CancellationToken cancellationToken)
         {
-            var config = await _configRepository.FindAsync(c => c.ConfigName == "MaxSampleCountPerExperimentLog", cancellationToken)
+            var config = await _configRepository.FindAsync(c => c.Key == "MaxSampleCountPerExperimentLog", cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy config để có thể tạo");
 
             var maxSampleCount = (int)config.Value;

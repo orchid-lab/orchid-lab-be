@@ -44,7 +44,7 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
                 TargetId = request.TargetId,
                 TargetType = Enum.Parse<ImageTargetType>(request.TargetType),
                 IsNewest = true,
-                CreatedAt = DateTime.Now,
+                CreatedAt = DateTime.UtcNow,
                 Description = request.Description
             };
 

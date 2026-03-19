@@ -121,7 +121,7 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                     Name = $"SAMPLE-{i}",
                     ExperimentLogId = samplesLog.ID,
                     Notes = i == 1 ? "Healthy sample" : i == 2 ? "Slightly weak" : "Under observation",
-                    ExecutionDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(-10)),
+                    ExecutionDate = null,
                     CreatedBy = researcherUser?.ID ?? "System",
                     CreatedDate = DateTime.UtcNow.AddDays(-10)
                 });

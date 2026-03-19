@@ -7,7 +7,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.MonitoringLog.UseCase.GetAllMonitoring
 {
-    public record GetAllMonitoringLogQuery(int PageNo, int PageSize, string? TechnicianId, string? SampleName, string? NameSearchTerm) : IRequest<PageResult<MonitoringLogDto>>;
+    public record GetAllMonitoringLogQuery(int PageNo, int PageSize, string? TechnicianId, string? ResearcherId, string? SampleName, string? NameSearchTerm) : IRequest<PageResult<MonitoringLogDto>>;
     internal class GetAllMonitoringLogQueryHandler(IMonitoringLogRepository monitoringLogRepository) : IRequestHandler<GetAllMonitoringLogQuery, PageResult<MonitoringLogDto>>
     {
         public async Task<PageResult<MonitoringLogDto>> Handle(GetAllMonitoringLogQuery request, CancellationToken cancellationToken)
@@ -25,6 +25,10 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.GetAllMonitoring
                 if(!string.IsNullOrEmpty(request.NameSearchTerm))
                 {
                     query = query.Where(ml => ml.Name.Contains(request.NameSearchTerm));
+                }
+                if (!string.IsNullOrEmpty(request.ResearcherId))
+                { 
+                    query = query.Where(ml => ml.SampleStage.Samples.ExperimentLog.CreatedBy == request.ResearcherId);
                 }
                 return query;
             }

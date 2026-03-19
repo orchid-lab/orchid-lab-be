@@ -26,6 +26,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                 .ForMember(dest => dest.Status,
                     opt => opt.MapFrom(src =>
                         src.SampleStages
+                            .OrderByDescending(s => s.StartedAt)
                             .Select(s => s.Status)
                             .FirstOrDefault()
                     ))
@@ -33,6 +34,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                     opt => opt.MapFrom(src =>
                         src.SampleStages
                             .Where(s => s.Status == SampleStatus.InProgressed)
+                            .OrderByDescending(s => s.StartedAt)
                             .Select(s => s.SampleStageDefinition.Name)
                             .FirstOrDefault()
                     ))

@@ -46,14 +46,15 @@ namespace orchid_backend_net.API.Controllers
             [FromQuery] int pageNo,
             [FromQuery] int pageSize,
             [FromQuery] string? nameSearchTerm,
-            [FromQuery] string? TechnicianId,
+            [FromQuery] string? technicianId,
+            [FromQuery] string? researcherId,
             [FromQuery] string? sampleName,
             CancellationToken cancellationToken = default)
         {
             try
             {
                 logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(new GetAllMonitoringLogQuery(pageNo, pageSize, TechnicianId, sampleName, nameSearchTerm), cancellationToken);
+                var result = await Sender.Send(new GetAllMonitoringLogQuery(pageNo, pageSize, technicianId, researcherId, sampleName, nameSearchTerm), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

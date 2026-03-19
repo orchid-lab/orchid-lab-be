@@ -80,29 +80,30 @@ namespace orchid_backend_net.Domain.Entities
         /// </summary>
         /// <param name="definitionOrderMap"></param>
         /// <param name="orderDefinitionIds"></param>
-        public void CompleteCurrentStage( IReadOnlyList<int> orderDefinitionIds)
+        public void CompleteCurrentStage(IReadOnlyList<int> orderDefinitionIds)
         {
-            if(orderDefinitionIds.Count == 0 || orderDefinitionIds is null)
+            if (orderDefinitionIds is null || orderDefinitionIds.Count == 0)
                 throw new DomainException("Danh sách định nghĩa giai đoạn không được rỗng.");
-            
+
             EnsureSampleIsActive();
-            
+
             var currentStage = GetCurrentSampleStage();
+            var currentIndex = IndexOfDefinition(orderDefinitionIds, currentStage.SampleStageDefinitionId);
 
             currentStage.MarkAsCompleted();
-            MoveToNextStage(currentStage, orderDefinitionIds);
+
+            var isLastStage = currentIndex == orderDefinitionIds.Count - 1;
+            if (!isLastStage)
+            {
+                MoveToNextStage(orderDefinitionIds, currentIndex);
+            }
         }
 
         private void MoveToNextStage(
-           SampleStage completedStage,
-           IReadOnlyList<int> orderedDefinitionIds)
+            IReadOnlyList<int> orderedDefinitionIds,
+            int currentIndex
+            )
         {
-            var currentIndex = IndexOfDefinition(orderedDefinitionIds, completedStage.SampleStageDefinitionId);
-
-            // Không có stage tiếp theo
-            if (currentIndex == orderedDefinitionIds.Count - 1)
-                throw new DomainException("Sample này đã ở giai đoạn cuối cùng.");
-
             var nextDefinitionId = orderedDefinitionIds[currentIndex + 1];
 
             var nextStage = new SampleStage
@@ -111,9 +112,9 @@ namespace orchid_backend_net.Domain.Entities
                 SampleId = ID,
                 Status = SampleStatus.Created
             };
+
             nextStage.Start();
             SampleStages.Add(nextStage);
-
         }
 
 

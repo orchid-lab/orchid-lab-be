@@ -28,7 +28,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
 
         TimeProviderMock
             .Setup(x => x.Now)
-            .Returns(new DateTime(2026, 1, 3, 9, 0, 0, DateTimeKind.Utc));
+            .Returns(new DateTime(2026, 3, 21, 0, 0, 0, DateTimeKind.Utc));
 
         TimeProviderMock
             .Setup(x => x.IsInWorkingHour(It.IsAny<DateTime>()))
@@ -203,7 +203,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
 
         TimeProviderMock
             .Setup(x => x.Now)
-            .Returns(new DateTime(2026, 1, 3, 10, 0, 0, DateTimeKind.Utc));
+            .Returns(new DateTime(2026, 3, 21, 0, 0, 0, DateTimeKind.Utc));
 
         TimeProviderMock
             .Setup(x => x.IsInWorkingHour(It.IsAny<DateTime>()))
@@ -288,7 +288,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             await CreateCommandHandler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<NullReferenceException>();
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     #endregion

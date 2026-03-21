@@ -149,7 +149,7 @@ namespace orchid_backend_net.Application.Tasks.Policy
             //    throw new InvalidOperationException("Chỉ được thao tác với task trong giờ hành chính (7h - 17h).");
 
 
-            if (expectedEndDate is not null && expectedEndDate > currentTime)
+            if (expectedEndDate is not null && expectedEndDate <= currentTime)
                 throw new InvalidOperationException("Ngày dự kiến kết thúc phải sau thời điểm hiện tại.");
         }
 

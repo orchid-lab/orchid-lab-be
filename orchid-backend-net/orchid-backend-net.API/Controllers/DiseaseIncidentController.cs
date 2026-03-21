@@ -58,13 +58,12 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         [HttpGet]
-        [Authorize(Roles = "Researcher,Technician")]
         [ProducesResponseType(typeof(JsonResponse<PageResult<DiseaseIncidentDto>>), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetByExperimentLog(
             [FromQuery] int pageNo,
             [FromQuery] int pageSize,
-            [FromQuery] string experimentLogId, 
+            [FromQuery] string? experimentLogId, 
             [FromQuery] int? status, CancellationToken cancellationToken)
         {
             try

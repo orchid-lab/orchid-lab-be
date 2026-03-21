@@ -10,7 +10,7 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.GetByExperiment
     public record GetDiseaseIncidentsByExperimentLogQuery(
         int PageNo, 
         int PageSize,
-        string ExperimentLogId,
+        string? ExperimentLogId,
         DiseaseIncidentStatus? StatusFilter
     ) : IRequest<PageResult<DiseaseIncidentDto>>;
 
@@ -25,10 +25,13 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.GetByExperiment
 
             IQueryable<Domain.Entities.DiseaseIncident> query(IQueryable<Domain.Entities.DiseaseIncident> q)
             {
-                q = q.Where(x => x.SampleStage.Samples.ExperimentLogId == request.ExperimentLogId);
                 if (request.StatusFilter.HasValue)
                 {
                     q = q.Where(x => x.Status == request.StatusFilter.Value);
+                }
+                if(!string.IsNullOrWhiteSpace(request.ExperimentLogId))
+                {
+                    q = q.Where(x => x.SampleStage.Samples.ExperimentLogId == request.ExperimentLogId);
                 }
                 return q;
             }

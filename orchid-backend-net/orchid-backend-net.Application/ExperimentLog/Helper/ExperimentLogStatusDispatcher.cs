@@ -7,7 +7,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
         public static void Dispatch(
             ExperimentLogs el,
             Domain.Common.Enum.ExperimentLogStatus nextStatus,
-            MethodStages nextStage,
+            MethodStages? nextStage,
             string? reason,
             string? conclusion = null,
             string? issues = null,
@@ -22,6 +22,8 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
                     el.PendingToChangeStage();
                     break;
                 case Domain.Common.Enum.ExperimentLogStatus.ConfirmChangeStage:
+                    if (nextStage is null)
+                        throw new InvalidOperationException("Không thể chuyển giai đoạn khi đã ở giai đoạn cuối.");
                     el.MoveToNextStage(nextStage, nextStage.Order);
                     break;
                 case Domain.Common.Enum.ExperimentLogStatus.Destroyed:

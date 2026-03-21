@@ -40,8 +40,15 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
             var method = await methodRepository.FindAsync(m => m.ID == experimentLogs.MethodId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy phương pháp liên quan đến thí nghiệm này");
             var methodStages = method.MethodStages;
-            var nextStage = methodStages.FirstOrDefault(ms => ms.Order == experimentLogs.CurrentStageOrder + 1)
-                ?? throw new InvalidOperationException("Thí nghiệm này đã ở giai đoạn cuối của phương pháp thí nghiệm");
+            var maxStageOrder = methodStages.Max(ms => ms.Order);
+            var isElInFinalStage = experimentLogs.CurrentStageOrder == maxStageOrder;
+            var nextStage = methodStages.FirstOrDefault(ms => ms.Order == experimentLogs.CurrentStageOrder + 1);
+
+            if (isElInFinalStage && nextStage is not null)
+                throw new InvalidOperationException("Lỗi dữ liệu");
+
+            if (!isElInFinalStage && nextStage is null)
+                throw new InvalidOperationException("Lỗi dữ liệu");
 
             //get batch if provided
             if (request.BatchId is not null && request.BatchId > 0)

@@ -27,7 +27,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.ConvertTaskTemplateToTodo
             var taskTemplate = await taskRepository.GetTemplateForConversionAsync(request.TaskTemplateId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy task template này.");
             
-            TaskPolicy.ValidateTaskWorkingHour(request.CreateTaskAssignment.ExpectedEndDate, dateTimeProvider);
+            TaskPolicy.ValidateTaskWorkingHourWhenCreateOrUpdate(request.CreateTaskAssignment.ExpectedEndDate, dateTimeProvider);
 
             Domain.Entities.Tasks taskToDo = new()
             {

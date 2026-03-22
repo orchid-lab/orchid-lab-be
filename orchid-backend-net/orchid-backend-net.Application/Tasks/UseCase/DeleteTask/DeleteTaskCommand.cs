@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.DeleteTask
             {
                 throw new NotFoundException("Không tìm thấy task.");
             }
-            TaskPolicy.ValidateTaskWorkingHour(null ,dateTimeProvider);
+            TaskPolicy.ValidateTaskWorkingHourWhenCreateOrUpdate(null ,dateTimeProvider);
             task.Status = Domain.Common.Enum.TaskStatus.Deleted;
             task.DeletedDate = DateTime.UtcNow;
             task.DeletedBy = currentUserService.UserId;

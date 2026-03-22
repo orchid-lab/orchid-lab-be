@@ -58,7 +58,7 @@ namespace orchid_backend_net.Application.Tasks.Policy
             // RULE 4: Validate assignment data ONLY if updated
             if (requestHasAssignmentUpdate)
             {
-                ValidateTaskWorkingHour(
+                ValidateTaskWorkingHourWhenCreateOrUpdate(
                     request.UpdateTaskAssignment!.ExpectedEndDate,
                     dateTimeProvider);
             }
@@ -93,7 +93,7 @@ namespace orchid_backend_net.Application.Tasks.Policy
             // Rule 2: to-do task => must have assignment
             if (isToDoTask)
             {
-                ValidateTaskWorkingHour(
+                ValidateTaskWorkingHourWhenCreateOrUpdate(
                     request.CreateTaskAssignment!.ExpectedEndDate,
                     dateTimeProvider);
             }
@@ -109,7 +109,7 @@ namespace orchid_backend_net.Application.Tasks.Policy
         /// <exception cref="InvalidOperationException"></exception>
         public static Domain.Common.Enum.TaskStatus ValidateTaskStatusChange(Domain.Entities.Tasks tasks, ChangeTaskStatusCommand request, IDateTimeProvider dateTimeProvider)
         {
-            ValidateTaskWorkingHour(null, dateTimeProvider);
+            ValidateTaskWorkingHourWhenCreateOrUpdate(null, dateTimeProvider);
             bool IsToDoTask = tasks.TaskAssignment != null;
             //only to-do task can change status
             if (!IsToDoTask)
@@ -125,11 +125,6 @@ namespace orchid_backend_net.Application.Tasks.Policy
             if (IsCompletedStatus(parsedStatus) && request.EndDate == null)
                 throw new InvalidOperationException("Thiếu ngày kết thúc khi hoàn thành task.");
 
-            // Validate working hour only when completing
-            if (IsCompletedStatus(parsedStatus))
-            {
-                ValidateTaskWorkingHour(request.EndDate, dateTimeProvider);
-            }
 
             return parsedStatus;
         }
@@ -140,7 +135,7 @@ namespace orchid_backend_net.Application.Tasks.Policy
         /// <param name="expectedEndDate"></param>
         /// <param name="dateTimeProvider"></param>
         /// <exception cref="InvalidOperationException"></exception>
-        public static void ValidateTaskWorkingHour(DateTime? expectedEndDate, IDateTimeProvider dateTimeProvider)
+        public static void ValidateTaskWorkingHourWhenCreateOrUpdate(DateTime? expectedEndDate, IDateTimeProvider dateTimeProvider)
         {
             //DateTime currentTime = dateTimeProvider.Now;
             DateTime currentTime = DateTime.UtcNow;

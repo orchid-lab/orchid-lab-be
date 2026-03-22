@@ -313,6 +313,16 @@ namespace orchid_backend_net.Domain.Entities
             TaskAssignment.EndDate = endDate ?? TaskAssignment.EndDate;
         }
 
+        public void TaskCancelled(string? reason)
+        {
+            if (Status == Common.Enum.TaskStatus.Deleted)
+                throw new DomainException("Task đã bị xóa.");
+            Status = Common.Enum.TaskStatus.Deleted;
+            DeletedDate = DateTime.UtcNow;
+            DeletedBy = ResearcherId;
+            AddDomainEvent(new TaskCancelledEvent(ID, CreatedBy, TaskAssignment.TechnicianId, reason));
+        }
+
         #endregion Task Assignment
 
         #region Task Attributes

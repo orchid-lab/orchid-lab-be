@@ -203,7 +203,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
 
         TimeProviderMock
             .Setup(x => x.Now)
-            .Returns(new DateTime(2026, 3, 21, 0, 0, 0, DateTimeKind.Utc));
+            .Returns(DateTime.UtcNow);
 
         TimeProviderMock
             .Setup(x => x.IsInWorkingHour(It.IsAny<DateTime>()))

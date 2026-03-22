@@ -25,15 +25,16 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
             profile.CreateMap<Samples, SampleDto>()
                 .ForMember(dest => dest.Status,
                     opt => opt.MapFrom(src =>
-                        src.SampleStages.Any(s => 
-                            s.Status == SampleStatus.InProgressed) 
-                        ? SampleStatus.InProgressed
-                        : SampleStatus.Completed
+                        src.SampleStages.
+                            OrderByDescending(s => s.SampleStageDefinitionId)
+                            .Select(s => s.Status)
+                            .FirstOrDefault()
                     ))
                 .ForMember(dest => dest.CurrentSampleStage,
                     opt => opt.MapFrom(src =>
                         src.SampleStages
                             .Where(s => s.Status == SampleStatus.InProgressed)
+                            .OrderByDescending(s => s.SampleStageDefinitionId)
                             .Select(s => s.SampleStageDefinition.Name)
                             .FirstOrDefault()
                     ))

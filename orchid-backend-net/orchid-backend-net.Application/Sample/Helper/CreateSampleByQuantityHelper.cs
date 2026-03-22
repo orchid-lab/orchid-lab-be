@@ -19,7 +19,7 @@ namespace orchid_backend_net.Application.Sample.Helper
                 {
                     ExperimentLogId = experimentLogId,
                     Name = $"Mẫu vật số {i + 1} của thí nghiệm {experimentLogName}",
-                    CreatedDate = DateTime.Now,
+                    CreatedDate = DateTime.UtcNow,
                     CreatedBy = userId,
                     InitialCondition = initialCondition
                 };

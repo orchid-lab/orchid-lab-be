@@ -31,7 +31,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                     .FirstOrDefault()))
                  .ForMember(dest => dest.SampleStageDto,
                     opt => opt.MapFrom(src =>
-                        src.SampleStages.OrderBy(ss => ss.SampleStageDefinitionId).ToList()))
+                        src.SampleStages.OrderBy(ss => ss.SampleStageDefinitionId)))
                 .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition))
                 .ForMember(dest => dest.CurrentSampleStage,
                     opt => opt.MapFrom(src => src.SampleStages

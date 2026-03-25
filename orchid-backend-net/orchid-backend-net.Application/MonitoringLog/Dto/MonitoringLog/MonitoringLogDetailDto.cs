@@ -11,6 +11,7 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
     {
         public required string Id { get; set; }
         public string Name { get; set; } = null!;
+        public required string SampleStageId { get; set; }
         public required string CreatedBy { get; set; }
         public required DateOnly CreatedDate { get; set; }
         public string SampleName { get; set; } = null!;
@@ -45,6 +46,8 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.MonitoringLog
                     opt => opt.MapFrom(src => src.UpdatedDate.HasValue
                         ? DateOnly.FromDateTime(src.UpdatedDate.Value)
                         : (DateOnly?)null))
+                .ForMember(dest => dest.SampleStageId,
+                    opt => opt.MapFrom(src => src.SampleStageId.ToString()))
                 .ForMember(dest => dest.Images, opt => opt.Ignore());
         }
     }

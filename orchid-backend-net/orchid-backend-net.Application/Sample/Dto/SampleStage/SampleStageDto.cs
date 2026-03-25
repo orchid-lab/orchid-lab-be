@@ -10,7 +10,6 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStage
     {
         public required string Id { get; set; }
         public DateOnly StartAt { get; set; }
-        public required string CurrentSampleStage { get; set; }
         public SampleStatus Status { get; set; }
         public required SampleStageDefinitionDto SampleStageDefinition { get; set; }
         public List<LogDetailDto> LogDetailDtos { get; set; } = new();
@@ -18,9 +17,6 @@ namespace orchid_backend_net.Application.Sample.Dto.SampleStage
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.SampleStage, SampleStageDto>()
-                .ForMember(dest => dest.CurrentSampleStage,
-                    opt => opt.MapFrom(
-                        src => src.SampleStageDefinition.Name))
                 .ForMember(dest => dest.StartAt,
                     opt => opt.MapFrom(
                         src => src.StartedAt))

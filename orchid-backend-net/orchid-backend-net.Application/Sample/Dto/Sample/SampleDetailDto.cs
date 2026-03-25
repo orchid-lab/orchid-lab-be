@@ -11,6 +11,7 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public required string Id { get; set; }
         public string Name { get; set; } = default!;
         public required string ExperimentLogId { get; set; }
+        public required string CurrentSampleStage { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public DateTime CreatedDate { get; set; }
@@ -30,8 +31,13 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                     .FirstOrDefault()))
                  .ForMember(dest => dest.SampleStageDto,
                     opt => opt.MapFrom(src =>
-                        src.SampleStages.ToList()))
-                .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition));
+                        src.SampleStages.OrderBy(ss => ss.SampleStageDefinitionId).ToList()))
+                .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition))
+                .ForMember(dest => dest.CurrentSampleStage,
+                    opt => opt.MapFrom(src => src.SampleStages
+                        .OrderByDescending(s => s.SampleStageDefinitionId)
+                        .Select(ss => ss.SampleStageDefinition.Name)
+                        .FirstOrDefault()));
         }
     }
 }

@@ -56,5 +56,7 @@ RUN apt-get update && apt-get install -y \
     libgtk-3-0 \
     --no-install-recommends && \
     rm -rf /var/lib/apt/lists/*
+USER $APP_UID
+
 
 ENTRYPOINT ["dotnet", "orchid-backend-net.API.dll"]

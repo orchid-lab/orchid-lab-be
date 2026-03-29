@@ -3,6 +3,7 @@ using orchid_backend_net.Application.ExperimentLog.Dto.Report;
 using orchid_backend_net.Infrastructure.Service.PdfGenerator.Template;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
+using Scriban.Runtime;
 
 namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
 {
@@ -29,7 +30,15 @@ namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
             var templateHtml = await TemplateLoader.LoadTemplateAsync(templateName);    
 
             var scribanTemplate = Scriban.Template.Parse(templateHtml);
-            var html = await scribanTemplate.RenderAsync(model, member => ToSnakeCase(member.Name));
+            var context = new Scriban.TemplateContext();
+            context.MemberRenamer = member => ToSnakeCase(member.Name);
+
+            var scriptObject = new Scriban.Runtime.ScriptObject();
+            scriptObject.Import(model, renamer: member => ToSnakeCase(member.Name));
+            context.PushGlobal(scriptObject);
+
+            var html = await scribanTemplate.RenderAsync(context);
+
 
             var browserFetcher = new BrowserFetcher();
             var revisionInfo = await browserFetcher.DownloadAsync();

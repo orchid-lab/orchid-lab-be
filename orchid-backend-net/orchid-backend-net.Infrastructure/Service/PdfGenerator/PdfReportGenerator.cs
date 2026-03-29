@@ -29,7 +29,7 @@ namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
             var templateHtml = await TemplateLoader.LoadTemplateAsync(templateName);    
 
             var scribanTemplate = Scriban.Template.Parse(templateHtml);
-            var html = await scribanTemplate.RenderAsync(model, member => member.Name);
+            var html = await scribanTemplate.RenderAsync(model, member => ToSnakeCase(member.Name));
 
             var browserFetcher = new BrowserFetcher();
             var revisionInfo = await browserFetcher.DownloadAsync();
@@ -56,6 +56,11 @@ namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
                     Left = "20px"
                 }
             });
+        }
+
+        private static string ToSnakeCase(string name)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(name, "(?<=[a-z0-9])([A-Z])", "_$1").ToLower();
         }
     }
 }

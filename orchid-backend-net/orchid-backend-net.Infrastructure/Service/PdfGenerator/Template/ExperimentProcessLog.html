@@ -100,7 +100,7 @@
 
 <!-- Section 4: AI Analysis -->
 <h2>4. Kết quả AI phân tích mẫu</h2>
-{{ if ai_analysis_result && ai_analysis_results.size > 0 }}
+{{ if ai_analysis_results && ai_analysis_results.size > 0 }}
 <table>
   <tr><th scope="col">Mẫu</th><th scope="col">Giai đoạn AI nhận diện</th><th scope="col">Bệnh phát hiện</th>
       <th scope="col">Độ tin cậy</th><th scope="col">Trạng thái sự cố</th><th scope="col">Thời gian</th></tr>
@@ -126,7 +126,7 @@
 
 <!-- Section 5: Disease Incidents -->
 <h2>5. Sự cố bệnh và hành động xử lý</h2>
-{{ if disease_incident && disease_incidents.size > 0 }}
+{{ if disease_incidents && disease_incidents.size > 0 }}
 <table>
   <tr><th scope="col">Mẫu</th><th scope="col">Bệnh</th><th scope="col">Tin cậy AI</th><th scope="col">Trạng thái</th>
       <th scope="col">Ghi chú nhân lực</th><th scope="col">Hành động đã thực hiện</th></tr>

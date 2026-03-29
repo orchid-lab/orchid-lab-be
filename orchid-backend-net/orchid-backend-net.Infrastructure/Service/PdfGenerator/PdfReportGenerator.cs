@@ -69,7 +69,13 @@ namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
 
         private static string ToSnakeCase(string name)
         {
-            return System.Text.RegularExpressions.Regex.Replace(name, "(?<=[a-z0-9])([A-Z])", "_$1").ToLower();
+            // Step 1: UCUCLower → UC_UCLower (e.g. "AIAnalysis" → "AI_Analysis")
+            var result = System.Text.RegularExpressions.Regex
+                .Replace(name, "([A-Z]+)([A-Z][a-z])", "$1_$2");
+            // Step 2: LowerUC → Lower_UC (e.g. "Analysis_Results" → "Analysis_Results")  
+            result = System.Text.RegularExpressions.Regex
+                .Replace(result, "([a-z0-9])([A-Z])", "$1_$2");
+            return result.ToLower();
         }
     }
 }

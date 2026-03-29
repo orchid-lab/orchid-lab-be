@@ -111,10 +111,17 @@
     <td>{{ a.detected_disease }}</td>
     <td>{{ a.confidence }}%</td>
     <td>
-      {{ if a.incident_status == "Confirmed" }}<span class="badge badge-red">Đã xác nhận</span>
-      {{ else if a.incident_status == "Dismissed" }}<span class="badge badge-green">Bác bỏ (AI sai)</span>
-      {{ else if a.incident_status == "AIDetected" }}<span class="badge badge-amber">Chờ review</span>
-      {{ else }}<span class="badge badge-gray">{{ a.incident_status }}</span>{{ end }}
+        {{ if a.incident_status == "Confirmed" }}
+        <span class="badge badge-red">Đã xác nhận bệnh</span>
+        {{ else if a.incident_status == "Dismissed" }}
+        <span class="badge badge-green">AI phán đoán sai</span>
+        {{ else if a.incident_status == "AIDetected" }}
+        <span class="badge badge-amber">Chờ review</span>
+        {{ else if a.incident_status == "UnderReview" }}
+        <span class="badge badge-amber">Đang kiểm tra</span>
+        {{ else }}
+        <span class="badge badge-gray">Không có sự cố</span>
+        {{ end }}
     </td>
     <td>{{ a.analyzed_at }}</td>
   </tr>

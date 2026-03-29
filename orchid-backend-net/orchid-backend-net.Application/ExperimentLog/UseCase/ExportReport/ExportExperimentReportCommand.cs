@@ -83,17 +83,10 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
                 .ToList();
             var aiResults = BuildAiAnalysisItems(samples);
 
-            var completedTasks = tasks
-            .Where(t =>
-                t.Status == Domain.Common.Enum.TaskStatus.CompletedInTime
-                && t.Status == Domain.Common.Enum.TaskStatus.CompletedOutTime
-                && t.TaskAssignment?.EndDate.HasValue == true)
-            .ToList();
-
             var totalTasks = tasks.Count;
-            var tasksCompletedOnTime = completedTasks
+            var tasksCompletedOnTime = tasks
                 .Count(t => t.Status == Domain.Common.Enum.TaskStatus.CompletedInTime);
-            var tasksCompletedLate = completedTasks
+            var tasksCompletedLate = tasks
                 .Count(t => t.Status == Domain.Common.Enum.TaskStatus.CompletedOutTime);
 
 

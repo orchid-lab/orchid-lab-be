@@ -191,19 +191,31 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
 
         private static List<AIAnalysisItem> BuildAiAnalysisItems(List<Samples> samples)
             => samples
-                .SelectMany(s => s.SampleStages
-                    .SelectMany(ss => ss.MonitoringLogs
+            .SelectMany(s => s.SampleStages
+                .SelectMany(ss =>
+                {
+                     // Build lookup: MonitoringLogId → DiseaseIncident
+                    var incidentByLogId = ss.DiseaseIncidents
+                        .Where(di => di.MonitoringLogId != null)
+                        .ToDictionary(di => di.MonitoringLogId!);
+
+                    return ss.MonitoringLogs
                         .Where(ml => ml.AnalyticResult != null)
-                        .Select(ml => new AIAnalysisItem
+                        .Select(ml =>
                         {
-                            SampleName = s.Name,
-                            StageName = ss.SampleStageDefinition?.Name ?? "Unknown",
-                            DetectedDisease = ml.Disease?.Name ?? "Unknown",
-                            Confidence = (double)GetTopConfidence(ml.AnalyticResult!) * 100,
-                            IncidentStatus = "AIDetected",
-                            AnalyzedAt = ml.CreatedDate.ToString("dd/MM/yyyy HH:mm")
-                        })))
-                .ToList();
+                            incidentByLogId.TryGetValue(ml.ID, out var incident);
+                            return new AIAnalysisItem
+                            {
+                                SampleName = s.Name,
+                                StageName = ss.SampleStageDefinition?.Name ?? "Unknown",
+                                DetectedDisease = ml.Disease?.Name ?? "Không phát hiện bệnh",
+                                Confidence = (double)GetTopConfidence(ml.AnalyticResult!) * 100,
+                                IncidentStatus = incident?.Status.ToString() ?? "NoIncident",
+                                AnalyzedAt = ml.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                            };
+                        });
+                }))
+            .ToList();
 
         private static ExperimentSummaryReportModel BuildSummaryModel(
             ExperimentLogs el,

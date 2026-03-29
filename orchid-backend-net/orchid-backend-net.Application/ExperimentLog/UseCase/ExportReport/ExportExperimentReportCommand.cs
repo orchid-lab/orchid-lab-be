@@ -26,6 +26,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
     internal class ExportExperimentReportCommandHandler(
         IExperimentLogRepository experimentLogRepository,
         IUserRepository userRepository,
+        ITaskRepository taskRepository,
         IPdfReportGenerator pdfReportGenerator) : IRequestHandler<ExportExperimentReportCommand, byte[]>
     {
         public async Task<byte[]> Handle(ExportExperimentReportCommand request, CancellationToken cancellationToken)
@@ -39,13 +40,16 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
             var technician = await userRepository.FindAsync(
                 u => u.ID == el.AssignedTo, cancellationToken);
 
+            var tasks = await taskRepository.GetTaskByTargetAsync(
+                TaskTargetType.ExperimentLog, el.ID, cancellationToken);
+
             var generatedAt = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
             var researcherName = researcher?.Name ?? el.CreatedBy;
             var technicianName = technician?.Name ?? el.AssignedTo;
 
             if (request.ReportType.Equals("process", StringComparison.OrdinalIgnoreCase))
             {
-                var model = BuildProcessLogModel(el, researcherName, technicianName, generatedAt);
+                var model = BuildProcessLogModel(el, researcherName, technicianName, generatedAt, tasks);
                 return await pdfReportGenerator.GenerateProcessLogAsync(model, cancellationToken);
             }
             else if (request.ReportType.Equals("summary", StringComparison.OrdinalIgnoreCase))
@@ -61,7 +65,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
             ExperimentLogs el,
             string researcherName,
             string technicianName,
-            string generatedAt)
+            string generatedAt,
+            List<Domain.Entities.Tasks> tasks)
         {
             var samples = el.Samples ?? new List<Samples>();
             var totalSamples = samples.Count;
@@ -77,6 +82,20 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
                 .Select(ms => BuildTimelineItem(ms, el, methodStages))
                 .ToList();
             var aiResults = BuildAiAnalysisItems(samples);
+
+            var completedTasks = tasks
+            .Where(t =>
+                t.Status == Domain.Common.Enum.TaskStatus.CompletedInTime
+                && t.Status == Domain.Common.Enum.TaskStatus.CompletedOutTime
+                && t.TaskAssignment?.EndDate.HasValue == true)
+            .ToList();
+
+            var totalTasks = tasks.Count;
+            var tasksCompletedOnTime = completedTasks
+                .Count(t => t.Status == Domain.Common.Enum.TaskStatus.CompletedInTime);
+            var tasksCompletedLate = completedTasks
+                .Count(t => t.Status == Domain.Common.Enum.TaskStatus.CompletedOutTime);
+
 
             return new ExperimentProcessLogReportModel
             {
@@ -99,9 +118,9 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
                 MethodStageTimeline = methodStageTimeline,
                 AIAnalysisResults = aiResults,
                 DiseaseIncidents = BuildDiseaseIncidentItems(el.Samples),
-                TotalTasks = 0,
-                TasksCompletedOnTime = 0,
-                TasksCompletedLate = 0
+                TotalTasks = totalTasks,
+                TasksCompletedOnTime = tasksCompletedOnTime,
+                TasksCompletedLate = tasksCompletedLate
             };
         }
 

@@ -40,7 +40,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
             var technician = await userRepository.FindAsync(
                 u => u.ID == el.AssignedTo, cancellationToken);
 
-            var tasks = await taskRepository.GetTaskByTargetAsync(
+            var tasks = await taskRepository.GetTasksByTargetAsync(
                 TaskTargetType.ExperimentLog, el.ID, cancellationToken);
 
             var generatedAt = DateTime.Now.ToString("dd/MM/yyyy HH:mm");

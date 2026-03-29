@@ -1,5 +1,6 @@
 using MediatR;
 using orchid_backend_net.Application.Common.Exceptions;
+using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.ExperimentLog.Dto.Report;
 using orchid_backend_net.Domain.Common.Enum;
@@ -43,7 +44,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
             var tasks = await taskRepository.GetTasksByTargetAsync(
                 TaskTargetType.ExperimentLog, el.ID, cancellationToken);
 
-            var generatedAt = DateTime.Now.ToString("dd/MM/yyyy HH:mm");
+            var generatedAt = TimeZoneHelper.VietnamTimeNow.ToString("dd/MM/yyyy HH:mm");
             var researcherName = researcher?.Name ?? el.CreatedBy;
             var technicianName = technician?.Name ?? el.AssignedTo;
 
@@ -211,7 +212,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
                                 DetectedDisease = ml.Disease?.Name ?? "Không phát hiện bệnh",
                                 Confidence = (double)GetTopConfidence(ml.AnalyticResult!) * 100,
                                 IncidentStatus = incident?.Status.ToString() ?? "NoIncident",
-                                AnalyzedAt = ml.CreatedDate.ToString("dd/MM/yyyy HH:mm")
+                                AnalyzedAt = ml.CreatedDate.ToVietnamTimeString()
                             };
                         });
                 }))

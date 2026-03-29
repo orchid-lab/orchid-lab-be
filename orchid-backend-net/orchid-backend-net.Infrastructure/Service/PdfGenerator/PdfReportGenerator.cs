@@ -37,7 +37,8 @@ namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
-                ExecutablePath = revisionInfo.GetExecutablePath()
+                ExecutablePath = revisionInfo.GetExecutablePath(),
+                Args = new[] { "--no-sandbox"}
             });
 
             await using var page = await browser.NewPageAsync();

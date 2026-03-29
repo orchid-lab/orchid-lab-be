@@ -9,6 +9,6 @@ namespace orchid_backend_net.Domain.IRepositories
 
         Task<List<Tasks>> GetAllTaskTemplateByStageId(int stageId, CancellationToken cancellationToken);
 
-        Task<List<Tasks>> GetTaskByTargetAsync(TaskTargetType targetType, string targetId, CancellationToken cancellationToken);
+        Task<List<Tasks>> GetTasksByTargetAsync(TaskTargetType targetType, string targetId, CancellationToken cancellationToken);
     }
 }

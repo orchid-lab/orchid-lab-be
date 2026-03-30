@@ -11,7 +11,8 @@ namespace orchid_backend_net.Application.Images.Policy
         [
             ImageTargetType.Task,
             ImageTargetType.MonitoringLog,
-            ImageTargetType.Sample
+            ImageTargetType.Sample,
+            ImageTargetType.SampleStage
         ];
 
         public static async Task<ImageTargetType> ValidateImageTargetType(
@@ -22,12 +23,12 @@ namespace orchid_backend_net.Application.Images.Policy
         {
             if(!Enum.TryParse<ImageTargetType>(request.TargetType, true, out var parsedTargetType))
             {
-                throw new ArgumentException($"Target type cho iamge không hợp lệ: {request.TargetType}");
+                throw new ArgumentException($"Target type cho image không hợp lệ: {request.TargetType}");
             }
 
             if (!AllowedImageTargetTypes.Contains(parsedTargetType))
             {
-                throw new ArgumentException($"Target type cho iamge không được phép: {request.TargetType}");
+                throw new ArgumentException($"Target type cho image không được phép: {request.TargetType}");
             }
 
             var exist = parsedTargetType switch

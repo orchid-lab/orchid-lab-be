@@ -190,7 +190,7 @@ namespace orchid_backend_net.Domain.Entities
             Recommendations = recommendations;
             Status = ExperimentLogStatus.Completed;
             EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
-            AddDomainEvent(new ExperimentLogCompleted(this.ID));
+            AddDomainEvent(new ExperimentLogCompleted(this.ID, this.AssignedTo, this.BatchId));
             Batch.FinishBatching(CreatedBy);
         }
 

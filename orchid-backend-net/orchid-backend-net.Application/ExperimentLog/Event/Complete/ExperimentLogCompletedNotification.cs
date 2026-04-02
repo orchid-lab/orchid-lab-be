@@ -2,6 +2,7 @@
 using orchid_backend_net.Application.Common.Events;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.Notification.Helper;
+using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.Events.ExperimentLogEvents;
 using orchid_backend_net.Domain.IRepositories;
 
@@ -11,6 +12,8 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.Complete
         IExperimentLogRepository experimentLogRepository,
         IUserRepository userRepository,
         INotificationRepository notificationRepository,
+        ITaskRepository taskRepository,
+        IUnitOfWork unitOfWork,
         INotificationPushService pushService)
         : INotificationHandler<DomainEventNotification<ExperimentLogCompleted>>
     {
@@ -25,7 +28,23 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.Complete
             var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content);
             await pushService.PushToSingleUserAsync(technician.ID, title, content);
             notificationRepository.Add(noti);
-            await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            //create cleanning task for technician 
+            var cleaningTask = new Domain.Entities.Tasks
+            {
+                Name = $"Dọn dẹp sau thí nghiệm {experiment.Name}",
+                Description = $"Dọn dẹp và chuẩn bị lại khu vực sau khi hoàn thành thí nghiệm {experiment.Name}",
+                CreatedBy = researcher.ID,
+            };
+            cleaningTask.AddTaskAssignment(
+                evt.DomainEvent.TechnicianId, 
+                Domain.Common.Enum.TaskTargetType.ExperimentLog, 
+                evt.DomainEvent.ExperimentLogId, 
+                DateTime.UtcNow.AddDays(3), 
+                DateTime.UtcNow, 
+                true);
+            taskRepository.Add(cleaningTask);
+            await unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

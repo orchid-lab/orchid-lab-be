@@ -26,9 +26,6 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
                         throw new InvalidOperationException("Không thể chuyển giai đoạn khi đã ở giai đoạn cuối.");
                     el.MoveToNextStage(nextStage, nextStage.Order);
                     break;
-                case Domain.Common.Enum.ExperimentLogStatus.Destroyed:
-                    el.DestroyBecauseAllSamplesInfected(reason);
-                    break;
                 case Domain.Common.Enum.ExperimentLogStatus.Completed:
                     el.Complete(conclusion, issues, recommendations);
                     break;

@@ -35,6 +35,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.Complete
                 Name = $"Dọn dẹp sau thí nghiệm {experiment.Name}",
                 Description = $"Dọn dẹp và chuẩn bị lại khu vực sau khi hoàn thành thí nghiệm {experiment.Name}",
                 CreatedBy = researcher.ID,
+                ResearcherId = researcher.ID,
             };
             cleaningTask.AddTaskAssignment(
                 evt.DomainEvent.TechnicianId, 

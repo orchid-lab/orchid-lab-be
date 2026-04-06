@@ -2,6 +2,7 @@
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
+using orchid_backend_net.Domain.Common.Enum;
 
 namespace orchid_backend_net.Application.Sample.UseCase.ConvertToSeedling
 {
@@ -29,13 +30,15 @@ namespace orchid_backend_net.Application.Sample.UseCase.ConvertToSeedling
 
             sample.ConvertToSeedling();
 
-            var lastStage = sample.SampleStages
-                .OrderByDescending(s => s.StartedAt)
-                .First();
+            var convertedStage = sample.SampleStages
+                .Where(s => s.Status == SampleStatus.ConvertedToSeedling)
+                .OrderByDescending(s => s.SampleStageDefinitionId)
+                .FirstOrDefault()
+                ?? throw new DomainException("Không tìm thấy giai đoạn đã chuyển thành cây giống.");
 
             var latestApprovedLog = await monitoringLogRepository
                 .FindLatestApprovedLogWithDetailsBySampleStageIdAsync(
-                    lastStage.ID, cancellationToken);
+                    convertedStage.ID, cancellationToken);
 
             var allCharacteristics = await characteristicRepository
                 .FindAllAsync(cancellationToken);

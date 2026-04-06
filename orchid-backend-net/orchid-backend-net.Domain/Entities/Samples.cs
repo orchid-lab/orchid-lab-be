@@ -140,21 +140,20 @@ namespace orchid_backend_net.Domain.Entities
         {
             EnsureSampleIsActive();
 
-            var hasCompletedStage = SampleStages
-                .Any(s => s.Status == SampleStatus.Completed);
-
+            var hasCompletedStage = SampleStages.Any(s => s.Status == SampleStatus.Completed);
             if (!hasCompletedStage)
                 throw new DomainException("Chỉ có thể chuyển mẫu đã hoàn thành ít nhất một giai đoạn thành cây giống.");
 
-            var stillInProgress = SampleStages
-                .Any(s => s.Status == SampleStatus.InProgressed);
-
+            var stillInProgress = SampleStages.Any(s => s.Status == SampleStatus.InProgressed);
             if (stillInProgress)
                 throw new DomainException("Mẫu vẫn còn đang ở giai đoạn chưa hoàn thành, không thể chuyển thành cây giống.");
 
             var lastStage = SampleStages
-                .OrderByDescending(s => s.StartedAt)
-                .First();
+                .Where(s => s.Status == SampleStatus.Completed || s.Status == SampleStatus.ConvertedToSeedling)
+                .OrderByDescending(s => s.SampleStageDefinitionId)
+                .ThenByDescending(s => s.CompletedAt ?? s.StartedAt)
+                .FirstOrDefault()
+                ?? throw new DomainException("Không tìm thấy giai đoạn hợp lệ để chuyển thành cây giống.");
 
             lastStage.MarkAsConvertedToSeedling();
         }

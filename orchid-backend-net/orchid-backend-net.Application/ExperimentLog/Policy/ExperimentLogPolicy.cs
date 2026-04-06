@@ -13,7 +13,6 @@ namespace orchid_backend_net.Application.ExperimentLog.Policy
             ExperimentLogStatus.WaitingForChangeStage,
             ExperimentLogStatus.ConfirmChangeStage,
             ExperimentLogStatus.Completed,
-            ExperimentLogStatus.Destroyed
             ];
 
         private static readonly HashSet<Domain.Common.Enum.TaskStatus> CompletedTaskStatus = [

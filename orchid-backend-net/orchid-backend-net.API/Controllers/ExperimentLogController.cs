@@ -201,7 +201,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="reason"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost("cancel/{id}")]
+        [HttpDelete("{id}/cancel")]
         [Authorize(Roles = "Technician")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> CancelExperimentLog([FromRoute] string id, [FromBody] string? reason, CancellationToken cancellationToken)

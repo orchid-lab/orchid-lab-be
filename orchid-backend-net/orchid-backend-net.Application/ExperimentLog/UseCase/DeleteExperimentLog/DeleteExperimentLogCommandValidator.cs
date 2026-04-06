@@ -31,7 +31,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.DeleteExperimentL
             }
             var totalSamples = experimentLog.Samples.Count;
             var infectedSamples = experimentLog.Samples.Count(s => s.ExecutionDate is not null);
-            return Task.FromResult(infectedSamples >= totalSamples / 2);
+            return Task.FromResult(totalSamples > 0 && infectedSamples * 2 > totalSamples);
         }
     }
 }

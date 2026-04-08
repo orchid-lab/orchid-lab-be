@@ -35,7 +35,8 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="pageNo"></param>
         /// <param name="pageSize"></param>
         /// <param name="nameSearchTerm"></param>
-        /// <param name="TechnicianId"></param>
+        /// <param name="technicianId"></param>
+        /// <param name="researcherId"></param>
         /// <param name="sampleName"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>

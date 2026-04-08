@@ -155,7 +155,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId, dto.Reason, dto.Conclusion, dto.Issues, dto.Recommendations);
+                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId, dto.Conclusion, dto.Issues, dto.Recommendations);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
@@ -171,7 +171,7 @@ namespace orchid_backend_net.API.Controllers
         /// experiment log's sample are all infected with disease or experiment log is created by mistake
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="reason"></param>
+        /// <param name="dto"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>

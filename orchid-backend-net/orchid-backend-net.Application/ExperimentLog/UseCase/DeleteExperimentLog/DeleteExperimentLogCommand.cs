@@ -7,7 +7,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.ExperimentLog.UseCase.DeleteExperimentLog
 {
-    public record DeleteExperimentLogCommand(string Id, string? Reason) : IRequest<string>;
+    public record DeleteExperimentLogCommand(string Id, string? Reason, string Conclusion, string Issue, string Recommendation) : IRequest<string>;
     internal class DeleteExperimentLogCommandHandler(
         IExperimentLogRepository experimentLogRepository,
         ITaskRepository taskRepository,
@@ -18,7 +18,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.DeleteExperimentL
         {
             var experimentLog = await experimentLogRepository.FindAsync(el => el.ID == request.Id, cancellationToken)
                 ?? throw new NotFoundException("Experiment log not found");
-            experimentLog.DestroyBecauseAllSamplesInfected(request.Reason);
+            experimentLog.DestroyBecauseAllSamplesInfected(request.Reason, request.Conclusion, request.Issue, request.Recommendation);
             experimentLog.UpdatedBy = currentUserService.UserId;
             experimentLog.UpdatedDate = DateTime.UtcNow;
 

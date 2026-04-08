@@ -1,5 +1,4 @@
 using MediatR;
-using orchid_backend_net.Application.Common.Exceptions;
 using orchid_backend_net.Application.Common.Helper;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Application.ExperimentLog.Dto.Report;
@@ -7,9 +6,6 @@ using orchid_backend_net.Domain.Common.Enum;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.Entities;
 using orchid_backend_net.Domain.IRepositories;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
 {
@@ -195,7 +191,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
             .SelectMany(s => s.SampleStages
                 .SelectMany(ss =>
                 {
-                     // Build lookup: MonitoringLogId → DiseaseIncident
+                    // Build lookup: MonitoringLogId → DiseaseIncident
                     var incidentByLogId = ss.DiseaseIncidents
                         .Where(di => di.MonitoringLogId != null)
                         .ToDictionary(di => di.MonitoringLogId!);

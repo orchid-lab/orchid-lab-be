@@ -139,12 +139,15 @@ namespace orchid_backend_net.Domain.Entities
         /// which will set status to destroyed, set end date, and trigger domain event to notify researcher and other related entities to stop the experiment log.
         /// </summary>
         /// <param name="reason"></param>
-        public void DestroyBecauseAllSamplesInfected(string? reason)
+        public void DestroyBecauseAllSamplesInfected(string? reason, string conclusion, string issue, string recommendation)
         {
             EnsureStatusIsOneOf(ExperimentLogStatus.InProgress, ExperimentLogStatus.WaitingForChangeStage);
 
             Status = ExperimentLogStatus.Destroyed;
             Reason = reason;
+            Conclusion = conclusion;
+            Issues = issue;
+            Recommendations = recommendation;
             EndDate = DateOnly.FromDateTime(DateTime.UtcNow);
             AddDomainEvent(new ExperimentLogDestroyed(ID, reason));
             Batch.FinishBatching(CreatedBy);

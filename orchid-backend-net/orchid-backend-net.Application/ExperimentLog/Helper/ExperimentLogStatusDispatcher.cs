@@ -8,7 +8,6 @@ namespace orchid_backend_net.Application.ExperimentLog.Helper
             ExperimentLogs el,
             Domain.Common.Enum.ExperimentLogStatus nextStatus,
             MethodStages? nextStage,
-            string? reason,
             string? conclusion = null,
             string? issues = null,
             string? recommendations = null)

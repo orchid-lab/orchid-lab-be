@@ -11,7 +11,6 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
         string Id,
         string Status,
         int? BatchId,
-        string? Reason,
         string? Conclusion,
         string? Issues,
         string? Recommendations
@@ -70,7 +69,6 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
                 experimentLogs,
                 nextStatus,
                 nextStage,
-                request.Reason,
                 request.Conclusion,
                 request.Issues,
                 request.Recommendations);

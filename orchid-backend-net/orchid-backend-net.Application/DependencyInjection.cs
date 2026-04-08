@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using orchid_backend_net.Application.Common.Behaviours;
 using orchid_backend_net.Application.Common.Validation;
+using orchid_backend_net.Application.ExperimentLog.Event.Complete;
 using orchid_backend_net.Application.ExperimentLog.Helper;
 using orchid_backend_net.Application.ExperimentLog.Helper.CreateExperimentLogHelperInjection;
 using orchid_backend_net.Application.MonitoringLog.UseCase.CreateMonitoringLog;
@@ -33,6 +34,8 @@ namespace orchid_backend_net.Application
             services.AddTransient<CreateExperimentLogServices>();
             services.AddTransient<CreateExperimentLogRepositories>();
             services.AddTransient<CreateMonitoringLogRepository>();
+            services.AddTransient<ExperimentLogCompletedNotificationRepository>();
+            services.AddTransient<ExperimentLogCompletedNotificationService>();
             return services;
         }
     }

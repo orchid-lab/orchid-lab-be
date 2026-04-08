@@ -178,12 +178,12 @@ namespace orchid_backend_net.API.Controllers
         [HttpDelete("{id}")]
         [Authorize(Roles = "Researcher")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<ActionResult<JsonResponse<string>>> DestroyExperimentLog([FromRoute] string id, [FromBody] string? reason, CancellationToken cancellationToken)
+        public async Task<ActionResult<JsonResponse<string>>> DestroyExperimentLog([FromRoute] string id, [FromBody] DeleteExperimentLogDto dto, CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var command = new DeleteExperimentLogCommand(id, reason);
+                var command = new DeleteExperimentLogCommand(id, dto.Reason, dto.Conclusion, dto.Issue, dto.Recommendation);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }

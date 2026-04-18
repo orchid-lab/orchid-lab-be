@@ -93,19 +93,6 @@ namespace orchid_backend_net.Infrastructure
             services.Configure<GmailOptions>(configuration.GetSection("Gmail"));
 
 
-            //Seed data generation and check migration
-            using (var scope = services.BuildServiceProvider().CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
-                if (dbContext.Database.GetMigrations().Any())
-                {
-                    dbContext.Database.Migrate();
-                    SeedDataGenerator.SeedAsync(dbContext)
-                                     .GetAwaiter()
-                                     .GetResult();
-                }
-            }
-
             //service
             services.AddSingleton<LoggingFilter>();
             services.AddScoped<IEmailSender, EmailSender>();
@@ -174,6 +161,18 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<TokenCleanupJob>();
             services.AddScoped<MethodStageOverdueCheckJob>();
             return services;
+        }
+
+        public static async Task InitializeDatabaseAsync(this IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
+
+            if (dbContext.Database.GetMigrations().Any())
+            {
+                await dbContext.Database.MigrateAsync();
+                await SeedDataGenerator.SeedAsync(dbContext);
+            }
         }
     }
 }

@@ -58,6 +58,8 @@ builder.Services.AddLogging(opt =>
 
 var app = builder.Build();
 
+await app.Services.InitializeDatabaseAsync();
+
 using (var scope = app.Services.CreateScope())
 {
     var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();

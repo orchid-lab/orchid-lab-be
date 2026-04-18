@@ -60,6 +60,20 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                     new() { Name = "Thiamine HCl", Category = ChemicalCategories.ORGANIC_SUBTANCES, ConcentrationUnit = Unit.CHEMICAL_UNIT }
                 };
 
+                foreach (var chemical in chemicals)
+                {
+                    chemical.Description ??= chemical.Category switch
+                    {
+                        ChemicalCategories.DISINFECTANT => "Hóa chất dùng cho khử trùng mẫu, dụng cụ hoặc môi trường.",
+                        ChemicalCategories.SOLVENT => "Dung môi/hỗ trợ pha dung dịch trong quy trình nuôi cấy.",
+                        ChemicalCategories.PLANT_GROWTH_REGULATOR => "Chất điều hòa sinh trưởng sử dụng theo nồng độ mục tiêu của từng giai đoạn.",
+                        ChemicalCategories.MACRO_MINERALS => "Khoáng đa lượng bổ sung dinh dưỡng nền cho môi trường nuôi cấy.",
+                        ChemicalCategories.MICRO_MINERALS => "Khoáng vi lượng cần thiết cho chuyển hóa và phát triển mô.",
+                        ChemicalCategories.ORGANIC_SUBTANCES => "Thành phần hữu cơ bổ trợ tăng trưởng và ổn định môi trường.",
+                        _ => "Hóa chất phục vụ quy trình nuôi cấy và theo dõi thí nghiệm."
+                    };
+                }
+
                 await context.Set<Chemicals>().AddRangeAsync(chemicals);
                 await context.SaveChangesAsync();
             }

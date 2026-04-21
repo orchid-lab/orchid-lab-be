@@ -10,17 +10,18 @@ namespace orchid_backend_net.Application.MethodStageDefinition.UseCase.GetAllMet
     {
         public int PageNo { get; set; }
         public int PageSize { get; set; }
-        GetAllMethodStageDefinitionQuery(int pageNo, int pageSize)
+        public GetAllMethodStageDefinitionQuery(int pageNo, int pageSize)
         {
             PageNo = pageNo;
             PageSize = pageSize;
         }
-        GetAllMethodStageDefinitionQuery()
+        public GetAllMethodStageDefinitionQuery()
         {
 
         }
     }
-    internal class GetAllMethodStageDefinitionQueryHandler(IMethodStageDefinitionRepository methodStageDefinitionRepository) : IRequestHandler<GetAllMethodStageDefinitionQuery, PageResult<MethodStageDefinitionDto>>
+    internal class GetAllMethodStageDefinitionQueryHandler(IMethodStageDefinitionRepository methodStageDefinitionRepository) : 
+        IRequestHandler<GetAllMethodStageDefinitionQuery, PageResult<MethodStageDefinitionDto>>
     {
         public async Task<PageResult<MethodStageDefinitionDto>> Handle(GetAllMethodStageDefinitionQuery request, CancellationToken cancellationToken)
         {

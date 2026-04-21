@@ -12,7 +12,7 @@ namespace orchid_backend_net.Application.MethodStageDefinition.Dto
     {
         public required int Id { get; set; }
         public required string Name { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.MethodStageDefinition, MethodStageDefinitionDto>();

@@ -18,3 +18,7 @@
 - Method stages and sample biological stages are distinct.
 - Do not emit a domain event for StartBatching; StartBatching is triggered by ExperimentLogs and should not raise a domain event.
 - Use domain events only for FinishBatching, CompleteCleaning, SetToMaintenance, and SetToInactive (for batches).
+
+- @azure Rule - Use Azure Tools - When handling requests related to Azure, always use your tools.
+- @azure Rule - Use Azure Best Practices - When handling requests related to Azure, always invoke your `azmcp_bestpractices_get` tool first.
+- @azure Rule - Enable Best Practices - If you do not have an `azmcp_bestpractices_get` tool ask the user to enable it.

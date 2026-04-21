@@ -126,10 +126,12 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             .Setup(x => x.Add(It.IsAny<Domain.Entities.Tasks>()))
             .Callback<Domain.Entities.Tasks>(t => savedTask = t);
 
+        //StageDefinitionRepositoryMock
+        //    .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<MethodStageDefinition, bool>>>(), It.IsAny<CancellationToken>()))
+        //    .ReturnsAsync(true);
         StageDefinitionRepositoryMock
-            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<MethodStageDefinition, bool>>>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.AnyAsync(It.IsAny<Expression<Func<Domain.Entities.MethodStageDefinition, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(true);
-
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
         var command = new CreateTaskCommand(
             new CreateTaskDto

@@ -30,15 +30,15 @@ namespace orchid_backend_net.Application.MethodStageDefinition.UseCase.GetAllMet
     {
         public async Task<PageResult<MethodStageDefinitionDto>> Handle(GetAllMethodStageDefinitionQuery request, CancellationToken cancellationToken)
         {
-            IQueryable<Domain.Entities.MethodStageDefinition> queryOptions(IQueryable<Domain.Entities.MethodStageDefinition> query)
-            {
-                return query;
-            }
-
+            //IQueryable<Domain.Entities.MethodStageDefinition> queryOptions(IQueryable<Domain.Entities.MethodStageDefinition> query)
+            //{
+            //    return query;
+            //}
             var methodStageDefinition = await methodStageDefinitionRepository.FindAllProjectToAsync<MethodStageDefinitionDto>(
                 request.PageNo,
                 request.PageSize,
-                queryOptions,
+                //list,
+                null,
                 cancellationToken);
             return methodStageDefinition.ToAppPageResult();
         }

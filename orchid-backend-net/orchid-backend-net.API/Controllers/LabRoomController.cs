@@ -18,7 +18,7 @@ namespace orchid_backend_net.API.Controllers
     /// <param name="logger"></param>
     [Route("api/LabRoom")]
     [ApiController]
-    public class LabRoomController(ISender sender, ILogger logger) : BaseController(sender)
+    public class LabRoomController(ISender sender, ILogger<LabRoomController> logger) : BaseController(sender)
     {
         /// <summary>
         /// get all lab room, use for btach drop down list

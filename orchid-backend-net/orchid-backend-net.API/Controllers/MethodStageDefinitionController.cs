@@ -26,7 +26,7 @@ namespace orchid_backend_net.API.Controllers
     /// <param name="logger"></param>
     [Route("api/MethodStageDefinition")]
     [ApiController]
-    public class MethodStageDefinitionController(ISender sender, ILogger logger) : BaseController(sender)
+    public class MethodStageDefinitionController(ISender sender, ILogger<MethodStageDefinitionController> logger) : BaseController(sender)
     {
         /// <summary>
         /// get all method stage definition, use for method stage details

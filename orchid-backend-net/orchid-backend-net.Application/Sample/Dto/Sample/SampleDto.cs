@@ -14,14 +14,19 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public DateOnly? ExecutionDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public required string CreatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
         public SampleStatus Status { get; set; } = default!;
+        public string? InitialCondition { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Samples, SampleDto>()
                 .ForMember(dest => dest.Status,
                     opt => opt.MapFrom(src =>
-                        src.SampleStages
-                            .Where(s => s.Status == SampleStatus.InProgressed)
+                        src.SampleStages.
+                            OrderByDescending(s => s.SampleStageDefinitionId)
                             .Select(s => s.Status)
                             .FirstOrDefault()
                     ))
@@ -29,9 +34,11 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                     opt => opt.MapFrom(src =>
                         src.SampleStages
                             .Where(s => s.Status == SampleStatus.InProgressed)
+                            .OrderByDescending(s => s.SampleStageDefinitionId)
                             .Select(s => s.SampleStageDefinition.Name)
                             .FirstOrDefault()
-                    ));
+                    ))
+                .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition));
         }
     }
 }

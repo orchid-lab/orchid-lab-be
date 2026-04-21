@@ -1,8 +1,9 @@
-﻿using orchid_backend_net.Domain.Entities;
+﻿using orchid_backend_net.Domain.Common.Enum;
+using orchid_backend_net.Domain.Entities;
 
 namespace orchid_backend_net.Domain.IRepositories
 {
-    public interface ISampleRepository : IEFRepository<Samples, Samples>
+    public interface ISampleRepository : IEFRepository<Samples, Samples>, IEntityWithImagesRepository
     {
     }
 }

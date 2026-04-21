@@ -6,5 +6,6 @@
     /// <param name="Name"></param>
     /// <param name="Description"></param>
     /// <param name="Notes"></param>
-    public record UpdateSampleInformationDto(string? Name, string? Description, string? Notes);
+    /// <param name="InitialCondition"></param>
+    public record UpdateSampleInformationDto(string? Name, string? Description, string? Notes, string? InitialCondition);
 }

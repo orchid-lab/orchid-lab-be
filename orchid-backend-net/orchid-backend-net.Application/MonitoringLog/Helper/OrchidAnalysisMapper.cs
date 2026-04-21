@@ -4,51 +4,142 @@ using System.Globalization;
 namespace orchid_backend_net.Application.MonitoringLog.Helper
 {
     /// <summary>
-    /// this helper is used to map orchid analysis result to analytic results entity
+    /// Maps ONNX analysis results to database AnalyticResults entity.
+    /// Handles stage validation and disease code conversion.
     /// </summary>
     public static class OrchidAnalysisMapper
     {
+        /// <summary>
+        /// Valid stage names from ONNX model output.
+        /// </summary>
+        private static readonly HashSet<string> ValidStageNames = new(StringComparer.OrdinalIgnoreCase)
+        {
+            "Coppice",  // Giai đoạn chồi non
+            "Tissue",   // Giai đoạn mô nuôi cấy
+            "Tree"      // Giai đoạn cây trưởng thành
+        };
 
         /// <summary>
-        /// map the python api result to analytic results entity
+        /// Disease code mapping: ONNX output name → Database Disease.Code.
+        /// Used for Disease table lookup.
         /// </summary>
-        /// <param name="source">the result after using OrchidAnalyzerService</param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
+        private static readonly Dictionary<string, string> DiseaseCodeMapping = new()
+        {
+            // ONNX prediction name → Disease.Code in database
+            { "Anthracnose", "disease_anthracnose" },
+            { "BacterialWilt", "disease_bacterial_wilt" },
+            { "Blackrot", "disease_blackrot" },
+            { "Brownspots", "disease_brownspots" },
+            { "MoldBacterial", "disease_mold_bac" },
+            { "MoldFungus", "disease_mold_fungus" },
+            { "SoftRot", "disease_soft_rot" },
+            { "StemRot", "disease_stemrot" },
+            { "WitheredYellowRoot", "disease_withered_yellow_root" },
+            { "Healthy", "healthy" },
+            { "Oxidation", "oxidation" },
+            { "Virus", "virus" }
+        };
+
+        /// <summary>
+        /// Map ONNX analysis result to AnalyticResults entity.
+        /// </summary>
+        /// <param name="source">OrchidAnalysisResult from ONNX service</param>
+        /// <returns>AnalyticResults entity ready for database insertion</returns>
+        /// <exception cref="ArgumentNullException">If source is null</exception>
+        /// <exception cref="ArgumentException">If disease data is missing</exception>
         public static AnalyticResults ToAnalyticResult(OrchidAnalysisResult source)
         {
             ArgumentNullException.ThrowIfNull(source);
-            if (source.Disease is null) throw new ArgumentException("Kết quả phân tích bệnh bị thiếu", nameof(source));
-            var p = source.Disease.Probability ?? new Dictionary<string, float>();
+            
+            if (source.Disease is null) 
+                throw new ArgumentException("Kết quả phân tích bệnh bị thiếu", nameof(source));
 
+            var probabilities = source.Disease.Probability ?? new Dictionary<string, float>();
 
-            //helper to safely get and convert float -> decimal 
-            decimal Get(string key)
+            // Helper to safely get and convert float → decimal
+            decimal GetProbability(string onnxKey)
             {
-                if (p.TryGetValue(key, out var value))
+                if (probabilities.TryGetValue(onnxKey, out var value))
                 {
+                    // Handle NaN and Infinity cases
                     if (float.IsNaN(value) || float.IsInfinity(value))
                         return 0m;
+                    
                     return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
                 }
                 return 0m;
             }
 
+            // Map ONNX probabilities to AnalyticResults entity properties
+            // ONNX outputs PascalCase keys (e.g., "Anthracnose", "BacterialWilt")
             return new AnalyticResults
             {
-                Anthracnose = Get("disease_anthracnose"),
-                BacterialWilt = Get("disease_bacterial_wilt"),
-                Blackrot = Get("disease_blackrot"),
-                Brownspots = Get("disease_brownspots"),
-                MoldBacterial = Get("disease_mold_bac"),
-                MoldFungus = Get("disease_mold_fungus"),
-                SoftRot = Get("disease_soft_rot"),
-                StemRot = Get("disease_stemrot"),
-                WitheredYellowRoot = Get("disease_withered_yellow_root"),
-                Healthy = Get("healthy"),
-                Oxidation = Get("oxidation"),
-                Virus = Get("virus"),
+                Anthracnose = GetProbability("Anthracnose"),
+                BacterialWilt = GetProbability("BacterialWilt"),
+                Blackrot = GetProbability("Blackrot"),
+                Brownspots = GetProbability("Brownspots"),
+                MoldBacterial = GetProbability("MoldBacterial"),
+                MoldFungus = GetProbability("MoldFungus"),
+                SoftRot = GetProbability("SoftRot"),
+                StemRot = GetProbability("StemRot"),
+                WitheredYellowRoot = GetProbability("WitheredYellowRoot"),
+                Healthy = GetProbability("Healthy"),
+                Oxidation = GetProbability("Oxidation"),
+                Virus = GetProbability("Virus"),
             };
+        }
+
+        /// <summary>
+        /// Validate and normalize stage name from ONNX output.
+        /// </summary>
+        /// <param name="stageName">Stage name from ONNX (e.g., "Coppice", "Tissue", "Tree")</param>
+        /// <returns>Normalized stage name with proper casing</returns>
+        /// <exception cref="ArgumentException">If stage name is empty or invalid</exception>
+        public static string ValidateStageName(string stageName)
+        {
+            if (string.IsNullOrWhiteSpace(stageName))
+                throw new ArgumentException("Stage name cannot be empty", nameof(stageName));
+
+            // Check if stage is valid (case-insensitive)
+            if (!ValidStageNames.Contains(stageName))
+            {
+                var validStages = string.Join(", ", ValidStageNames);
+                throw new ArgumentException(
+                    $"Invalid stage: '{stageName}'. Valid stages: {validStages}", 
+                    nameof(stageName));
+            }
+
+            // Return normalized stage name (proper casing from the set)
+            return ValidStageNames.First(s => s.Equals(stageName, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
+        /// Convert ONNX disease prediction to Disease.Code for database lookup.
+        /// </summary>
+        /// <param name="onnxDiseaseName">Disease name from ONNX (e.g., "Anthracnose")</param>
+        /// <returns>Disease code for database lookup (e.g., "disease_anthracnose")</returns>
+        /// <exception cref="ArgumentException">If disease name is empty or unknown</exception>
+        public static string ToDiseaseCode(string onnxDiseaseName)
+        {
+            if (string.IsNullOrWhiteSpace(onnxDiseaseName))
+                throw new ArgumentException("Disease name cannot be empty", nameof(onnxDiseaseName));
+
+            // Try exact match first
+            if (DiseaseCodeMapping.TryGetValue(onnxDiseaseName, out var code))
+                return code;
+
+            // Fallback: try case-insensitive match
+            var match = DiseaseCodeMapping.FirstOrDefault(x => 
+                x.Key.Equals(onnxDiseaseName, StringComparison.OrdinalIgnoreCase));
+            
+            if (match.Value != null)
+                return match.Value;
+
+            // No match found - throw descriptive error
+            var availableDiseases = string.Join(", ", DiseaseCodeMapping.Keys);
+            throw new ArgumentException(
+                $"Unknown disease: '{onnxDiseaseName}'. Available: {availableDiseases}", 
+                nameof(onnxDiseaseName));
         }
     }
 }

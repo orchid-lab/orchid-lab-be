@@ -4,7 +4,7 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentLogInformation
 {
-    public record UpdateExperimentLogInformationCommand(string Id, string? Name, string? Notes, int? ExpectedSampleCount) : IRequest<string>;
+    public record UpdateExperimentLogInformationCommand(string Id, string? Name, string? Notes, int? ExpectedSampleCount, string? Objective) : IRequest<string>;
 
     internal class UpdateExperimentLogInformationCommandHandler(IExperimentLogRepository experimentLogRepository,
         ICurrentUserService currentUserService) : IRequestHandler<UpdateExperimentLogInformationCommand, string>
@@ -13,7 +13,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
         {
             var experimentLog = await experimentLogRepository.FindAsync(el => el.ID == request.Id, cancellationToken)
                 ?? throw new KeyNotFoundException($"Experiment log with ID {request.Id} not found.");
-            experimentLog.UpdateInformation(request.Name, request.Notes, request.ExpectedSampleCount);
+            experimentLog.UpdateInformation(request.Name, request.Notes, request.ExpectedSampleCount, request.Objective);
             experimentLog.UpdatedDate = DateTime.UtcNow;
             experimentLog.UpdatedBy = currentUserService.UserId;
             experimentLogRepository.Update(experimentLog);

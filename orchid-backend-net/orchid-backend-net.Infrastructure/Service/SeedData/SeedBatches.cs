@@ -37,6 +37,17 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 HeightUnit = "mm",
                 Status = Domain.Common.Enum.BatchStatus.Ready,
             },
+            new()
+            {
+                LabRoomId = labRooms["Phòng cấy mô"].ID,
+                LabRoom = labRooms["Phòng cấy mô"],
+                BatchName = "TC-2026-03",
+                BatchSizeWidth = 1500,
+                BatchSizeHeight = 1800,
+                WidthUnit = "mm",
+                HeightUnit = "mm",
+                Status = Domain.Common.Enum.BatchStatus.Ready,
+            },
 
             // ===== Phòng nhân chồi =====
             new()

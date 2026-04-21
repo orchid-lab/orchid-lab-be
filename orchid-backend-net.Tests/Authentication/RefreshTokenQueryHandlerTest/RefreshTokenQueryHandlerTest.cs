@@ -38,6 +38,9 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
         UserRepositoryMock
             .Setup(x => x.FindAsync(It.IsAny<Expression<Func<Users, bool>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Users?)null);
+        CacheServiceMock
+            .Setup(x => x.RemoveAsync(It.IsAny<string>()))
+            .ReturnsAsync(true);
 
         var query = new RefreshTokenQuery(CacheTestData.NormalizedToken);
 
@@ -45,7 +48,44 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
         Func<Task> act = async () => { await RefreshTokenQueryHandler.Handle(query, CancellationToken.None); };
 
         //Assert
-        await act.Should().ThrowAsync<UnauthorizedAccessException>().WithMessage("Không tìm thấy người dùng hoặc token không hợp lệ.");
+        await act.Should().ThrowAsync<UnauthorizedAccessException>().WithMessage("Người dùng không tồn tại hoặc đã bị vô hiệu hóa. Vui lòng đăng nhập lại.");
+        
+        // Verify that Redis cleanup was called
+        CacheServiceMock.Verify(
+            x => x.RemoveAsync(It.IsAny<string>()),
+            Times.Once);
+    }
+
+    [Test]
+    public async Task RefreshTokenQuery_TokenMismatch_ThrowException()
+    {
+        //Arrange 
+        var user = UserTestData.CreateValidResearcherUser();
+        user.RefreshToken = "different-token-in-database";
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        
+        CacheServiceMock
+            .Setup(x => x.GetAsync(It.IsAny<string>()))
+            .ReturnsAsync(user.ID);
+        UserRepositoryMock
+            .Setup(x => x.FindAsync(It.IsAny<Expression<Func<Users, bool>>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(user);
+        CacheServiceMock
+            .Setup(x => x.RemoveAsync(It.IsAny<string>()))
+            .ReturnsAsync(true);
+
+        var query = new RefreshTokenQuery(CacheTestData.NormalizedToken);
+
+        //Act
+        Func<Task> act = async () => { await RefreshTokenQueryHandler.Handle(query, CancellationToken.None); };
+
+        //Assert
+        await act.Should().ThrowAsync<UnauthorizedAccessException>().WithMessage("Refresh Token không hợp lệ. Vui lòng đăng nhập lại.");
+        
+        // Verify that Redis cleanup was called
+        CacheServiceMock.Verify(
+            x => x.RemoveAsync(It.IsAny<string>()),
+            Times.Once);
     }
 
     [Test]
@@ -53,6 +93,9 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
     {
         //Arrange 
         var user = UserTestData.CreateValidResearcherUser();
+        user.RefreshToken = CacheTestData.NormalizedToken; // Match the token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        
         CacheServiceMock
             .Setup(x => x.GetAsync(It.IsAny<string>()))
             .ReturnsAsync(user.ID);
@@ -76,6 +119,9 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
     {
         //Arrange 
         var user = UserTestData.CreateInvalidRoleUser();
+        user.RefreshToken = CacheTestData.NormalizedToken; // Match the token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+        
         CacheServiceMock
             .Setup(x => x.GetAsync(It.IsAny<string>()))
             .ReturnsAsync(user.ID);
@@ -100,6 +146,8 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
     {
         //Arrange 
         var user = UserTestData.CreateValidAdminUser();
+        user.RefreshToken = CacheTestData.NormalizedToken; // Match the token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         CacheServiceMock
             .Setup(x => x.GetAsync(It.IsAny<string>()))
@@ -163,6 +211,8 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
     {
         //Arrange 
         var user = UserTestData.CreateValidResearcherUser();
+        user.RefreshToken = CacheTestData.NormalizedToken; // Match the token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         CacheServiceMock
             .Setup(x => x.GetAsync(It.IsAny<string>()))
@@ -226,6 +276,8 @@ internal class RefreshTokenQueryHandlerTest : AuthenticationHandlerTestConfig
     {
         //Arrange 
         var user = UserTestData.CreateValidTechnicianUser();
+        user.RefreshToken = CacheTestData.NormalizedToken; // Match the token
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
 
         CacheServiceMock
            .Setup(x => x.GetAsync(It.IsAny<string>()))

@@ -6,6 +6,7 @@ using orchid_backend_net.API.Dto.Sample;
 using orchid_backend_net.Application.Common.Pagination;
 using orchid_backend_net.Application.Sample.Dto.Sample;
 using orchid_backend_net.Application.Sample.UseCase.ChangeSampleStage;
+using orchid_backend_net.Application.Sample.UseCase.ConvertToSeedling;
 using orchid_backend_net.Application.Sample.UseCase.CreateSampleByQuantity;
 using orchid_backend_net.Application.Sample.UseCase.DestroyBecauseOfDisease;
 using orchid_backend_net.Application.Sample.UseCase.GetAll;
@@ -161,24 +162,59 @@ namespace orchid_backend_net.API.Controllers
         }
 
         /// <summary>
+        /// Researcher converts a completed healthy sample into a seedling source.
+        /// </summary>
+        /// <remarks>
+        /// <ul>
+        /// <li>Sample must be alive (not destroyed by disease).</li>
+        /// <li>Sample must have at least one Completed stage and no InProgressed stage.</li>
+        /// <li>After conversion, use POST /api/seedlings to register the new seedling in the catalog.</li>
+        /// </ul>
+        /// </remarks>
+        [HttpPut("{id}/convert-to-seedling")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(JsonResponse<string>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ConvertToSeedling(
+            [FromRoute] string id,
+            [FromBody] ConvertToSeedlingRequest body,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received PUT convert-to-seedling for sample {Id} at {Time}", id, DateTime.UtcNow);
+                var result = await Sender.Send(
+                    new ConvertSampleToSeedlingCommand(id, body.LocalName, body.ScientificName, body.Description),
+                    cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error converting sample {Id} to seedling at {Time}", id, DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Chuyển đổi thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// when a sample is infected, technician use this api to destroy sample of experiment log
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="reason"></param>
+        /// <param name="dto"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Technician")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> Destroy(
             [FromRoute] string id,
-            [FromBody] string? reason,
+            [FromBody] DestroySampleCommandDto dto,
             CancellationToken cancellationToken = default)
         {
             try
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var result = await Sender.Send(new DestroySampleBecauseOfDiseaseCommand(id, reason), cancellationToken);
+                var result = await Sender.Send(new DestroySampleBecauseOfDiseaseCommand(id, dto.Reason), cancellationToken);
                 return Ok(result);
             }
             catch (Exception ex)

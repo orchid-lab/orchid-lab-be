@@ -6,8 +6,10 @@
     /// <param name="Name"></param>
     /// <param name="Notes"></param>
     /// <param name="ExpectedSampleCount"></param>
+    /// <param name="Objective"></param>
     public record UpdateExperimentLogInformationDto(
         string? Name,
         string? Notes,
-        int? ExpectedSampleCount);
+        int? ExpectedSampleCount,
+        string? Objective);
 }

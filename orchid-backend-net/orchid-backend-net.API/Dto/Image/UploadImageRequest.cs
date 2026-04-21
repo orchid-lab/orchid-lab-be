@@ -23,5 +23,10 @@
         /// Target entity ID (GUID format)
         /// </summary>
         public required string TargetId { get; set; }
+
+        /// <summary>
+        /// Description/caption for the image
+        /// </summary>
+        public string? Description { get; set; }
     }
 }

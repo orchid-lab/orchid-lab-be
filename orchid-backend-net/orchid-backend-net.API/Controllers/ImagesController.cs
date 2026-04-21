@@ -2,6 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.API.Dto.Image;
+using orchid_backend_net.Application.Common.Pagination;
+using orchid_backend_net.Application.Images.Dto.Img;
+using orchid_backend_net.Application.Images.UseCase.GetAll;
 using orchid_backend_net.Application.Images.UseCase.UploadImage;
 using orchid_backend_net.Application.Images.UseCase.UploadUserAvatarCommand;
 using orchid_backend_net.Domain.Common.Exceptions;
@@ -18,6 +21,29 @@ namespace orchid_backend_net.API.Controllers
     [ApiController]
     public class ImagesController(ISender sender, ILogger<ImagesController> logger) : BaseController(sender)
     {
+        /// <summary>
+        /// return a list with pagination of image 
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [ProducesResponseType(typeof(PageResult<ImageDto>), 200)]
+        public async Task<IActionResult> GetAll([FromQuery] GetAllImageQuery query, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(query, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error occurred while processing PUT request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
+            }
+        }
+
         /// <summary>
         /// using for upload user image in return of the url
         /// </summary>
@@ -68,6 +94,7 @@ namespace orchid_backend_net.API.Controllers
         /// <ul>
         /// <li><c>MonitoringLog</c> or <c>0</c></li>
         /// <li><c>Task</c> or <c>1</c></li>
+        /// <li><c>Sample</c> or <c>2</c></li>
         /// </ul>
         /// 
         /// Sample request:
@@ -132,7 +159,8 @@ namespace orchid_backend_net.API.Controllers
                     request.Image.FileName,
                     resizedBytes,
                     request.TargetType,
-                    request.TargetId
+                    request.TargetId,
+                    request.Description // truyền description vào command
                 );
 
                 var imageUrl = await Sender.Send(command, cancellationToken);

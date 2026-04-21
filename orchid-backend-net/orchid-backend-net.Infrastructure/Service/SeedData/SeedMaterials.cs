@@ -77,6 +77,21 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
             new() { Name = "Nhà lưới / mái che", Category = MaterialCategories.CATEGORY_ACCLIMATIZATION, Unit = Unit.MATERIAL_UNIT }
         };
 
+                foreach (var material in materials)
+                {
+                    material.Description ??= material.Category switch
+                    {
+                        MaterialCategories.CATEGORY_PREPARE_ROOM => "Thiết bị dùng để chuẩn bị môi trường và kiểm soát thông số trước khi nuôi cấy.",
+                        MaterialCategories.CATEGORY_CONTAINER => "Dụng cụ chứa, đong đo và lưu trữ mẫu/môi trường trong phòng lab.",
+                        MaterialCategories.CATEGORY_WASH_AREA => "Dụng cụ phục vụ khu rửa và làm sạch trước khử trùng.",
+                        MaterialCategories.CATEGORY_SURGICAL_TOOL => "Dụng cụ thao tác vô trùng khi xử lý, cắt và cấy mẫu.",
+                        MaterialCategories.CATEGORY_STERILIZE_ROOM => "Thiết bị khu khử trùng dùng xử lý dụng cụ/môi trường trước thao tác.",
+                        MaterialCategories.CATEGORY_CULTURE_ROOM => "Thiết bị và không gian cấy trong điều kiện vô trùng.",
+                        MaterialCategories.CATEGORY_ACCLIMATIZATION => "Vật tư dùng cho giai đoạn huấn luyện cây con và thích nghi môi trường.",
+                        _ => "Vật tư phục vụ cho quy trình thí nghiệm và theo dõi mẫu."
+                    };
+                }
+
                 await context.Set<Materials>().AddRangeAsync(materials);
                 await context.SaveChangesAsync();
             }

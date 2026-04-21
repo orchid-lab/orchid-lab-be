@@ -9,6 +9,7 @@ using orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentLog;
 using orchid_backend_net.Application.ExperimentLog.UseCase.DeleteExperimentLog;
 using orchid_backend_net.Application.ExperimentLog.UseCase.GetAllExperimentLog;
 using orchid_backend_net.Application.ExperimentLog.UseCase.GetExperimentLogById;
+using orchid_backend_net.Application.ExperimentLog.UseCase.GetExperimentLogSummary;
 using orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentLogInformation;
 using orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentLogStatus;
 
@@ -116,7 +117,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                var command = new UpdateExperimentLogInformationCommand(id, dto.Name, dto.Notes, dto.ExpectedSampleCount);
+                var command = new UpdateExperimentLogInformationCommand(id, dto.Name, dto.Notes, dto.ExpectedSampleCount, dto.Objective);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
@@ -154,7 +155,7 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
-                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId, dto.Reason);
+                var command = new UpdateExperimentLogStatusCommand(id, dto.Status, dto.BatchId, dto.Conclusion, dto.Issues, dto.Recommendations);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
@@ -170,19 +171,19 @@ namespace orchid_backend_net.API.Controllers
         /// experiment log's sample are all infected with disease or experiment log is created by mistake
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="reason"></param>
+        /// <param name="dto"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpDelete("{id}")]
         [Authorize(Roles = "Researcher")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
-        public async Task<ActionResult<JsonResponse<string>>> DestroyExperimentLog([FromRoute] string id, [FromBody] string? reason, CancellationToken cancellationToken)
+        public async Task<ActionResult<JsonResponse<string>>> DestroyExperimentLog([FromRoute] string id, [FromBody] DeleteExperimentLogDto dto, CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received DELETE request at {Time}", DateTime.UtcNow);
-                var command = new DeleteExperimentLogCommand(id, reason);
+                var command = new DeleteExperimentLogCommand(id, dto.Reason, dto.Conclusion, dto.Issue, dto.Recommendation);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
@@ -200,7 +201,7 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="reason"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [HttpPost("cancel/{id}")]
+        [HttpDelete("{id}/cancel")]
         [Authorize(Roles = "Technician")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> CancelExperimentLog([FromRoute] string id, [FromBody] string? reason, CancellationToken cancellationToken)
@@ -216,6 +217,69 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Hủy thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// get experiment log summary by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpGet("{id}/summary")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(JsonResponse<ExperimentLogSummaryDto>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetSummary([FromRoute] string id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received GET summary for experimentLogId {Id} at {Time}", id, DateTime.UtcNow);
+                var result = await Sender.Send(new GetExperimentLogSummaryQuery(id), cancellationToken);
+                return Ok(new JsonResponse<ExperimentLogSummaryDto>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Error in get summary for experimentLogId {Id} at {Time}", id, DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// <ul>
+        /// <li>Download PDF report trực tiếp từ browser.</li>
+        /// <li>Content-Disposition: attachment → trình duyệt tự download file.</li>
+        /// </ul>
+        /// </summary>
+        /// <param name="id">Experiment log id</param>
+        /// <param name="type">"process" | "summary"</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>PDF file as attachment</returns>
+        [HttpGet("{id}/report")]
+        [Authorize(Roles = "Researcher")]
+        [ProducesResponseType(typeof(FileContentResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> ExportReport(
+            [FromRoute] string id,
+            [FromQuery] string type,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Exporting experiment report for {Id} as {Type} at {Time}", id, type, DateTime.UtcNow);
+                var pdfBytes = await Sender.Send(
+                    new orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport.ExportExperimentReportCommand(id, type), cancellationToken);
+
+                var fileName = type == "summary"
+                    ? $"summary-report-{id[..8]}.pdf"
+                    : $"process-log-{id[..8]}.pdf";
+
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to export experiment report for {Id} as {Type} at {Time}", id, type, DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Xuất báo cáo PDF thất bại", Detail = ex.Message });
             }
         }
     }

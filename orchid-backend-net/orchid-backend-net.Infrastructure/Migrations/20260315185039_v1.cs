@@ -102,7 +102,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ID = table.Column<string>(type: "text", nullable: false),
                     TargetType = table.Column<int>(type: "integer", nullable: false),
                     TargetId = table.Column<string>(type: "text", nullable: false),
-                    Url = table.Column<string>(type: "text", nullable: false)
+                    Url = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    IsNewest = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -523,6 +526,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
+                    Objective = table.Column<string>(type: "text", nullable: true),
+                    Conclusion = table.Column<string>(type: "text", nullable: true),
+                    Issues = table.Column<string>(type: "text", nullable: true),
+                    Recommendations = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<string>(type: "text", nullable: false),
@@ -670,7 +677,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     ExperimentLogId = table.Column<string>(type: "text", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
-                    ExecutionDate = table.Column<DateOnly>(type: "date", nullable: true)
+                    ExecutionDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    InitialCondition = table.Column<string>(type: "text", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -723,6 +735,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Status = table.Column<int>(type: "integer", nullable: false),
+                    RejectionReason = table.Column<string>(type: "text", nullable: true),
+                    RejectedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    RejectedBy = table.Column<string>(type: "text", nullable: true),
                     DeletedDate = table.Column<DateOnly>(type: "date", nullable: true),
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
                     IsNewest = table.Column<bool>(type: "boolean", nullable: false),
@@ -759,6 +774,46 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "DiseaseIncidents",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    SampleStageId = table.Column<string>(type: "text", nullable: false),
+                    MonitoringLogId = table.Column<string>(type: "text", nullable: true),
+                    DiseaseId = table.Column<int>(type: "integer", nullable: false),
+                    AIConfidence = table.Column<decimal>(type: "numeric", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false),
+                    ReviewNote = table.Column<string>(type: "text", nullable: true),
+                    ReviewedBy = table.Column<string>(type: "text", nullable: true),
+                    ReviewedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<string>(type: "text", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DiseaseIncidents", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_DiseaseIncidents_Diseases_DiseaseId",
+                        column: x => x.DiseaseId,
+                        principalTable: "Diseases",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DiseaseIncidents_MonitoringLogs_MonitoringLogId",
+                        column: x => x.MonitoringLogId,
+                        principalTable: "MonitoringLogs",
+                        principalColumn: "ID");
+                    table.ForeignKey(
+                        name: "FK_DiseaseIncidents_SampleStages_SampleStageId",
+                        column: x => x.SampleStageId,
+                        principalTable: "SampleStages",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MonitoringLogDetails",
                 columns: table => new
                 {
@@ -789,6 +844,21 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_Batches_LabRoomId",
                 table: "Batches",
                 column: "LabRoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiseaseIncidents_DiseaseId",
+                table: "DiseaseIncidents",
+                column: "DiseaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiseaseIncidents_MonitoringLogId",
+                table: "DiseaseIncidents",
+                column: "MonitoringLogId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_DiseaseIncidents_SampleStageId",
+                table: "DiseaseIncidents",
+                column: "SampleStageId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ExperimentLogs_BatchId",
@@ -971,6 +1041,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Configs");
+
+            migrationBuilder.DropTable(
+                name: "DiseaseIncidents");
 
             migrationBuilder.DropTable(
                 name: "Imgs");

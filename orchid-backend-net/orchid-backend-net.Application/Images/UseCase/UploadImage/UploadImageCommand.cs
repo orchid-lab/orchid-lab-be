@@ -7,24 +7,31 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Images.UseCase.UploadImage
 {
-    public class UploadImageCommand(string fileName, byte[] fileStream, string targetType, string targetId) : IRequest<string>
+    public class UploadImageCommand(string fileName, byte[] fileStream, string targetType, string targetId, string? description = null) : IRequest<string>
     {
         public string FileName { get; set; } = fileName;
         public byte[] FileStream { get; set; } = fileStream;
         public string TargetType { get; set; } = targetType;
         public string TargetId { get; set; } = targetId;
+        public string? Description { get; set; } = description;
     }
 
     internal class UploadImageCommandHandler(
         IImageUploaderService imageUploaderService,
         IImageRepository imageRepository,
         IMonitoringLogRepository monitoringLogRepository,
+        ISampleRepository sampleRepository,
         ITaskRepository taskRepository) : IRequestHandler<UploadImageCommand, string>
     {
         public async Task<string> Handle(UploadImageCommand request, CancellationToken cancellationToken)
         {
             //validate target type 
-            var parsedTargetType = await ImagePolicy.ValidateImageTargetType(request, monitoringLogRepository, taskRepository);
+            var parsedTargetType = await ImagePolicy.ValidateImageTargetType(request, monitoringLogRepository, taskRepository, sampleRepository);
+
+
+            //set old image
+            await imageRepository.SetOldImagesNotNewest(request.TargetId, parsedTargetType, cancellationToken);
+
             //get folder base on target type
             var folder = GetFolderByTargetType(parsedTargetType);
             //upload image to storage and get url
@@ -35,7 +42,10 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
             {
                 Url = imageUrl,
                 TargetId = request.TargetId,
-                TargetType = Enum.Parse<ImageTargetType>(request.TargetType)
+                TargetType = Enum.Parse<ImageTargetType>(request.TargetType),
+                IsNewest = true,
+                CreatedAt = DateTime.UtcNow,
+                Description = request.Description
             };
 
             imageRepository.Add(img);
@@ -50,6 +60,8 @@ namespace orchid_backend_net.Application.Images.UseCase.UploadImage
             {
                 Domain.Common.Enum.ImageTargetType.MonitoringLog => "monitoring-logs",
                 Domain.Common.Enum.ImageTargetType.Task => "tasks",
+                Domain.Common.Enum.ImageTargetType.Sample => "samples",
+                Domain.Common.Enum.ImageTargetType.SampleStage => "sample-stages",
                 _ => "general"
             };
         }

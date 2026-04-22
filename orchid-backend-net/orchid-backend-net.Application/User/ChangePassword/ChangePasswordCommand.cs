@@ -30,7 +30,7 @@ namespace orchid_backend_net.Application.User.ChangePassword
     {
         public async Task<string> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await userRepository.FindAsync(x => x.ID.ToString() == request.UserId);
+            var user = await userRepository.FindAsync(x => x.ID == request.UserId);
             if (user == null)
                 throw new Exception("User not found");
             var isTrue = userRepository.VerifyPassword(request.CurrentPassword , user.Password);

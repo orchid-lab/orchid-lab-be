@@ -6,15 +6,21 @@ using orchid_backend_net.Domain.IRepositories;
 
 namespace orchid_backend_net.Application.Seedling.UseCase.UpdateSeedlings
 {
-    public class UpdateSeedlingsCommand(UpdateSeedlingCommandDto parameter) : IRequest<string>
+    public class UpdateSeedlingsCommand(string id,
+        string? localName,
+        string? scientificName,
+        string? description,
+        string? parentAId,
+        List<CreateSeedlingTraistDto>? createSeedlingsTraits,
+        List<UpdateSeedlingsTraitsDto>? updateSeedlingsTraits) : IRequest<string>
     {
-        public required string Id { get; set; } = parameter.Id;
-        public string? LocalName { get; set; } = parameter.LocalName;
-        public string? ScientificName { get; set; } = parameter.ScientificName;
-        public string? Description { get; set; } = parameter.Description;
-        public string? ParentAId { get; set; } = parameter.ParentAId;
-        public List<CreateSeedlingTraistDto>? CreateSeedlingsTraits { get; set; } = parameter.CreateSeedlingsTraits;
-        public List<UpdateSeedlingsTraitsDto>? UpdateSeedlingsTraits { get; set; } = parameter.UpdateSeedlingsTraits;
+        public required string Id { get; set; } = id;
+        public string? LocalName { get; set; } = localName;
+        public string? ScientificName { get; set; } = scientificName;
+        public string? Description { get; set; } = description;
+        public string? ParentAId { get; set; } = parentAId;
+        public List<CreateSeedlingTraistDto>? CreateSeedlingsTraits { get; set; } = createSeedlingsTraits;
+        public List<UpdateSeedlingsTraitsDto>? UpdateSeedlingsTraits { get; set; } = updateSeedlingsTraits;
     }
 
     internal class UpdateSeedlingCommandHandler(ISeedlingRepository seedlingRepository,

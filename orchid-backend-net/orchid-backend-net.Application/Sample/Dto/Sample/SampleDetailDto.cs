@@ -11,11 +11,17 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
         public required string Id { get; set; }
         public string Name { get; set; } = default!;
         public required string ExperimentLogId { get; set; }
+        public required string CurrentSampleStage { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public required string CreatedBy { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public string? UpdatedBy { get; set; }
         public DateOnly? ExecutionDate { get; set; }
         public SampleStatus Status { get; set; } = default!;
-        public SampleStageDto SampleStageDto { get; set; } = default!;
+        public List<SampleStageDto> SampleStageDto { get; set; } = default!;
+        public string? InitialCondition { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Samples, SampleDetailDto>()
@@ -25,9 +31,13 @@ namespace orchid_backend_net.Application.Sample.Dto.Sample
                     .FirstOrDefault()))
                  .ForMember(dest => dest.SampleStageDto,
                     opt => opt.MapFrom(src =>
-                        src.SampleStages
-                            .FirstOrDefault(s => s.Status
-                                .Equals(Domain.Common.Enum.SampleStatus.InProgressed))));
+                        src.SampleStages.OrderBy(ss => ss.SampleStageDefinitionId)))
+                .ForMember(dest => dest.InitialCondition, opt => opt.MapFrom(src => src.InitialCondition))
+                .ForMember(dest => dest.CurrentSampleStage,
+                    opt => opt.MapFrom(src => src.SampleStages
+                        .OrderByDescending(s => s.SampleStageDefinitionId)
+                        .Select(ss => ss.SampleStageDefinition.Name)
+                        .FirstOrDefault()));
         }
     }
 }

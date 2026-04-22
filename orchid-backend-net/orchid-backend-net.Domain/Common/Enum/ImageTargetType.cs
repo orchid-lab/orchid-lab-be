@@ -3,6 +3,8 @@
     public enum ImageTargetType
     {
         MonitoringLog,
-        Task
+        Task,
+        Sample,
+        SampleStage,
     }
 }

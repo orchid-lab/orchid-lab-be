@@ -14,7 +14,9 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
         string ParentAId,
         string Name,
         int ExpectedSampleCount,
-        string AssignedToTechnicianId) : IRequest<string>, ICommand;
+        string AssignedToTechnicianId,
+        string? Objective // thêm field mới
+    ) : IRequest<string>, ICommand;
 
     internal class CreateExperimentLogCommandHandler(
         CreateExperimentLogRepositories repo,
@@ -54,6 +56,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 CreatedDate = DateTime.UtcNow,
                 CreatedBy = services.CurrentUserService.UserId!,
                 Status = ExperimentLogStatus.Created,
+                Objective = request.Objective // set field mới
             };
 
             repo.ExperimentLogRepository.Add(eL);

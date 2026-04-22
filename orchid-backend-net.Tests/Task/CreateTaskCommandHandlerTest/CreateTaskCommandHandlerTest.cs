@@ -28,7 +28,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
 
         TimeProviderMock
             .Setup(x => x.Now)
-            .Returns(new DateTime(2026, 1, 3, 9, 0, 0, DateTimeKind.Utc));
+            .Returns(DateTime.UtcNow);
 
         TimeProviderMock
             .Setup(x => x.IsInWorkingHour(It.IsAny<DateTime>()))
@@ -61,7 +61,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TechnicianId = "tech-1",
                 TargetId = "sample-1",
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(3)
+                ExpectedEndDate = TimeProviderMock.Object.Now.AddDays(3)
             },
             createTaskCheckListItems:
             [
@@ -205,7 +205,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
 
         TimeProviderMock
             .Setup(x => x.Now)
-            .Returns(new DateTime(2026, 1, 3, 10, 0, 0, DateTimeKind.Utc));
+            .Returns(DateTime.UtcNow);
 
         TimeProviderMock
             .Setup(x => x.IsInWorkingHour(It.IsAny<DateTime>()))
@@ -223,7 +223,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TargetId = "target-1",
                 TechnicianId = "tech-1",
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(1)
+                ExpectedEndDate = TimeProviderMock.Object.Now.AddDays(1)
             },
             createTaskCheckListItems:
             [
@@ -270,7 +270,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
                 TargetId = null!,
                 TechnicianId = null!, // invalid
                 TargetType = Domain.Common.Enum.TaskTargetType.Sample,
-                ExpectedEndDate = DateTime.UtcNow.AddDays(-1)
+                ExpectedEndDate = TimeProviderMock.Object.Now.AddDays(-1)
             },
             createTaskCheckListItems:
             [
@@ -290,7 +290,7 @@ internal class CreateTaskCommandHandlerTest : TaskHandlerTestConfig
             await CreateCommandHandler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<NullReferenceException>();
+        await act.Should().ThrowAsync<InvalidOperationException>();
     }
 
     #endregion

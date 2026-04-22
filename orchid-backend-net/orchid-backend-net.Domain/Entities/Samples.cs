@@ -5,13 +5,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace orchid_backend_net.Domain.Entities
 {
-    public class Samples : BaseGuidEntity
+    public class Samples : AuditableEntity
     {
         public string Name { get; set; } = null!;
         public required string ExperimentLogId { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public DateOnly? ExecutionDate { get; set; }
+        public string? InitialCondition { get; set; }   // Trạng thái ban đầu, vd: "mẫu xanh tươi, dài 2cm"
 
         [ForeignKey(nameof(ExperimentLogId))]
         public virtual ExperimentLogs ExperimentLog { get; set; } = null!;
@@ -79,29 +80,30 @@ namespace orchid_backend_net.Domain.Entities
         /// </summary>
         /// <param name="definitionOrderMap"></param>
         /// <param name="orderDefinitionIds"></param>
-        public void CompleteCurrentStage( IReadOnlyList<int> orderDefinitionIds)
+        public void CompleteCurrentStage(IReadOnlyList<int> orderDefinitionIds)
         {
-            if(orderDefinitionIds.Count == 0 || orderDefinitionIds is null)
+            if (orderDefinitionIds is null || orderDefinitionIds.Count == 0)
                 throw new DomainException("Danh sách định nghĩa giai đoạn không được rỗng.");
-            
+
             EnsureSampleIsActive();
-            
+
             var currentStage = GetCurrentSampleStage();
+            var currentIndex = IndexOfDefinition(orderDefinitionIds, currentStage.SampleStageDefinitionId);
 
             currentStage.MarkAsCompleted();
-            MoveToNextStage(currentStage, orderDefinitionIds);
+
+            var isLastStage = currentIndex == orderDefinitionIds.Count - 1;
+            if (!isLastStage)
+            {
+                MoveToNextStage(orderDefinitionIds, currentIndex);
+            }
         }
 
         private void MoveToNextStage(
-           SampleStage completedStage,
-           IReadOnlyList<int> orderedDefinitionIds)
+            IReadOnlyList<int> orderedDefinitionIds,
+            int currentIndex
+            )
         {
-            var currentIndex = IndexOfDefinition(orderedDefinitionIds, completedStage.SampleStageDefinitionId);
-
-            // Không có stage tiếp theo
-            if (currentIndex == orderedDefinitionIds.Count - 1)
-                throw new DomainException("Sample này đã ở giai đoạn cuối cùng.");
-
             var nextDefinitionId = orderedDefinitionIds[currentIndex + 1];
 
             var nextStage = new SampleStage
@@ -110,9 +112,9 @@ namespace orchid_backend_net.Domain.Entities
                 SampleId = ID,
                 Status = SampleStatus.Created
             };
+
             nextStage.Start();
             SampleStages.Add(nextStage);
-
         }
 
 
@@ -132,6 +134,28 @@ namespace orchid_backend_net.Domain.Entities
             if(index == -1) 
                 throw new DomainException("Định nghĩa giai đoạn không tồn tại trong danh sách định nghĩa giai đoạn.");
             return index;
+        }
+
+        public void ConvertToSeedling()
+        {
+            EnsureSampleIsActive();
+
+            var hasCompletedStage = SampleStages.Any(s => s.Status == SampleStatus.Completed);
+            if (!hasCompletedStage)
+                throw new DomainException("Chỉ có thể chuyển mẫu đã hoàn thành ít nhất một giai đoạn thành cây giống.");
+
+            var stillInProgress = SampleStages.Any(s => s.Status == SampleStatus.InProgressed);
+            if (stillInProgress)
+                throw new DomainException("Mẫu vẫn còn đang ở giai đoạn chưa hoàn thành, không thể chuyển thành cây giống.");
+
+            var lastStage = SampleStages
+                .Where(s => s.Status == SampleStatus.Completed || s.Status == SampleStatus.ConvertedToSeedling)
+                .OrderByDescending(s => s.SampleStageDefinitionId)
+                .ThenByDescending(s => s.CompletedAt ?? s.StartedAt)
+                .FirstOrDefault()
+                ?? throw new DomainException("Không tìm thấy giai đoạn hợp lệ để chuyển thành cây giống.");
+
+            lastStage.MarkAsConvertedToSeedling();
         }
 
         private SampleStage GetCurrentSampleStage()

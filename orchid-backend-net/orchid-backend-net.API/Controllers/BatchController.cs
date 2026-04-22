@@ -202,5 +202,33 @@ namespace orchid_backend_net.API.Controllers
                 return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
             }
         }
+
+        /// <summary>
+        /// Allow technician to mark the batch as ready after they complete cleaning the batch, 
+        /// this is a specific api for technician to update batch status to ready without changing the status to cleaning first, 
+        /// because in some cases, 
+        /// the batch is already in cleaning status but the technician can not update it to ready status immediately, 
+        /// so they can use this api to update the batch status to ready directly
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        [HttpPatch("{id}/complete-cleaning")]
+        [Authorize(Roles = "Technician")]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        public async Task<ActionResult<JsonResponse<string>>> CompleteCleaning([FromRoute] int id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received PATCH request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(new UpdateBatchStatusCommand(id, Status: "Ready"), cancellationToken);
+                return Ok(new JsonResponse<string>(result));
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật thất bại", Detail = ex.Message });
+            }
+        }
     }
 }

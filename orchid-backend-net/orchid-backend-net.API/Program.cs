@@ -1,8 +1,10 @@
+using Hangfire;
 using orchid_backend_net.API.Configuration;
 using orchid_backend_net.API.Filters;
 using orchid_backend_net.API.Middleware;
 using orchid_backend_net.Application;
 using orchid_backend_net.Infrastructure;
+using orchid_backend_net.Infrastructure.BackgroundJobs;
 using orchid_backend_net.Infrastructure.Service;
 using orchid_backend_net.Infrastructure.Service.GmailSettings;
 using Serilog;
@@ -55,6 +57,21 @@ builder.Services.AddLogging(opt =>
 });
 
 var app = builder.Build();
+
+await app.Services.InitializeDatabaseAsync();
+
+using (var scope = app.Services.CreateScope())
+{
+    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+    recurringJobManager.AddOrUpdate<TokenCleanupJob>(
+        "token-cleanup",
+        job => job.ExecuteAsync(),
+        "0 0 */3 * *"); // Run every 3 days at midnight
+    recurringJobManager.AddOrUpdate<MethodStageOverdueCheckJob>(
+        "method-stage-overdue-check",
+        job => job.ExecuteAsync(),
+        "0 9 * * *"); // Run every day at 8 AM
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

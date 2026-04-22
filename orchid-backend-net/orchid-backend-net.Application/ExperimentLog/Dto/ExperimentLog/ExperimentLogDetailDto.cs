@@ -23,6 +23,10 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
         public DateOnly? EndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
+        public string? Objective { get; set; }
+        public string? Conclusion { get; set; }
+        public string? Issues { get; set; }
+        public string? Recommendations { get; set; }
         public ExperimentLogStatus Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public required string CreatedBy { get; set; }
@@ -41,7 +45,11 @@ namespace orchid_backend_net.Application.ExperimentLog.Dto.ExperimentLog
                .ForMember(dest => dest.Samples,
                 opt => opt.MapFrom(src => src.Samples))
                .ForMember(dest => dest.Status,
-               opt => opt.MapFrom(src => src.Status));
+               opt => opt.MapFrom(src => src.Status))
+               .ForMember(dest => dest.Objective, opt => opt.MapFrom(src => src.Objective))
+               .ForMember(dest => dest.Conclusion, opt => opt.MapFrom(src => src.Conclusion))
+               .ForMember(dest => dest.Issues, opt => opt.MapFrom(src => src.Issues))
+               .ForMember(dest => dest.Recommendations, opt => opt.MapFrom(src => src.Recommendations));
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using CloudinaryDotNet;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -8,16 +10,15 @@ using Microsoft.Extensions.Options;
 using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Domain.Common.Interfaces;
 using orchid_backend_net.Domain.IRepositories;
+using orchid_backend_net.Infrastructure.BackgroundJobs;
 using orchid_backend_net.Infrastructure.Persistence;
 using orchid_backend_net.Infrastructure.Provider;
 using orchid_backend_net.Infrastructure.Repository;
 using orchid_backend_net.Infrastructure.Service;
 using orchid_backend_net.Infrastructure.Service.CloudinarySettings;
 using orchid_backend_net.Infrastructure.Service.GmailSettings;
+using orchid_backend_net.Infrastructure.Service.PdfGenerator;
 using orchid_backend_net.Infrastructure.Service.RedisSettings;
-using Polly;
-using Polly.Extensions.Http;
-using System.Net;
 
 namespace orchid_backend_net.Infrastructure
 {
@@ -66,6 +67,24 @@ namespace orchid_backend_net.Infrastructure
                 return cloudinary;
             });
 
+            //hangfire for cleanup cache and other background task in the future
+            services.AddHangfire(config => config
+                .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UsePostgreSqlStorage(options =>
+                {
+                    options.UseNpgsqlConnection(
+                    configuration.GetConnectionString("Server"));
+                }));
+
+            // Add Hangfire Server
+            services.AddHangfireServer(options =>
+            {
+                options.WorkerCount = 1;
+                options.ServerName = "OrchidLab-BackgroundWorker";
+            });
+
             //refactor: all configure must be in programcs to take the appsettings not in here
 
             //gmail services 
@@ -73,19 +92,6 @@ namespace orchid_backend_net.Infrastructure
             //when use in local please comment these lines 
             services.Configure<GmailOptions>(configuration.GetSection("Gmail"));
 
-
-            //Seed data generation and check migration
-            using (var scope = services.BuildServiceProvider().CreateScope())
-            {
-                var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
-                if (dbContext.Database.GetMigrations().Any())
-                {
-                    dbContext.Database.Migrate();
-                    SeedDataGenerator.SeedAsync(dbContext)
-                                     .GetAwaiter()
-                                     .GetResult();
-                }
-            }
 
             //service
             services.AddSingleton<LoggingFilter>();
@@ -95,7 +101,8 @@ namespace orchid_backend_net.Infrastructure
             services.AddScoped<IDateTimeProvider, VietNamDateTimeProvider>();
             services.AddScoped<IHubnotificationService, HubNotificationService>();
             services.AddScoped<INotificationPushService, NotificationPushService>();
-            services.AddScoped<IOrchidAnalyzerService, OrchidAnalyzerService>();
+            services.AddSingleton<IOrchidAnalyzerService, OnnxOrchidAnalyzerService>();
+            services.AddScoped<IPdfReportGenerator, PdfReportGenerator>();
             //Add repositories
 
             //for config and safe procedure module
@@ -141,6 +148,9 @@ namespace orchid_backend_net.Infrastructure
             //for image module
             services.AddScoped<IImageRepository, ImageRepository>();
 
+            //for disease module
+            services.AddScoped<IDiseaseIncidentRepository, DiseaseIncidentRepository>();
+
             //signalR
             services.AddSignalR(opt =>
             {
@@ -148,65 +158,22 @@ namespace orchid_backend_net.Infrastructure
                 opt.EnableDetailedErrors = true;
             });
 
-
-            //httpclient for some service required 3rd parties with tune handler + polly
-            services.AddHttpClient<OrchidAnalyzerService>((sp, client) =>
-            {
-                var pythonApiUrl = configuration["OrchidAnalyzer:PythonApiUrl"];
-                if(string.IsNullOrWhiteSpace(pythonApiUrl))
-                    throw new InvalidOperationException("OrchidAnalyzer:PythonApiUrl is not configured.");
-
-                client.BaseAddress = new Uri(pythonApiUrl);
-                client.Timeout = TimeSpan.FromSeconds(5); // tight per-request timeout, maybe tune later
-                client.DefaultRequestHeaders.ConnectionClose = false;
-                client.DefaultRequestHeaders.ExpectContinue = false;
-                client.DefaultRequestHeaders.AcceptEncoding.ParseAdd("gzip, deflate, br");
-
-                //prefer http/2 for all request
-                client.DefaultRequestVersion = HttpVersion.Version20;
-                client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrHigher;
-            })
-            .ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return new SocketsHttpHandler
-                {
-                    PooledConnectionLifetime = TimeSpan.FromMinutes(2),   // rotate connections
-                    PooledConnectionIdleTimeout = TimeSpan.FromMinutes(1),
-                    MaxConnectionsPerServer = 100,                        // tune based on load
-                    EnableMultipleHttp2Connections = true,
-                    AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate | DecompressionMethods.Brotli,
-                    AllowAutoRedirect = false,
-                    KeepAlivePingDelay = TimeSpan.FromSeconds(30),
-                    KeepAlivePingTimeout = TimeSpan.FromSeconds(5),
-                    KeepAlivePingPolicy = HttpKeepAlivePingPolicy.Always
-                };
-            })
-            .AddPolicyHandler(GetRetryPolicy())
-            .AddPolicyHandler(GetTimeOutPolicy())
-            .AddPolicyHandler(GetCircuitBreakerPolicy());
+            //clean up background job
+            services.AddScoped<TokenCleanupJob>();
+            services.AddScoped<MethodStageOverdueCheckJob>();
             return services;
         }
 
-        private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        public static async Task InitializeDatabaseAsync(this IServiceProvider serviceProvider)
         {
-            return HttpPolicyExtensions
-               .HandleTransientHttpError()
-               .OrResult(r => (int)r.StatusCode >= 500)
-               .WaitAndRetryAsync(3, retryAttempt =>
-                   TimeSpan.FromMilliseconds(100 * Math.Pow(2, retryAttempt)) + TimeSpan.FromMilliseconds(Random.Shared.Next(0, 100)),
-                   onRetry: (outcome, delay, attempt, ctx) => { /* add logging if needed */ });
-        }
+            using var scope = serviceProvider.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
 
-        private static IAsyncPolicy<HttpResponseMessage> GetTimeOutPolicy()
-        {
-            return Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(3));
-        }
-
-        private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
-        {
-            return HttpPolicyExtensions
-               .HandleTransientHttpError()
-               .CircuitBreakerAsync(5, TimeSpan.FromSeconds(30));
+            if (dbContext.Database.GetMigrations().Any())
+            {
+                await dbContext.Database.MigrateAsync();
+                await SeedDataGenerator.SeedAsync(dbContext);
+            }
         }
     }
 }

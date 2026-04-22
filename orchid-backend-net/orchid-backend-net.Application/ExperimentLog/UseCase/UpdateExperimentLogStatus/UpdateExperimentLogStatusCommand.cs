@@ -11,7 +11,10 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
         string Id,
         string Status,
         int? BatchId,
-        string? Reason) : IRequest<string>;
+        string? Conclusion,
+        string? Issues,
+        string? Recommendations
+    ) : IRequest<string>;
 
     internal class UpdateExperimentLogStatusCommandHandler(
         IExperimentLogRepository experimentLogRepository,
@@ -36,8 +39,15 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
             var method = await methodRepository.FindAsync(m => m.ID == experimentLogs.MethodId, cancellationToken)
                 ?? throw new NotFoundException("Không tìm thấy phương pháp liên quan đến thí nghiệm này");
             var methodStages = method.MethodStages;
-            var nextStage = methodStages.FirstOrDefault(ms => ms.Order == experimentLogs.CurrentStageOrder + 1)
-                ?? throw new InvalidOperationException("Thí nghiệm này đã ở giai đoạn cuối của phương pháp thí nghiệm");
+            var maxStageOrder = methodStages.Max(ms => ms.Order);
+            var isElInFinalStage = experimentLogs.CurrentStageOrder == maxStageOrder;
+            var nextStage = methodStages.FirstOrDefault(ms => ms.Order == experimentLogs.CurrentStageOrder + 1);
+
+            if (isElInFinalStage && nextStage is not null)
+                throw new InvalidOperationException("Lỗi dữ liệu");
+
+            if (!isElInFinalStage && nextStage is null)
+                throw new InvalidOperationException("Lỗi dữ liệu");
 
             //get batch if provided
             if (request.BatchId is not null && request.BatchId > 0)
@@ -54,18 +64,17 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.UpdateExperimentL
             if(nextStatus == Domain.Common.Enum.ExperimentLogStatus.WaitingForChangeStage) 
                 await ExperimentLogPolicy.ValidateForChangeStage(experimentLogs.ID, taskRepository, cancellationToken);
 
-            //update experiment log status and stage
+            // Nếu chuyển sang trạng thái Completed thì truyền các trường kết luận vào dispatcher
             ExperimentLogStatusDispatcher.Dispatch(
                 experimentLogs,
                 nextStatus,
                 nextStage,
-                request.Reason);
+                request.Conclusion,
+                request.Issues,
+                request.Recommendations);
             experimentLogs.UpdatedBy = currentUserService.UserId!;
             experimentLogs.UpdatedDate = DateTime.UtcNow;
 
-            //validate if experiment log task has any incomplete subtask before moving to completed status
-
-            //update and save changes
             experimentLogRepository.Update(experimentLogs);
             return await experimentLogRepository.UnitOfWork.SaveChangesAsync(cancellationToken) > 0 ?
                 experimentLogs.ID.ToString()

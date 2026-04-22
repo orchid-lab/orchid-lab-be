@@ -191,7 +191,7 @@ namespace orchid_backend_net.Domain.Entities
             if (TaskAssignment?.TechnicianId != technicianId)
                 throw new DomainException("Không phải task của bạn.");
 
-            if (Status != Common.Enum.TaskStatus.InProgress)
+            if (Status != Common.Enum.TaskStatus.InProgress && Status != Common.Enum.TaskStatus.ReworkRequired)
                 throw new DomainException("Task chưa được thực hiện.");
             if (string.IsNullOrWhiteSpace(ResearcherId))
                 throw new DomainException("Task hiện tại đang lỗi.");
@@ -313,6 +313,16 @@ namespace orchid_backend_net.Domain.Entities
             TaskAssignment.EndDate = endDate ?? TaskAssignment.EndDate;
         }
 
+        public void TaskCancelled(string? reason)
+        {
+            if (Status == Common.Enum.TaskStatus.Deleted)
+                throw new DomainException("Task đã bị xóa.");
+            Status = Common.Enum.TaskStatus.Deleted;
+            DeletedDate = DateTime.UtcNow;
+            DeletedBy = ResearcherId;
+            AddDomainEvent(new TaskCancelledEvent(ID, CreatedBy, TaskAssignment.TechnicianId, reason));
+        }
+
         #endregion Task Assignment
 
         #region Task Attributes
@@ -418,7 +428,7 @@ namespace orchid_backend_net.Domain.Entities
         {
             if (TaskAssignment?.TechnicianId != technicianId)
                 throw new DomainException("Không phải task của bạn.");
-            if (Status != Common.Enum.TaskStatus.InProgress)
+            if (Status != Common.Enum.TaskStatus.InProgress && Status != Common.Enum.TaskStatus.ReworkRequired)
                 throw new DomainException("Task chưa được thực hiện.");
             _ = CheckList ?? throw new DomainException("Checklist chưa được tạo.");
             var item = CheckList.GetItem(checkListItemId);

@@ -37,6 +37,14 @@
             TimeSpan end = new(17, 0, 0);
             return dateTime.TimeOfDay >= start && dateTime.TimeOfDay < end;
         }
+
+        public static DateTime ToVietnamTime(this DateTime utcDateTime)
+        => TimeZoneInfo.ConvertTimeFromUtc(
+            DateTime.SpecifyKind(utcDateTime, DateTimeKind.Utc),
+            VietnamTimeZoneInfo);
+
+        public static string ToVietnamTimeString(this DateTime utcDateTime, string format = "dd/MM/yyyy HH:mm")
+            => utcDateTime.ToVietnamTime().ToString(format);
     }
 
 }

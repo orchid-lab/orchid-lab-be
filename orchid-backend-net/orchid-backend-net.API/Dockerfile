@@ -30,4 +30,33 @@ RUN dotnet publish "./orchid-backend-net.API.csproj" -c $BUILD_CONFIGURATION -o 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Install Chrome dependencies for PuppeteerSharp
+USER root
+RUN apt-get update && apt-get install -y \
+    libglib2.0-0 \
+    libnss3 \
+    libatk-bridge2.0-0 \
+    libx11-xcb1 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libatk1.0-0 \
+    libcups2 \
+    libdrm2 \
+    libxfixes3 \
+    libxext6 \
+    libxshmfence1 \
+    libpango-1.0-0 \
+    libcairo2 \
+    libatspi2.0-0 \
+    libgtk-3-0 \
+    --no-install-recommends && \
+    rm -rf /var/lib/apt/lists/*
+USER $APP_UID
+
+
 ENTRYPOINT ["dotnet", "orchid-backend-net.API.dll"]

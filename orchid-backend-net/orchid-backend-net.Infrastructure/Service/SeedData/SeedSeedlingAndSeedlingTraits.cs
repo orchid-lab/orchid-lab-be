@@ -34,9 +34,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
         Trait(characteristics["FLOWER_DIAMETER"], 9.5m),
         Trait(characteristics["FLOWER_COUNT_PER_SPIKE"], 10),
 
-        Trait(characteristics["FLOWER_COLOR_R"], 245),
-        Trait(characteristics["FLOWER_COLOR_G"], 245),
-        Trait(characteristics["FLOWER_COLOR_B"], 245),
+        // Màu hoa chính: trắng (245, 245, 245)
+        Trait(characteristics["FLOWER_COLOR_PRIMARY"], RgbToDecimal(245, 245, 245)),
+        // Màu hoa phụ: trắng kem (250, 248, 240)
+        Trait(characteristics["FLOWER_COLOR_SECONDARY"], RgbToDecimal(250, 248, 240)),
 
         Trait(characteristics["DAYS_TO_FLOWERING"], 270),
         Trait(characteristics["FLOWER_LIFESPAN"], 85),
@@ -64,9 +65,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
         Trait(characteristics["FLOWER_DIAMETER"], 10),
         Trait(characteristics["FLOWER_COUNT_PER_SPIKE"], 9),
 
-        Trait(characteristics["FLOWER_COLOR_R"], 255),
-        Trait(characteristics["FLOWER_COLOR_G"], 180),
-        Trait(characteristics["FLOWER_COLOR_B"], 200),
+        // Màu hoa chính: hồng nhạt (255, 180, 200)
+        Trait(characteristics["FLOWER_COLOR_PRIMARY"], RgbToDecimal(255, 180, 200)),
+        // Màu hoa phụ: hồng đậm (255, 150, 180)
+        Trait(characteristics["FLOWER_COLOR_SECONDARY"], RgbToDecimal(255, 150, 180)),
 
         Trait(characteristics["DAYS_TO_FLOWERING"], 260),
         Trait(characteristics["FLOWER_LIFESPAN"], 80),
@@ -98,9 +100,10 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
         Trait(characteristics["FLOWER_DIAMETER"], 10.2m),
         Trait(characteristics["FLOWER_COUNT_PER_SPIKE"], 11),
 
-        Trait(characteristics["FLOWER_COLOR_R"], 248),
-        Trait(characteristics["FLOWER_COLOR_G"], 210),
-        Trait(characteristics["FLOWER_COLOR_B"], 220),
+       // Màu hoa chính: hồng rất nhạt (248, 210, 220)
+        Trait(characteristics["FLOWER_COLOR_PRIMARY"], RgbToDecimal(248, 210, 220)),
+        // Màu hoa phụ: hồng pastel (250, 200, 215)
+        Trait(characteristics["FLOWER_COLOR_SECONDARY"], RgbToDecimal(250, 200, 215)),
 
         Trait(characteristics["DAYS_TO_FLOWERING"], 255),
         Trait(characteristics["FLOWER_LIFESPAN"], 88),
@@ -118,6 +121,18 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 CharacteristicId = characteristic.ID,
                 Value = value
             };
+        }
+
+        /// <summary>
+        /// Chuyển đổi giá trị RGB (0-255) sang định dạng decimal: RRRGGGBBB
+        /// </summary>
+        /// <param name="r">Red (0-255)</param>
+        /// <param name="g">Green (0-255)</param>
+        /// <param name="b">Blue (0-255)</param>
+        /// <returns>Giá trị decimal tổng hợp</returns>
+        private static decimal RgbToDecimal(int r, int g, int b)
+        {
+            return r * 1_000_000 + g * 1_000 + b;
         }
     }
 }

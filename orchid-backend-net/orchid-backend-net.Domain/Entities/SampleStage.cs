@@ -15,12 +15,14 @@ namespace orchid_backend_net.Domain.Entities
         public virtual SampleStageDefinition SampleStageDefinition { get; set; }
         public DateOnly StartedAt { get; set; }
         public DateOnly? CompletedAt { get; set; }
-        public virtual List<MonitoringLogs> MonitoringLogs { get; set; }
+        public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
         public SampleStatus Status { get; set; }
         //0 - Mới tạo - technician chưa nhận experiment log để tiến hành lai tạo
         //1 - Đang tiến hành - diễn ra khi technician nhận experiment log
         //2 - Hoàn thành
         //3 - Bị hủy 
+        //4 - Chuyển thành cây giống
+        public virtual List<DiseaseIncident> DiseaseIncidents { get; set; } = new();
         internal void MarkAsCompleted()
         {
             EnsureNotTerminated();
@@ -29,6 +31,18 @@ namespace orchid_backend_net.Domain.Entities
             if (Status != SampleStatus.InProgressed)
                 throw new DomainException("Stage không ở trạng thái đang tiến hành.");
             Status = SampleStatus.Completed;
+            CompletedAt = DateOnly.FromDateTime(DateTime.UtcNow);
+        }
+        
+        internal void MarkAsConvertedToSeedling()
+        {
+            EnsureNotTerminated();
+            if (Status == SampleStatus.ConvertedToSeedling)
+                return;
+            if (Status != SampleStatus.Completed)
+                throw new DomainException("Stage không ở trạng thái đã hoàn thành.");
+            Status = SampleStatus.ConvertedToSeedling;
+            CompletedAt = DateOnly.FromDateTime(DateTime.UtcNow);
         }
 
         internal void Start()

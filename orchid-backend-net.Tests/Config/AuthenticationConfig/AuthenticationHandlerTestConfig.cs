@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
 using orchid_backend_net.Application.Authentication.Login;
 using orchid_backend_net.Application.Authentication.Logout;
 using orchid_backend_net.Application.Authentication.Refreshtoken.GenerateRefreshToken;
@@ -42,7 +43,8 @@ internal abstract class AuthenticationHandlerTestConfig : BaseHandlerTestConfig
         var config = new MapperConfiguration(cfg =>
         {
             cfg.AddMaps(typeof(LoginDTO).Assembly);
-        });
+        },
+        NullLoggerFactory.Instance);
         config.AssertConfigurationIsValid();
         _mapper = config.CreateMapper();
     }

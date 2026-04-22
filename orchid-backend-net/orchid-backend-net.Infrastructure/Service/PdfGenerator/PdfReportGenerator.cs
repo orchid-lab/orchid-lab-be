@@ -1,39 +1,59 @@
 ﻿using orchid_backend_net.Application.Common.Interfaces;
+using orchid_backend_net.Application.ExperimentLog.Dto.Report;
 using orchid_backend_net.Infrastructure.Service.PdfGenerator.Template;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
+using Scriban.Runtime;
 
 namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
 {
     public class PdfReportGenerator: IPdfReportGenerator
     {
-        public async Task<byte[]> GenerateAsync(object model)
+        public async Task<byte[]> GenerateProcessLogAsync(
+        ExperimentProcessLogReportModel model,
+        CancellationToken cancellationToken = default)
+        => await RenderToPdfAsync("ExperimentProcessLog.html", model);
+
+        public async Task<byte[]> GenerateSummaryReportAsync(
+            ExperimentSummaryReportModel model,
+            CancellationToken cancellationToken = default)
+            => await RenderToPdfAsync("ExperimentSummaryReport.html", model);
+
+        // Method cũ — giữ lại để không breaking change nếu có caller khác
+        public static async Task<byte[]> GenerateAsync(object model)
+            => await RenderToPdfAsync("ExperimentReport.html", model);
+
+        private static async Task<byte[]> RenderToPdfAsync(
+            string templateName,
+            object model)
         {
-            // Load embedded template
-            var templateHtml = await TemplateLoader.LoadTemplateAsync();
+            var templateHtml = await TemplateLoader.LoadTemplateAsync(templateName);    
 
-            // Render with Scriban
             var scribanTemplate = Scriban.Template.Parse(templateHtml);
-            var html = await scribanTemplate.RenderAsync(model, member => member.Name);
+            var context = new Scriban.TemplateContext();
+            context.MemberRenamer = member => ToSnakeCase(member.Name);
 
-            //Get Chromium path and launch browser
+            var scriptObject = new Scriban.Runtime.ScriptObject();
+            scriptObject.Import(model, renamer: member => ToSnakeCase(member.Name));
+            context.PushGlobal(scriptObject);
+
+            var html = await scribanTemplate.RenderAsync(context);
+
+
             var browserFetcher = new BrowserFetcher();
             var revisionInfo = await browserFetcher.DownloadAsync();
 
             await using var browser = await Puppeteer.LaunchAsync(new LaunchOptions
             {
                 Headless = true,
-                ExecutablePath = revisionInfo.GetExecutablePath()
+                ExecutablePath = revisionInfo.GetExecutablePath(),
+                Args = new[] { "--no-sandbox"}
             });
 
-            //Convert HTML -> PDF by DinkToPdf
             await using var page = await browser.NewPageAsync();
-
-            // Settings html
             await page.SetContentAsync(html);
 
-            // Create PDF options
-            var pdfOptions = new PdfOptions
+            return await page.PdfDataAsync(new PdfOptions
             {
                 Format = PaperFormat.A4,
                 PrintBackground = true,
@@ -44,9 +64,18 @@ namespace orchid_backend_net.Infrastructure.Service.PdfGenerator
                     Bottom = "20px",
                     Left = "20px"
                 }
-            };
+            });
+        }
 
-            return await page.PdfDataAsync(pdfOptions);
+        private static string ToSnakeCase(string name)
+        {
+            // Step 1: UCUCLower → UC_UCLower (e.g. "AIAnalysis" → "AI_Analysis")
+            var result = System.Text.RegularExpressions.Regex
+                .Replace(name, "([A-Z]+)([A-Z][a-z])", "$1_$2");
+            // Step 2: LowerUC → Lower_UC (e.g. "Analysis_Results" → "Analysis_Results")  
+            result = System.Text.RegularExpressions.Regex
+                .Replace(result, "([a-z0-9])([A-Z])", "$1_$2");
+            return result.ToLower();
         }
     }
 }

@@ -119,7 +119,8 @@ namespace orchid_backend_net.API.Controllers
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        [HttpPut("change-pasword")]
+
+        [HttpPut("change-password")]
         [Authorize(Roles = "Admin,Researcher,Technician")]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]

@@ -19,7 +19,7 @@ namespace orchid_backend_net.Application.Batch.UseCase.GetAllBatch
                 if (!string.IsNullOrWhiteSpace(request.LabNameSearchTerm))
                     query = query.Where(b => b.LabRoom.Name.ToLower().Contains(request.LabNameSearchTerm.ToLower()));
 
-                return query;
+                return query.OrderBy(x => x.Status);
             }
 
             var batch = await batchesRepository.FindAllProjectToAsync<BatchDto>(

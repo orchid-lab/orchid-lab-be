@@ -32,7 +32,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                 .GroupBy(x => new { x.Method, x.ID })
                 .Select(async g =>
                 {
-                    var totalExperimentLogs = g.Count();
+                    //var totalExperimentLogs = g.Count();
                     var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed);
                     var failedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed);
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
@@ -64,7 +64,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         SuccessRate = completedExperimentLog + failedExperimentLog > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog) * 100) : 0,
                         MethodStages = methodStages,
                         //Seedling = seedlings,
-                        TotalExperimentLog = totalExperimentLogs
+                        //TotalExperimentLog = totalExperimentLogs
                     };
                 });
             var dtoList = await Task.WhenAll(dto);

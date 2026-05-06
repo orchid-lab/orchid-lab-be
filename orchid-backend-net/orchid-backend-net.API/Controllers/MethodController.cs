@@ -4,20 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 using orchid_backend_net.API.Controllers.ResponseTypes;
 using orchid_backend_net.API.Dto.Method;
 using orchid_backend_net.Application.Common.Pagination;
+using orchid_backend_net.Application.Common.Security;
 using orchid_backend_net.Application.Method.Dto.Method;
 using orchid_backend_net.Application.Method.UseCase.CreateMethod;
+using orchid_backend_net.Application.Method.UseCase.DeleteChemicalFromMethodStage;
+using orchid_backend_net.Application.Method.UseCase.DeleteMaterialFromMethodStage;
 using orchid_backend_net.Application.Method.UseCase.DeleteMethod;
 using orchid_backend_net.Application.Method.UseCase.GetAllMethod;
 using orchid_backend_net.Application.Method.UseCase.GetMethodById;
-using orchid_backend_net.Application.Method.UseCase.DeleteChemicalFromMethodStage;
-using orchid_backend_net.Application.Method.UseCase.DeleteMaterialFromMethodStage;
+using orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExperimentLogRate;
 using orchid_backend_net.Application.Method.UseCase.UpdateChemicalInMethodStage;
 using orchid_backend_net.Application.Method.UseCase.UpdateMaterialInMethodStage;
 using orchid_backend_net.Application.Method.UseCase.UpdateMethod;
 using orchid_backend_net.Domain.Entities;
 using System.Net.Mime;
 using System.Threading;
-using orchid_backend_net.Application.Common.Security;
 
 namespace orchid_backend_net.API.Controllers
 {
@@ -39,6 +40,31 @@ namespace orchid_backend_net.API.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<PageResult<MethodDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllMethodQuery query, CancellationToken cancellationToken)
+        {
+            try
+            {
+                logger.LogInformation("Received GET request at {Time}", DateTime.UtcNow);
+                var result = await Sender.Send(query, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// get all method
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
+        [HttpGet("success-rate")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(JsonResponse<PageResult<MethodDto>>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetSuccessRate([FromQuery] GetSuccessCompletedExperimentLogRateQuery query, CancellationToken cancellationToken)
         {
             try
             {

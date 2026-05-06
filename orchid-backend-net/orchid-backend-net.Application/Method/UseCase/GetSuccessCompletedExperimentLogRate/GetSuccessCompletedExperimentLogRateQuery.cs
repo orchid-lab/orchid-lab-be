@@ -32,8 +32,8 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                 .GroupBy(x => new { x.Method, x.ID })
                 .Select(async g =>
                 {
-                    var totalExperimentLogs = g.Count(x => x.MethodId.Equals(g.Key.Method));
-                    var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed && x.MethodId.Equals(g.Key.Method.ID));
+                    var totalExperimentLogs = g.Count();
+                    var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed);
                     var failedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed);
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
                     //List<Domain.Entities.Seedlings> seedlings = new List<Domain.Entities.Seedlings>();

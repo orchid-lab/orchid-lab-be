@@ -11,7 +11,7 @@ namespace orchid_backend_net.Application.Method.Dto.Method
         public required string Name { get; set; }
         public string? Description { get; set; }
         public int? TotalDurationDays { get; set; }
-        public int? TotalExperimentLog { get; set; }
+        //public int? TotalExperimentLog { get; set; }
         public int? CompletedExperimentLog { get; set; }
         public int? FailedExperimentLog { get; set; }
         public int? SuccessRate { get; set; }

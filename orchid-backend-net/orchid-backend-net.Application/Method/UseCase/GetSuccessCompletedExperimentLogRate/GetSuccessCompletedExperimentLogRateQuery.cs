@@ -17,7 +17,6 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
         //}
     }
     internal class GetSuccessCompletedExperimentLogRateQueryHandler(
-        IMethodRepository methodRepository,
         IExperimentLogRepository experimentLogRepository,
         IMethodStageDefinitionRepository methodStageDefinitionRepository,
         IMethodStageRepository methodStageRepository) :
@@ -32,22 +31,25 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                 .GroupBy(x => new { x.Method, x.ID })
                 .Select(async g =>
                 {
-                    var method = await methodRepository.FindAsync(x => x.ID.Equals(g.Key.Method.ID), cancellationToken);
                     var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed);
                     var failedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Cancelled);
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
-                    Parallel.ForEach(g.Where(x => x.Status == ExperimentLogStatus.Cancelled).ToList(), async item =>
+                    foreach(var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled).ToList())
                     {
                         var methodStage = await methodStageRepository.FindAsync(x => x.ID.Equals(item.CurrentStageOrder), cancellationToken);
-                        var methodStageDefinition = await methodStageDefinitionRepository.FindAsync(x => x.ID.Equals(methodStage.MethodStageDefinitionId), cancellationToken);
-                        methodStages.Add(methodStageDefinition);
-                    });
+                        if(methodStage != null) 
+                        {
+                            var methodStageDefinition = await methodStageDefinitionRepository.FindAsync(x => x.ID.Equals(methodStage.MethodStageDefinitionId), cancellationToken);
+                            if(methodStageDefinition != null)
+                                methodStages.Add(methodStageDefinition);
+                        }
+                    }
                     return new GetSuccessCompletedExperimentLogRateDto
                     {
-                        Id = method.ID,
-                        Name = method.Name,
-                        Description = method.Description,
-                        TotalDurationDays = method.MethodStages.Sum(ms => ms.DurationsDays),
+                        Id = g.Key.Method.ID,
+                        Name = g.Key.Method?.Name ?? "Unknow",
+                        Description = g.Key.Method?.Description ?? "Unknow",
+                        TotalDurationDays = g.Key.Method?.MethodStages.Sum(ms => ms.DurationsDays) ?? 0,
                         CompletedExperimentLog = completedExperimentLog,
                         FailedExperimentLog = failedExperimentLog,
                         SuccessRate = completedExperimentLog + failedExperimentLog > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog) * 100) : 0,

@@ -53,7 +53,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         TotalDurationDays = g.Key.Method?.MethodStages.Sum(ms => ms.DurationsDays) ?? 0,
                         CompletedExperimentLog = completedExperimentLog,
                         FailedExperimentLog = failedExperimentLog.Count(),
-                        SuccessRate = completedExperimentLog + failedExperimentLog.Count() > 0 ? (int)((double)completedExperimentLog / ((double)completedExperimentLog + (double)failedExperimentLog.Count()) * 100) : 0,
+                        SuccessRate = completedExperimentLog + failedExperimentLog.Count() > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog.Count()) * 100) : 0,
                         MethodStages = methodStages,
                         //Seedling = seedlings,
                         //TotalExperimentLog = totalExperimentLogs

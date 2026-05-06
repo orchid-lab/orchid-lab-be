@@ -19,7 +19,8 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
     internal class GetSuccessCompletedExperimentLogRateQueryHandler(
         IExperimentLogRepository experimentLogRepository,
         IMethodStageDefinitionRepository methodStageDefinitionRepository,
-        IMethodStageRepository methodStageRepository) :
+        IMethodStageRepository methodStageRepository,
+        ISeedlingRepository seedlingRepository) :
         IRequestHandler<GetSuccessCompletedExperimentLogRateQuery, List<GetSuccessCompletedExperimentLogRateDto>>
     {
         public async Task<List<GetSuccessCompletedExperimentLogRateDto>> Handle(GetSuccessCompletedExperimentLogRateQuery request, CancellationToken cancellationToken)
@@ -31,10 +32,12 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                 .GroupBy(x => new { x.Method, x.ID })
                 .Select(async g =>
                 {
-                    var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed);
-                    var failedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Cancelled);
+                    var othersExperimentLogs = await experimentLogRepository.FindAllAsync(x => x.MethodId == g.Key.Method.ID, cancellationToken);
+                    var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed && x.MethodId.Equals(g.Key.Method.ID));
+                    var failedExperimentLog = g.Count(x => (x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed) && x.MethodId.Equals(g.Key.Method.ID));
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
-                    foreach(var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled).ToList())
+                    List<Domain.Entities.Seedlings> seedlings = new List<Domain.Entities.Seedlings>();
+                    foreach (var item in g.Where(x => (x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed) && x.MethodId.Equals(g.Key.Method.ID)).ToList())
                     {
                         var methodStage = await methodStageRepository.FindAsync(x => x.ID.Equals(item.CurrentStageOrder), cancellationToken);
                         if(methodStage != null) 
@@ -43,6 +46,9 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                             if(methodStageDefinition != null)
                                 methodStages.Add(methodStageDefinition);
                         }
+                        var seedling = await seedlingRepository.FindAsync(x => x.ID.Equals(item.SeedlingParentId), cancellationToken);
+                        if(seedling != null)
+                            seedlings.Add(seedling);
                     }
                     return new GetSuccessCompletedExperimentLogRateDto
                     {
@@ -54,6 +60,8 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         FailedExperimentLog = failedExperimentLog,
                         SuccessRate = completedExperimentLog + failedExperimentLog > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog) * 100) : 0,
                         MethodStages = methodStages,
+                        Seedling = seedlings,
+                        TotalExperimentLog = othersExperimentLogs.Count()
                     };
                 });
             var dtoList = await Task.WhenAll(dto);

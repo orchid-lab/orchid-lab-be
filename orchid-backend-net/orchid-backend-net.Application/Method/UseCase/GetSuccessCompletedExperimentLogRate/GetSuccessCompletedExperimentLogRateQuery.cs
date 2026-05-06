@@ -24,11 +24,11 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                 .GroupBy(x => new { x.Method, x.ID })
                 .Select(async g =>
                 {
-                    var totalExperimentLogs = g.Count();
+                    //var totalExperimentLogs = g.Count();
                     var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed);
                     var failedExperimentLog = g.Where(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed).ToList();
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
-                    List<Domain.Entities.Seedlings> seedlings = new List<Domain.Entities.Seedlings>();
+                    //List<Domain.Entities.Seedlings> seedlings = new List<Domain.Entities.Seedlings>();
                     foreach (var item in failedExperimentLog)
                     {
                         var methodStage = await methodStageRepository.FindAsync(x => x.ID.Equals(item.CurrentStageOrder), cancellationToken);
@@ -53,10 +53,10 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         TotalDurationDays = g.Key.Method?.MethodStages.Sum(ms => ms.DurationsDays) ?? 0,
                         CompletedExperimentLog = completedExperimentLog,
                         FailedExperimentLog = failedExperimentLog.Count(),
-                        SuccessRate = completedExperimentLog + failedExperimentLog.Count() > 0 ? (double)((double)completedExperimentLog / ((double)completedExperimentLog + (double)failedExperimentLog.Count()) * 100) : 0,
+                        SuccessRate = completedExperimentLog + failedExperimentLog.Count() > 0 ? (int)((double)completedExperimentLog / ((double)completedExperimentLog + (double)failedExperimentLog.Count()) * 100) : 0,
                         MethodStages = methodStages,
                         //Seedling = seedlings,
-                        TotalExperimentLog = totalExperimentLogs
+                        //TotalExperimentLog = totalExperimentLogs
                     };
                 });
             var dtoList = await Task.WhenAll(dto);

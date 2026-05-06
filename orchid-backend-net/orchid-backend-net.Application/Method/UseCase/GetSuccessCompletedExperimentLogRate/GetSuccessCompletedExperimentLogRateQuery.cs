@@ -39,16 +39,13 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                             if(methodStageDefinition != null)
                                 methodStages.Add(methodStageDefinition);
                         }
-                        var seedling = await seedlingRepository.FindAsync(x => x.ID.Equals(item.SeedlingParentId), cancellationToken);
-                            if(seedling != null)
-                                seedlings.Add(seedling);
                     }
-                    //foreach (var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed).ToList())
-                    //{
-                    //    var seedling = await seedlingRepository.FindAsync(x => x.ID.Equals(item.SeedlingParentId), cancellationToken);
-                    //    if(seedling != null)
-                    //        seedlings.Add(seedling);
-                    //}
+                    foreach (var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed).ToList())
+                    {
+                        var seedling = await seedlingRepository.FindAsync(x => x.ID.Equals(item.SeedlingParentId), cancellationToken);
+                        if (seedling != null)
+                            seedlings.Add(seedling);
+                    }
                     return new GetSuccessCompletedExperimentLogRateDto
                     {
                         Id = g.Key.Method.ID,
@@ -57,7 +54,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         TotalDurationDays = g.Key.Method?.MethodStages.Sum(ms => ms.DurationsDays) ?? 0,
                         CompletedExperimentLog = completedExperimentLog,
                         FailedExperimentLog = failedExperimentLog.Count(),
-                        SuccessRate = completedExperimentLog + failedExperimentLog.Count() > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog.Count()) * 100) : 0,
+                        SuccessRate = completedExperimentLog + failedExperimentLog.Count() > 0 ? (double)((double)completedExperimentLog / ((double)completedExperimentLog + (double)failedExperimentLog.Count()) * 100) : 0,
                         MethodStages = methodStages,
                         Seedling = seedlings,
                         //TotalExperimentLog = totalExperimentLogs

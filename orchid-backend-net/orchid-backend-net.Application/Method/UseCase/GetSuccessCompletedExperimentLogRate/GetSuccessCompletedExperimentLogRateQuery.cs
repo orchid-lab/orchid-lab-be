@@ -28,7 +28,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
             var result = await experimentLogRepository.FindAllAsync(
                 cancellationToken);
 
-            var dtoTasks = result
+            var dto = result
                 .GroupBy(x => new { x.Method, x.ID })
                 .Select(async g =>
                 {
@@ -36,11 +36,12 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                     var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed);
                     var failedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Cancelled);
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
-                    foreach (var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled).ToList())
+                    Parallel.ForEach(g.Where(x => x.Status == ExperimentLogStatus.Cancelled).ToList(), async item =>
                     {
                         var methodStage = await methodStageRepository.FindAsync(x => x.ID.Equals(item.CurrentStageOrder), cancellationToken);
-                        methodStages.Add(await methodStageDefinitionRepository.FindAsync(x => x.ID.Equals(methodStage.MethodStageDefinitionId), cancellationToken));
-                    }
+                        var methodStageDefinition = await methodStageDefinitionRepository.FindAsync(x => x.ID.Equals(methodStage.MethodStageDefinitionId), cancellationToken);
+                        methodStages.Add(methodStageDefinition);
+                    });
                     return new GetSuccessCompletedExperimentLogRateDto
                     {
                         Id = method.ID,
@@ -53,7 +54,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         MethodStages = methodStages,
                     };
                 });
-            var dtoList = await Task.WhenAll(dtoTasks);
+            var dtoList = await Task.WhenAll(dto);
             return dtoList
                 .OrderByDescending(r => r.SuccessRate)
                 .ToList();

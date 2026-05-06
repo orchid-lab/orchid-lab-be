@@ -34,10 +34,10 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                 {
                     var totalExperimentLogs = g.Count(x => x.MethodId.Equals(g.Key.Method));
                     var completedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Completed && x.MethodId.Equals(g.Key.Method.ID));
-                    var failedExperimentLog = g.Count(x => (x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed) && x.MethodId.Equals(g.Key.Method.ID));
+                    var failedExperimentLog = g.Count(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed);
                     List<Domain.Entities.MethodStageDefinition> methodStages = new List<Domain.Entities.MethodStageDefinition>();
                     //List<Domain.Entities.Seedlings> seedlings = new List<Domain.Entities.Seedlings>();
-                    foreach (var item in g.Where(x => (x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed) && x.MethodId.Equals(g.Key.Method.ID)).ToList())
+                    foreach (var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed).ToList())
                     {
                         var methodStage = await methodStageRepository.FindAsync(x => x.ID.Equals(item.CurrentStageOrder), cancellationToken);
                         if(methodStage != null) 
@@ -47,7 +47,7 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                                 methodStages.Add(methodStageDefinition);
                         }
                     }
-                    //foreach (var item in g.Where(x => (x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed) && x.MethodId.Equals(g.Key.Method.ID)).ToList())
+                    //foreach (var item in g.Where(x => x.Status == ExperimentLogStatus.Cancelled || x.Status == ExperimentLogStatus.Destroyed).ToList())
                     //{
                     //    var seedling = await seedlingRepository.FindAsync(x => x.ID.Equals(item.SeedlingParentId), cancellationToken);
                     //    if(seedling != null)

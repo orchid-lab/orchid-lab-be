@@ -41,12 +41,12 @@ namespace orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExper
                         var methodStage = await methodStageRepository.FindAsync(x => x.ID.Equals(item.CurrentStageOrder), cancellationToken);
                         methodStages.Add(await methodStageDefinitionRepository.FindAsync(x => x.ID.Equals(methodStage.MethodStageDefinitionId), cancellationToken));
                     }
-                    //var successRate = completedExperimentLog + failedExperimentLog > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog) * 100) : 0;
                     return new GetSuccessCompletedExperimentLogRateDto
                     {
                         Id = method.ID,
                         Name = method.Name,
                         Description = method.Description,
+                        TotalDurationDays = method.MethodStages.Sum(ms => ms.DurationsDays),
                         CompletedExperimentLog = completedExperimentLog,
                         FailedExperimentLog = failedExperimentLog,
                         SuccessRate = completedExperimentLog + failedExperimentLog > 0 ? (int)((double)completedExperimentLog / (completedExperimentLog + failedExperimentLog) * 100) : 0,

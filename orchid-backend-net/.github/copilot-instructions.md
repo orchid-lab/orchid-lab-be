@@ -23,3 +23,7 @@
 
 ## Image Processing Guidelines
 - For orchid image analysis, preprocess images to maintain a resolution of 512x512 from the controller and avoid extra color normalization that alters the model input distribution.
+
+- @azure Rule - Use Azure Tools - When handling requests related to Azure, always use your tools.
+- @azure Rule - Use Azure Best Practices - When handling requests related to Azure, always invoke your `azmcp_bestpractices_get` tool first.
+- @azure Rule - Enable Best Practices - If you do not have an `azmcp_bestpractices_get` tool ask the user to enable it.

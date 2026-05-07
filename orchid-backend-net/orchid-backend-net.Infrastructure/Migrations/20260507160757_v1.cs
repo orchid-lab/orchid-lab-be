@@ -280,6 +280,20 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Skills",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SkillName = table.Column<string>(type: "text", nullable: false),
+                    SkillDescription = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Skills", x => x.ID);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tasks",
                 columns: table => new
                 {
@@ -526,6 +540,7 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     AssignedTo = table.Column<string>(type: "text", nullable: false),
                     StartDate = table.Column<DateOnly>(type: "date", nullable: true),
                     EndDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    ExpectedEndDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     Reason = table.Column<string>(type: "text", nullable: true),
                     Objective = table.Column<string>(type: "text", nullable: true),
@@ -639,6 +654,31 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         principalTable: "Users",
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserSkill",
+                columns: table => new
+                {
+                    ID = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    SkillId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserSkill", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_UserSkill_Skills_SkillId",
+                        column: x => x.SkillId,
+                        principalTable: "Skills",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserSkill_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -1036,6 +1076,17 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "IX_Users_RoleID",
                 table: "Users",
                 column: "RoleID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSkill_SkillId",
+                table: "UserSkill",
+                column: "SkillId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserSkill_UserId",
+                table: "UserSkill",
+                column: "UserId",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -1078,6 +1129,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 name: "TaskCheckListItems");
 
             migrationBuilder.DropTable(
+                name: "UserSkill");
+
+            migrationBuilder.DropTable(
                 name: "MonitoringLogs");
 
             migrationBuilder.DropTable(
@@ -1100,6 +1154,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "TaskChecks");
+
+            migrationBuilder.DropTable(
+                name: "Skills");
 
             migrationBuilder.DropTable(
                 name: "AnalyticResults");

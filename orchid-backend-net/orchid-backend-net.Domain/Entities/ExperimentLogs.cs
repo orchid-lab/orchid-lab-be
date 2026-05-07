@@ -23,6 +23,7 @@ namespace orchid_backend_net.Domain.Entities
         public required string AssignedTo { get; set; }
         public DateOnly? StartDate { get; set; }
         public DateOnly? EndDate { get; set; }
+        public DateOnly? ExpectedEndDate { get; set; }
         public string? Notes { get; set; }
         public string? Reason { get; set; }
         public string? Objective { get; set; }          // Mục tiêu thí nghiệm (Mục 1)
@@ -57,6 +58,9 @@ namespace orchid_backend_net.Domain.Entities
 
             if (ExpectedSampleCount < 0)
                 throw new DomainException("ExpectedSampleCount cannot be negative.");
+
+            if(StartDate is not null && StartDate <= DateOnly.FromDateTime(DateTime.UtcNow))
+                throw new DomainException("StartDate must be not null and in the future.");
 
             Status = ExperimentLogStatus.InProgress;
             CurrentStageOrder = 1;

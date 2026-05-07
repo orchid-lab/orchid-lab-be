@@ -15,6 +15,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
         string Name,
         int ExpectedSampleCount,
         string AssignedToTechnicianId,
+        DateOnly StartDate,
+        DateOnly ExpectedEndDate,
         string? Objective // thêm field mới
     ) : IRequest<string>, ICommand;
 
@@ -45,6 +47,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 throw new DuplicateException("Experiment Log này đã bị trùng");
             }
 
+            var expectedDurationInDays = method.MethodStages.Sum(ms => ms.DurationsDays);
+
             var eL = new ExperimentLogs()
             {
                 MethodId = method.ID,
@@ -55,6 +59,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 AssignedTo = technicianAssigned.ID,
                 CreatedDate = DateTime.UtcNow,
                 CreatedBy = services.CurrentUserService.UserId!,
+                StartDate = request.StartDate,
+                ExpectedEndDate = request.ExpectedEndDate,
                 Status = ExperimentLogStatus.Created,
                 Objective = request.Objective // set field mới
             };

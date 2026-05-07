@@ -27,5 +27,6 @@ namespace orchid_backend_net.Domain.Entities
         public DateTime? RefreshTokenExpiryTime { get; set; }
         public virtual List<TaskAssignment> TaskAssignments { get; set; } = new();
         public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
+        public virtual UserSkill? UserSkill { get; set; }
     }
 }

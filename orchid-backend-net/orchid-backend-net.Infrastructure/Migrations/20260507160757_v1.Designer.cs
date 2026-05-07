@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260507133059_v1")]
+    [Migration("20260507160757_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -292,6 +292,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateOnly?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("ExpectedEndDate")
                         .HasColumnType("date");
 
                     b.Property<int>("ExpectedSampleCount")
@@ -915,6 +918,27 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.ToTable("SeedlingsTraits");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Skills", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("SkillDescription")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SkillName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Skills");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.StageChemicals", b =>
                 {
                     b.Property<string>("ID")
@@ -1168,6 +1192,28 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.UserSkill", b =>
+                {
+                    b.Property<string>("ID")
+                        .HasColumnType("text");
+
+                    b.Property<int>("SkillId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("SkillId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserSkill");
                 });
 
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Users", b =>
@@ -1559,6 +1605,25 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("TaskCheckList");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.UserSkill", b =>
+                {
+                    b.HasOne("orchid_backend_net.Domain.Entities.Skills", "Skill")
+                        .WithMany("UserSkills")
+                        .HasForeignKey("SkillId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("orchid_backend_net.Domain.Entities.Users", "User")
+                        .WithOne("UserSkill")
+                        .HasForeignKey("orchid_backend_net.Domain.Entities.UserSkill", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Skill");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.Users", b =>
                 {
                     b.HasOne("orchid_backend_net.Domain.Entities.Roles", "Role")
@@ -1649,6 +1714,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("SeedlingsTraits");
                 });
 
+            modelBuilder.Entity("orchid_backend_net.Domain.Entities.Skills", b =>
+                {
+                    b.Navigation("UserSkills");
+                });
+
             modelBuilder.Entity("orchid_backend_net.Domain.Entities.TaskCheckList", b =>
                 {
                     b.Navigation("Items");
@@ -1669,6 +1739,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Navigation("MonitoringLogs");
 
                     b.Navigation("TaskAssignments");
+
+                    b.Navigation("UserSkill");
                 });
 #pragma warning restore 612, 618
         }

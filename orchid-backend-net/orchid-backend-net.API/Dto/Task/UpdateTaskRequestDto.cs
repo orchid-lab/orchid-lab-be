@@ -1,29 +1,25 @@
-using orchid_backend_net.Application.Tasks.Dto.Task;
 using orchid_backend_net.Application.Tasks.Dto.TaskAssignmentDto;
 using orchid_backend_net.Application.Tasks.Dto.TaskAttributeDto;
+using System.Text.Json.Serialization;
 
 namespace orchid_backend_net.API.Dto.Task
 {
     /// <summary>
-    /// parameter for update task, including the basic information of the task, the attributes of the task, and the assignment of the task
+    /// request payload for update task (matches frontend payload)
     /// </summary>
     public class UpdateTaskRequestDto
     {
-        /// <summary>
-        /// param
-        /// </summary>
-        public required UpdateTaskDto Parameter { get; set; }
-        /// <summary>
-        /// create task attribute - for the new attribute that need to be added to the task
-        /// </summary>
-        public List<CreateTaskAttributeDto>? CreateTaskAttributes { get; set; }
-        /// <summary>
-        /// update the old one - for the existing attribute that need to be updated
-        /// </summary>
-        public List<UpdateTaskAttributeDto>? UpdateTaskAttributes { get; set; }
-        /// <summary>
-        /// change technician or else
-        /// </summary>
+        public string? TaskId { get; set; }
+        public int? StageId { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+
+        [JsonPropertyName("createTaskAttribute")]
+        public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; }
+
+        [JsonPropertyName("updateTaskAttribute")]
+        public List<UpdateTaskAttributeDto>? UpdateTaskAttribute { get; set; }
+
         public UpdateTaskAssignmentDto? UpdateTaskAssignment { get; set; }
     }
 }

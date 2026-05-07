@@ -11,6 +11,7 @@ using orchid_backend_net.Application.Method.UseCase.DeleteChemicalFromMethodStag
 using orchid_backend_net.Application.Method.UseCase.DeleteMaterialFromMethodStage;
 using orchid_backend_net.Application.Method.UseCase.DeleteMethod;
 using orchid_backend_net.Application.Method.UseCase.GetAllMethod;
+using orchid_backend_net.Application.Method.UseCase.GetFailedExperimentLogDetails;
 using orchid_backend_net.Application.Method.UseCase.GetMethodById;
 using orchid_backend_net.Application.Method.UseCase.GetSuccessCompletedExperimentLogRate;
 using orchid_backend_net.Application.Method.UseCase.UpdateChemicalInMethodStage;
@@ -62,6 +63,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpGet("success-rate")]
+        [ResponseCache(Duration = 500)]
         [Produces(MediaTypeNames.Application.Json)]
         [ProducesResponseType(typeof(JsonResponse<PageResult<MethodDto>>), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetSuccessRate([FromQuery] GetSuccessCompletedExperimentLogRateQuery query, CancellationToken cancellationToken)
@@ -75,6 +77,38 @@ namespace orchid_backend_net.API.Controllers
             catch (Exception ex)
             {
                 logger.LogError(ex, "An error occured while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Get failed experiment details for a specific method with pagination
+        /// </summary>
+        /// <param name="methodId">Method ID to analyze</param>
+        /// <param name="skip">Number of records to skip (default: 0)</param>
+        /// <param name="take">Number of records to take (default: 10)</param>
+        /// <param name="cancellationToken"></param>
+        [HttpGet("{methodId}/failed-experiments")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(PagedFailedExperimentLogResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetFailedExperimentDetails(
+            [FromRoute] int methodId,
+            [FromQuery] int skip = 0,
+            [FromQuery] int take = 10,
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                logger.LogInformation("Received GET request for failed experiments of method {MethodId} at {Time}", methodId, DateTime.UtcNow);
+                var query = new GetFailedExperimentLogDetailsQuery(methodId, skip, take);
+                var result = await Sender.Send(query, cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Lấy dữ liệu thất bại", Detail = ex.Message });
             }
         }

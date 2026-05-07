@@ -24,7 +24,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskCompletedByTechnicianNo
             var title = "Task đã hoàn thành";
             var content = $"Task {task.Name} đã được duyệt hoàn thành bởi {researcher.Name}";
 
-            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.TechnicianId, title, content);
+            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.TechnicianId, title, content, Domain.Common.Enum.NotificationTargetType.Task, task.ID.ToString());
 
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

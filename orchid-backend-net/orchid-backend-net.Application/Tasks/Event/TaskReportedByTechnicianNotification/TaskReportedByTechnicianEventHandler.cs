@@ -25,7 +25,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskReportedByTechnicianNot
             var title = "Task được yêu cầu xét duyệt";
             var content = $"Task {task.Name} được yêu cầu xét duyệt bởi {technician.Name}";
 
-            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content);
+            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content, Domain.Common.Enum.NotificationTargetType.Task, task.ID.ToString());
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             await notificationService.PushToSingleUserAsync(evt.DomainEvent.ResearcherId, noti.Title, noti.Content);

@@ -611,6 +611,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("NotificationTargetType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TargetId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");

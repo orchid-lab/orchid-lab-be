@@ -98,7 +98,9 @@ namespace orchid_backend_net.Infrastructure.BackgroundJobs
                     var notification = CreateNotificationHelper.CreateForSingleUsers(
                         overdue.ResearcherId, 
                         title, 
-                        content);
+                        content,
+                        Domain.Common.Enum.NotificationTargetType.ExperimentLog,
+                        overdue.ExperimentId);
                     
                     _notificationRepository.Add(notification);
 

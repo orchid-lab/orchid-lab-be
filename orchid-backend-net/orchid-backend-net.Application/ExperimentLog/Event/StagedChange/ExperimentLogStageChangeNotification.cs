@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.StagedChange
 
             var title = "Thí nghiệm đã chuyển giai đoạn";
             var content = $"Thí nghiệm {experiment.Name} đã chuyển sang giai đoạn {stageOrder}, vui lòng kiểm tra các công việc liên quan";
-            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experiment.ID.ToString());
             await pushService.PushToSingleUserAsync(technician.ID, title, content);
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

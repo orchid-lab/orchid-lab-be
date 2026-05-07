@@ -179,7 +179,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     Title = table.Column<string>(type: "text", nullable: false),
                     Content = table.Column<string>(type: "text", nullable: false),
                     IsRead = table.Column<bool>(type: "boolean", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    NotificationTargetType = table.Column<int>(type: "integer", nullable: false),
+                    TargetId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

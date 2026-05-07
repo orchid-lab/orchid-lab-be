@@ -25,7 +25,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.Destroy
                 ? $"Thí nghiệm {experiment.Name} đã được đánh dấu hủy bởi {researcher.Name} với lý do {evt.DomainEvent.Reason}"
                 : $"Thí nghiệm {experiment.Name} đã được đánh dấu hủy bởi {researcher.Name}";
 
-            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experiment.ID.ToString());
             await pushService.PushToSingleUserAsync(technician.ID, title, content);
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

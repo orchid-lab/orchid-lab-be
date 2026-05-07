@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.Cancel
             var title = "Thí nghiệm đã bị hủy";
             var content = $"Thí nghiệm {experiment.Name} đã bị hủy bởi {technician.Name} với lý do {evt.DomainEvent.Reason}";
 
-            var noti = CreateNotificationHelper.CreateForSingleUsers(researcher.ID, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(researcher.ID, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experiment.ID.ToString());
             await pushService.PushToSingleUserAsync(researcher.ID, title, content);
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

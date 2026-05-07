@@ -26,7 +26,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskDeclineByTechnicianNoti
                 ? $"Task {task.Name} đã bị từ chối bởi Technician {technician.Name} với lý do {evt.DomainEvent.Reason}." 
                 : $"Task {task.Name} đã bị từ chối bởi Technician {technician.Name}.";
 
-            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content);
+            Domain.Entities.Notification noti = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content, Domain.Common.Enum.NotificationTargetType.Task, task.ID.ToString());
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             await notificationService.PushToSingleUserAsync(evt.DomainEvent.ResearcherId, noti.Title, noti.Content);

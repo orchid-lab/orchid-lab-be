@@ -41,7 +41,9 @@ namespace orchid_backend_net.Application.MonitoringLog.Event.Reject
             var notification = CreateNotificationHelper.CreateForSingleUsers(
                 evt.DomainEvent.TechnicianId,
                 title,
-                content);
+                content,
+                Domain.Common.Enum.NotificationTargetType.MonitoringLog,
+                monitoringLog.ID.ToString());
 
             notificationRepository.Add(notification);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

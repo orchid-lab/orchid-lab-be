@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskCancelledNotification
             var title = $"Task {task.Name} đã bị hủy";
             var content = $"Task {task.Name} đã bị hủy bởi {researcher.Name}. Lý do: {notification.DomainEvent.Reason ?? "Không có lý do nào được cung cấp."}";
 
-            var noti = CreateNotificationHelper.CreateForSingleUsers(notification.DomainEvent.Technician, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(notification.DomainEvent.Technician, title, content, Domain.Common.Enum.NotificationTargetType.Task, task.ID.ToString());
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             await notificationService.PushToSingleUserAsync(notification.DomainEvent.Technician, noti.Title, noti.Content);

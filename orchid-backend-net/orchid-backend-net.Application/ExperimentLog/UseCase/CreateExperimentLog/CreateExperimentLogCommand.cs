@@ -68,6 +68,8 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.CreateExperimentL
                 UserId = technicianAssigned.ID,
                 IsRead = false,
                 CreatedAt = DateTime.UtcNow,
+                NotificationTargetType = Domain.Common.Enum.NotificationTargetType.ExperimentLog,
+                TargetId = eL.ID.ToString()
             };
 
             repo.NotificationRepository.Add(noti);

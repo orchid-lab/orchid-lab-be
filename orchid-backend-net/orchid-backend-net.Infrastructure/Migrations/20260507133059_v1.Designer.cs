@@ -12,7 +12,7 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260315185039_v1")]
+    [Migration("20260507133059_v1")]
     partial class v1
     {
         /// <inheritdoc />
@@ -613,6 +613,12 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("NotificationTargetType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TargetId")
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -10,5 +10,7 @@ namespace orchid_backend_net.Domain.Entities
         public string Content { get; set; } = null!;
         public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }
+        public NotificationTargetType NotificationTargetType { get; set; }
+        public string? TargetId { get; set; }
     }
 }

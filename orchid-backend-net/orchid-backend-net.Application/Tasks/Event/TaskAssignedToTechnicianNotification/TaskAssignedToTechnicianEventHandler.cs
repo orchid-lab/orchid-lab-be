@@ -25,7 +25,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskAssignedToTechnicianNot
             var title = "Task mới được giao";
             var content = $"Task {task.Name} đã được giao bởi Researcher {researcher.Name}";
 
-            var notification = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.TechnicianId, title, content);
+            var notification = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.TechnicianId, title, content, Domain.Common.Enum.NotificationTargetType.Task, task.ID.ToString());
             notificationRepository.Add(notification);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             await notificationService.PushToSingleUserAsync(evt.DomainEvent.TechnicianId, notification.Title, notification.Content);

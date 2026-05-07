@@ -91,7 +91,7 @@ namespace orchid_backend_net.API.Controllers
         /// CreateTaskAssignmentDto can be null in case want to create task template
         /// Task attribute can be null in case you need to create task like observation
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
@@ -104,11 +104,16 @@ namespace orchid_backend_net.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<JsonResponse<string>>> Create([FromBody] CreateTaskCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult<JsonResponse<string>>> Create([FromBody] CreateTaskRequestDto request, CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+                var command = new CreateTaskCommand(
+                    request.Parameter,
+                    request.CreateTaskAttributes,
+                    request.CreateTaskAssignment,
+                    request.CreateTaskCheckListItems ?? new());
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }
@@ -156,7 +161,7 @@ namespace orchid_backend_net.API.Controllers
         /// update task assignment can be null
         /// create task attribute can be null
         /// </summary>
-        /// <param name="command"></param>
+        /// <param name="request"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
@@ -169,11 +174,16 @@ namespace orchid_backend_net.API.Controllers
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult<JsonResponse<string>>> Update([FromBody] UpdateTaskCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult<JsonResponse<string>>> Update([FromBody] UpdateTaskRequestDto request, CancellationToken cancellationToken)
         {
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+                var command = new UpdateTaskCommand(
+                    request.Parameter,
+                    request.CreateTaskAttributes,
+                    request.UpdateTaskAttributes,
+                    request.UpdateTaskAssignment);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }

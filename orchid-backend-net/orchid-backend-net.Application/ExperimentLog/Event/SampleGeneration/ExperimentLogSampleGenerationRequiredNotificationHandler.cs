@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.SampleGeneration
             var content = $"Thí nghiệm {experimentLog.Name} đã đến lúc phát sinh chồi cho giai đoạn hiện tại với số lượng mong muốn là {notification.DomainEvent.ExpectedSampleCount}" +
                 $". Vui lòng kiểm tra và thực hiện các bước tiếp theo.";
 
-            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experimentLog.ID.ToString());
             await pushService.PushToSingleUserAsync(technician.ID, title, content);
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

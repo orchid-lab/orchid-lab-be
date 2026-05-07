@@ -24,7 +24,7 @@ namespace orchid_backend_net.Application.Tasks.Event.TaskAcceptedByTechnicianNot
             var title = "Task đã được nhận";
             var content = $"Task {task.Name} đã được nhận bởi Technician {technician.Name}";
 
-            var notification = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content);
+            var notification = CreateNotificationHelper.CreateForSingleUsers(evt.DomainEvent.ResearcherId, title, content, Domain.Common.Enum.NotificationTargetType.Task, task.ID.ToString());
             notificationRepository.Add(notification);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);
             await notificationService.PushToSingleUserAsync(evt.DomainEvent.ResearcherId, notification.Title, notification.Content);

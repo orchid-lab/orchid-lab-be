@@ -42,7 +42,7 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.GetAllExperimentL
                 {
                     query = query.Where(el => el.AssignedTo.Equals(request.TechnicianId));
                 }
-                return query.OrderBy(x => x.CreatedDate);
+                return query.OrderByDescending(x => x.CreatedDate);
             }
 
             var el = await experimentLogRepository.FindAllProjectToAsync<ExperimentLogDto>(

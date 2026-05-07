@@ -46,7 +46,7 @@ namespace orchid_backend_net.Application.Seedling.UseCase.GetAllSeedlings
                         s.ParentA != null && s.ParentA.ScientificName.ToLower().Contains(request.ByParentScientificName.ToLower())
                     );
 
-                return query;
+                return query.OrderByDescending(s => s.CreatedDate);
             }
             var list = await seedlingRepository.FindAllProjectToAsync<SeedlingDto>(
                 pageNo: request.PageNumber,

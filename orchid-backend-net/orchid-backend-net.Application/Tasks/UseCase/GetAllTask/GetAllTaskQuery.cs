@@ -41,7 +41,7 @@ namespace orchid_backend_net.Application.Tasks.UseCase.GetAllTask
                 {
                     query = query.Where(t => t.TaskAssignment.TechnicianId!.Equals(request.TechnicianId));
                 }
-                return query.OrderBy(x => x.CreatedDate);
+                return query.OrderByDescending(x => x.CreatedDate);
             }
 
             var list = await taskRepository.FindAllProjectToAsync<TaskDto>(

@@ -87,7 +87,8 @@ namespace orchid_backend_net.Domain.Entities
                 TargetType = targetType,
                 TargetId = targetId,
                 StartDate = startDate,
-                ExpectedEndDate = expectedEndDate
+                ExpectedEndDate = expectedEndDate,
+                EndDate = startDate.AddDays(1)
             };
             AddDomainEvent(new TaskAssignedToTechnicianEvent(this.ID, technicianId, this.ResearcherId));
         }

@@ -192,10 +192,19 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received PUT request at {Time}", DateTime.UtcNow);
+
+                var parameter = new UpdateTaskDto
+                {
+                    TaskId = request.TaskId ?? string.Empty,
+                    StageId = request.StageId,
+                    Name = request.Name,
+                    Description = request.Description
+                };
+
                 var command = new UpdateTaskCommand(
-                    request.Parameter,
-                    request.CreateTaskAttributes,
-                    request.UpdateTaskAttributes,
+                    parameter,
+                    request.CreateTaskAttribute,
+                    request.UpdateTaskAttribute,
                     request.UpdateTaskAssignment);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);

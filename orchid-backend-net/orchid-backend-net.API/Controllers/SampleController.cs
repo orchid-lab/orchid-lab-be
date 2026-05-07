@@ -113,7 +113,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpPut("{id}/stage")]
-        [Authorize(Roles = "Researcher,Technician")]
+        [Authorize(Roles = "Researcher")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> ChangeStage(
             [FromRoute] string id,
@@ -141,7 +141,7 @@ namespace orchid_backend_net.API.Controllers
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
         [HttpPut("{id}")]
-        [Authorize(Roles = "Researcher")]
+        [Authorize(Roles = "Researcher,Technician")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         public async Task<ActionResult<JsonResponse<string>>> UpdateInformation(
             [FromRoute] string id,

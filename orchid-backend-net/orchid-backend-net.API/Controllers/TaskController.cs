@@ -109,11 +109,24 @@ namespace orchid_backend_net.API.Controllers
             try
             {
                 logger.LogInformation("Received POST request at {Time}", DateTime.UtcNow);
+
+                var parameter = new CreateTaskDto
+                {
+                    Name = request.Name ?? string.Empty,
+                    Description = request.Description,
+                    StageId = request.StageId,
+                    IsForWholeExperimentLog = true,
+                    ExpectedEndDate = request.CreateTaskAssignment?.ExpectedEndDate ?? DateTime.UtcNow
+                };
+
+                var createTaskAttributes = request.CreateTaskAttribute;
+                var createTaskCheckListItems = request.CreateTaskCheckListItemDtos ?? new();
+
                 var command = new CreateTaskCommand(
-                    request.Parameter,
-                    request.CreateTaskAttributes,
+                    parameter,
+                    createTaskAttributes,
                     request.CreateTaskAssignment,
-                    request.CreateTaskCheckListItems ?? new());
+                    createTaskCheckListItems);
                 var result = await Sender.Send(command, cancellationToken);
                 return Ok(result);
             }

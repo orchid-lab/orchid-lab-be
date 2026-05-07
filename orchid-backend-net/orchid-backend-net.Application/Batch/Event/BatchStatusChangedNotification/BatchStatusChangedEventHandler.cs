@@ -31,7 +31,7 @@ namespace orchid_backend_net.Application.Batch.Event.BatchStatusChangedNotificat
             var newStatus = evt.DomainEvent.NewStatus;
             var content = $"Trạng thái của batch {batch.BatchName} đã thay đổi từ {oldStatus} sang {newStatus}";
 
-            List<Domain.Entities.Notification> notifications = CreateNotificationHelper.CreateForMultipleUsers(researchers, title, content);
+            List<Domain.Entities.Notification> notifications = CreateNotificationHelper.CreateForMultipleUsers(researchers, title, content, Domain.Common.Enum.NotificationTargetType.Batch, batch.ID.ToString());
 
             await notificationService.PushToMultipleUserAsync(researchers.Select(r => r.ID), title, content);
 

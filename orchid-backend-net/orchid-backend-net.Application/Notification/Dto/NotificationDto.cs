@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using orchid_backend_net.Application.Common.Mappings;
+using orchid_backend_net.Domain.Common.Enum;
 
 namespace orchid_backend_net.Application.Notification.Dto
 {
@@ -11,6 +12,8 @@ namespace orchid_backend_net.Application.Notification.Dto
         public string Content { get; set; } = null!;
         public bool IsRead { get; set; }
         public DateTime CreatedAt { get; set; }
+        public NotificationTargetType NotificationTargetType { get; set; }
+        public string? TargetId { get; set; }
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Domain.Entities.Notification, NotificationDto>();

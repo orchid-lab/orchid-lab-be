@@ -88,7 +88,7 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
                     content = $"Mẫu '{sampleStage.Samples.Name}' được phân tích: Stage '{stageName}', bệnh '{analyticDisease.Name}'.";
 
                     notifications = recipientIds
-                        .Select(userId => CreateNotificationHelper.CreateForSingleUsers(userId, title, content))
+                        .Select(userId => CreateNotificationHelper.CreateForSingleUsers(userId, title, content, Domain.Common.Enum.NotificationTargetType.Sample, sampleStage.SampleId.ToString()))
                         .ToList();
 
                     notificationRepository.AddRange(notifications);

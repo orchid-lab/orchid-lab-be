@@ -9,7 +9,7 @@ namespace orchid_backend_net.Application.MethodStageDefinition.UseCase.DeleteMet
 {
     public class DeleteMethodStageDefinitionCommandValidator : AbstractValidator<DeleteMethodStageDefinitionCommand>
     {
-        DeleteMethodStageDefinitionCommandValidator() 
+        public DeleteMethodStageDefinitionCommandValidator() 
         {
             Configuration();    
         }

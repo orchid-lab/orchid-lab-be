@@ -7,6 +7,7 @@ using orchid_backend_net.Application.Tasks.Helper;
 using orchid_backend_net.Application.Tasks.Policy;
 using orchid_backend_net.Domain.Common.Exceptions;
 using orchid_backend_net.Domain.IRepositories;
+using System.Diagnostics.CodeAnalysis;
 
 namespace orchid_backend_net.Application.Tasks.UseCase.UpdateTask
 {
@@ -16,19 +17,37 @@ namespace orchid_backend_net.Application.Tasks.UseCase.UpdateTask
     /// <param name="parameter"></param>
     /// <param name="createTaskAttributes"></param>
     /// <param name="updateTaskAttributes"></param>
-    public class UpdateTaskCommand(
-        UpdateTaskDto parameter,
-        List<CreateTaskAttributeDto>? createTaskAttributes,
-        List<UpdateTaskAttributeDto>? updateTaskAttributes,
-        UpdateTaskAssignmentDto updateTaskAssignment) : IRequest<string>
+    public class UpdateTaskCommand : IRequest<string>
     {
-        public required string TaskId { get; set; } = parameter.TaskId;
-        public int? StageId { get; set; } = parameter.StageId;
-        public string? Name { get; set; } = parameter.Name;
-        public string? Description { get; set; } = parameter.Description;
-        public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
-        public List<UpdateTaskAttributeDto>? UpdateTaskAttribute { get; set; } = updateTaskAttributes;
-        public UpdateTaskAssignmentDto? UpdateTaskAssignment { get; set; } = updateTaskAssignment;
+        [SetsRequiredMembers]
+        public UpdateTaskCommand()
+        {
+            TaskId = string.Empty;
+        }
+
+        [SetsRequiredMembers]
+        public UpdateTaskCommand(
+            UpdateTaskDto parameter,
+            List<CreateTaskAttributeDto>? createTaskAttributes,
+            List<UpdateTaskAttributeDto>? updateTaskAttributes,
+            UpdateTaskAssignmentDto? updateTaskAssignment)
+        {
+            TaskId = parameter.TaskId;
+            StageId = parameter.StageId;
+            Name = parameter.Name;
+            Description = parameter.Description;
+            CreateTaskAttribute = createTaskAttributes;
+            UpdateTaskAttribute = updateTaskAttributes;
+            UpdateTaskAssignment = updateTaskAssignment;
+        }
+
+        public required string TaskId { get; set; }
+        public int? StageId { get; set; }
+        public string? Name { get; set; }
+        public string? Description { get; set; }
+        public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; }
+        public List<UpdateTaskAttributeDto>? UpdateTaskAttribute { get; set; }
+        public UpdateTaskAssignmentDto? UpdateTaskAssignment { get; set; }
     }
 
     internal class UpdateTaskCommandHandler(

@@ -28,4 +28,8 @@
     <ProjectReference Include="..\orchid-backend-net\orchid-backend-net.Application\orchid-backend-net.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Method\UseCase\GetFailedExperimentLogDetails\" />
+  </ItemGroup>
+
 </Project>

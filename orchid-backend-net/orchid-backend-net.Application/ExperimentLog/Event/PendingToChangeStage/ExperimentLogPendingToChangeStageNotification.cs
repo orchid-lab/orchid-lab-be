@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.PendingToChangeStag
             var title = "Thí nghiệm cần chuyển giai đoạn";
             var content = $"Thí nghiệm {experimentLog.Name} đã được yêu cầu chuyển sang giai đoạn tiếp theo bởi {technician.Name}";
 
-            var noti = CreateNotificationHelper.CreateForSingleUsers(researcher.ID, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(researcher.ID, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experimentLog.ID.ToString());
             await pushService.PushToSingleUserAsync(researcher.ID, title, content);
             notificationRepository.Add(noti);
             await notificationRepository.UnitOfWork.SaveChangesAsync(cancellationToken);

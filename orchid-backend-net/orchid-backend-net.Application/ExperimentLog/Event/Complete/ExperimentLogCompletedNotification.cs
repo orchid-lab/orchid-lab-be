@@ -23,7 +23,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.Complete
 
             var title = "Thí nghiệm đã hoàn thành";
             var content = $"Thí nghiệm {experiment.Name} đã được đánh dấu hoàn thành bởi {researcher.Name}";
-            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content);
+            var noti = CreateNotificationHelper.CreateForSingleUsers(technician.ID, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experiment.ID.ToString());
             await service.NotificationPushService.PushToSingleUserAsync(technician.ID, title, content);
             repository.NotificationRepository.Add(noti);
 

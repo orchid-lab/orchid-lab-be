@@ -2,11 +2,11 @@
 namespace orchid_backend_net.Application.MethodStageDefinition.UseCase.CreateMethodStageDefinition
 {
     public class CreateMethodStageDefinitionCommandValidator : AbstractValidator<CreateMethodStageDefinitionCommand>
-    { 
-        CreateMethodStageDefinitionCommandValidator() 
+    {
+        public CreateMethodStageDefinitionCommandValidator()
         {
             Configuration();
-        }  
+        }
         private void Configuration()
         {
             RuleFor(x => x.Name)

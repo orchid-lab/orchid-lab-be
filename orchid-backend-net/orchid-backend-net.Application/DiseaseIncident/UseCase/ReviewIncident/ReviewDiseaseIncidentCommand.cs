@@ -34,7 +34,7 @@ namespace orchid_backend_net.Application.DiseaseIncident.UseCase.ReviewIncident
                 var content = $"Mẫu '{sampleName}' được xác nhận nhiễm {diseaseName}. " +
                   "Vui lòng tiến hành tiêu hủy mẫu theo quy trình.";
 
-                var noti = CreateNotificationHelper.CreateForSingleUsers(technicianId, title, content);
+                var noti = CreateNotificationHelper.CreateForSingleUsers(technicianId, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, incident.SampleStage.Samples.ExperimentLog.ID.ToString());
                 notificationRepository.Add(noti);
                 await notificationPushService.PushToSingleUserAsync(technicianId, title, content);
                 incident.ConfirmByHuman(currentUserService.UserId, request.Note);

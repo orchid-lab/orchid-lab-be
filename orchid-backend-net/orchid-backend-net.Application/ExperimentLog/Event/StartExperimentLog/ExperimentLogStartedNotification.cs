@@ -26,7 +26,7 @@ namespace orchid_backend_net.Application.ExperimentLog.Event.StartExperimentLog
             var content = $"Thí nghiệm {experimentLog.Name} của {researcher.Name} đã bắt đầu ở lồng {batch.BatchName}, được thực hiện bởi {technician.Name}";
 
             var researcherList = await userRepository.FindAllAsync(u => u.RoleID == 2, cancellationToken);
-            var notificationList = CreateNotificationHelper.CreateForMultipleUsers(researcherList, title, content);
+            var notificationList = CreateNotificationHelper.CreateForMultipleUsers(researcherList, title, content, Domain.Common.Enum.NotificationTargetType.ExperimentLog, experimentLog.ID.ToString());
 
             await notificationService.PushToMultipleUserAsync(
                 researcherList.Select(r => r.ID), title, content);

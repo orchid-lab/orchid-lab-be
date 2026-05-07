@@ -7,29 +7,47 @@ using orchid_backend_net.Application.Tasks.Dto.TaskCheckListItem;
 using orchid_backend_net.Application.Tasks.Helper;
 using orchid_backend_net.Application.Tasks.Policy;
 using orchid_backend_net.Domain.IRepositories;
+using System.Diagnostics.CodeAnalysis;
 
 namespace orchid_backend_net.Application.Tasks.UseCase.CreateTask
 {
-    public class CreateTaskCommand(
-        CreateTaskDto parameter, 
-        List<CreateTaskAttributeDto>? createTaskAttributes,
-        CreateTaskAssignmentDto createTaskAssignment,
-        List<CreateTaskCheckListItemDto> createTaskCheckListItems) : IRequest<string>
+    public class CreateTaskCommand : IRequest<string>
     {
-        public string Name { get; set; } = parameter.Name;
-        public string? Description { get; set; } = parameter.Description;
+        [SetsRequiredMembers]
+        public CreateTaskCommand()
+        {
+            Name = string.Empty;
+        }
+
+        [SetsRequiredMembers]
+        public CreateTaskCommand(
+            CreateTaskDto parameter,
+            List<CreateTaskAttributeDto>? createTaskAttributes,
+            CreateTaskAssignmentDto? createTaskAssignment,
+            List<CreateTaskCheckListItemDto>? createTaskCheckListItems)
+        {
+            Name = parameter.Name;
+            Description = parameter.Description;
+            StageId = parameter.StageId;
+            CreateTaskAttribute = createTaskAttributes;
+            CreateTaskAssignment = createTaskAssignment;
+            CreateTaskCheckListItemDtos = createTaskCheckListItems ?? new();
+        }
+
+        public required string Name { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         /// depends on whether the task is a to-do task or a template task
         /// </summary>
-        public CreateTaskAssignmentDto? CreateTaskAssignment { get; set; } = createTaskAssignment;
+        public CreateTaskAssignmentDto? CreateTaskAssignment { get; set; }
         /// <summary>
         /// if stage id is null => the task is a to-do task
         /// if stage is not null => the task is a template task
         /// </summary>
-        public int? StageId { get; set; } = parameter.StageId;
-        public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; } = createTaskAttributes;
-        public List<CreateTaskCheckListItemDto> CreateTaskCheckListItemDtos { get; set; } = createTaskCheckListItems;
+        public int? StageId { get; set; }
+        public List<CreateTaskAttributeDto>? CreateTaskAttribute { get; set; }
+        public List<CreateTaskCheckListItemDto> CreateTaskCheckListItemDtos { get; set; } = new();
     }
 
     internal class CreateTaskCommandHandler(

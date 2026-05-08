@@ -56,6 +56,9 @@ builder.Services.AddLogging(opt =>
     opt.SetMinimumLevel(LogLevel.Information); // Set minimum log level
 });
 
+// Initialize Hangfire schema BEFORE building app (before HangfireServer starts)
+await builder.Services.BuildServiceProvider().InitializeHangfireSchemaAsync();
+
 var app = builder.Build();
 
 await app.Services.InitializeDatabaseAsync();

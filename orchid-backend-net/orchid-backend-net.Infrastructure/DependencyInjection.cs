@@ -165,16 +165,48 @@ namespace orchid_backend_net.Infrastructure
             return services;
         }
 
+        public static async Task InitializeHangfireSchemaAsync(this IServiceProvider serviceProvider)
+        {
+            try
+            {
+                using var scope = serviceProvider.CreateScope();
+                var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
+
+                // Create Hangfire schema using official Hangfire PostgreSQL installer
+                var connection = dbContext.Database.GetDbConnection() as Npgsql.NpgsqlConnection;
+                if (connection != null)
+                {
+                    if (connection.State != System.Data.ConnectionState.Open)
+                    {
+                        await connection.OpenAsync();
+                    }
+                    // Use Hangfire's official PostgreSQL schema installer
+                    PostgreSqlObjectsInstaller.Install(connection);
+                    if (connection.State != System.Data.ConnectionState.Closed)
+                    {
+                        await connection.CloseAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log but don't throw - schema might already exist
+                System.Diagnostics.Debug.WriteLine($"Hangfire schema initialization warning: {ex.Message}");
+            }
+        }
+
         public static async Task InitializeDatabaseAsync(this IServiceProvider serviceProvider)
         {
             using var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<OrchidDbContext>();
 
-            if (dbContext.Database.GetMigrations().Any())
+            // Run migrations and seed data
+            if (dbContext.Database.GetPendingMigrations().Any())
             {
                 await dbContext.Database.MigrateAsync();
-                await SeedDataGenerator.SeedAsync(dbContext);
             }
+
+            await SeedDataGenerator.SeedAsync(dbContext);
         }
     }
 }

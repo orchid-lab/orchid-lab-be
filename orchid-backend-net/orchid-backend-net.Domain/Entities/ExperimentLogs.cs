@@ -59,12 +59,17 @@ namespace orchid_backend_net.Domain.Entities
             if (ExpectedSampleCount < 0)
                 throw new DomainException("ExpectedSampleCount cannot be negative.");
 
-            if(StartDate is not null && StartDate <= DateOnly.FromDateTime(DateTime.UtcNow))
-                throw new DomainException("StartDate must be not null and in the future.");
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+            // If researcher specified a start date, technician cannot start before that date
+            if (StartDate is not null && today < StartDate)
+            {
+                throw new DomainException($"Cannot start experiment before scheduled start date {StartDate:yyyy-MM-dd}. Today is {today:yyyy-MM-dd}.");
+            }
 
             Status = ExperimentLogStatus.InProgress;
             CurrentStageOrder = 1;
-            StartDate = DateOnly.FromDateTime(DateTime.UtcNow);
+            StartDate = today;
 
             Batch.StartBatching();
 

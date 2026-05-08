@@ -3,6 +3,7 @@ using orchid_backend_net.API.Configuration;
 using orchid_backend_net.API.Filters;
 using orchid_backend_net.API.Middleware;
 using orchid_backend_net.Application;
+using orchid_backend_net.Application.Common.Interfaces;
 using orchid_backend_net.Infrastructure;
 using orchid_backend_net.Infrastructure.BackgroundJobs;
 using orchid_backend_net.Infrastructure.Service;
@@ -43,6 +44,7 @@ builder.Services.ConfigureSwagger(builder.Configuration);
 builder.Services.ConfigurationCors();
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddSingleton<FirebaseService>();
+builder.Services.AddScoped<IFirebaseMessagingService, FirebaseMessagingService>();
 
 builder.Services.AddHealthChecks();
 

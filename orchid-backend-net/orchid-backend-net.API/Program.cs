@@ -42,6 +42,7 @@ builder.Services.ConfigureProblemDetails();
 builder.Services.ConfigureSwagger(builder.Configuration);
 builder.Services.ConfigurationCors();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddSingleton<FirebaseService>();
 
 builder.Services.AddHealthChecks();
 

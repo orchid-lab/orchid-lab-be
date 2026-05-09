@@ -7,6 +7,7 @@ using orchid_backend_net.Application.User.ChangePassword;
 using orchid_backend_net.Application.User.DeleteUser;
 using orchid_backend_net.Application.User.GetAllUser;
 using orchid_backend_net.Application.User.GetUserId;
+using orchid_backend_net.Application.User.UpdateFcmToken;
 using orchid_backend_net.Application.User.UpdateUser;
 using System.Net.Mime;
 
@@ -172,6 +173,29 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
                 return BadRequest(new ProblemDetails { Title = "Xóa thất bại", Detail = ex.Message });
+            }
+        }
+
+        [HttpPut("fcm-token")]
+        [Authorize(Roles = "Admin,Researcher,Technician")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<JsonResponse<string>>> UpdateFcmToken(
+        [FromBody] string fcmToken,
+        CancellationToken cancellationToken)
+        {
+            try
+            {
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                var result = await Sender.Send(new UpdateFcmTokenCommand(userId!, fcmToken), cancellationToken);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "An error occurred while processing the request at {Time}", DateTime.UtcNow);
+                return BadRequest(new ProblemDetails { Title = "Cập nhật FCM token thất bại", Detail = ex.Message });
             }
         }
     }

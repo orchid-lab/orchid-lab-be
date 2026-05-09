@@ -32,9 +32,15 @@
 		</None>
 	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\orchid-backend-net.Application\orchid-backend-net.Application.csproj" />
-    <ProjectReference Include="..\orchid-backend-net.Infrastructure\orchid-backend-net.Infrastructure.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\orchid-backend-net.Application\orchid-backend-net.Application.csproj" />
+		<ProjectReference Include="..\orchid-backend-net.Infrastructure\orchid-backend-net.Infrastructure.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="firebase-service-account.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>

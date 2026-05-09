@@ -1,0 +1,23 @@
+public class NotificationPushService : INotificationPushService
+{
+    private readonly IFirebaseMessagingService _firebase;
+    private readonly IUserRepository _userRepository;
+
+    public NotificationPushService(IFirebaseMessagingService firebase, IUserRepository userRepository /*, other deps */)
+    {
+        _firebase = firebase;
+        _userRepository = userRepository;
+    }
+
+    public async Task PushToSingleUserAsync(string userId, string title, string content)
+    {
+        // Retrieve user's device tokens from DB (you must persist them)
+        var user = await _userRepository.FindAsync(u => u.ID == userId);
+        var tokens = user?.DeviceTokens ?? Enumerable.Empty<string>();
+
+        // push via firebase for each token (or SendToTokensAsync)
+        if (tokens.Any())
+            await _firebase.SendToTokensAsync(tokens, title, content);
+        // plus existing behaviour (e.g., SignalR, db notifications) if needed
+    }
+}

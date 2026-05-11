@@ -15,5 +15,7 @@ namespace orchid_backend_net.Application.Method.Dto.Method
         public int? CompletedExperimentLog { get; set; }
         public int? FailedExperimentLog { get; set; }
         public double? SuccessRate { get; set; }
+        public List<Domain.Entities.MethodStageDefinition> MethodStages { get; set; }
+        public List<Domain.Entities.Seedlings> Seedlings { get; set; }
     }
 }

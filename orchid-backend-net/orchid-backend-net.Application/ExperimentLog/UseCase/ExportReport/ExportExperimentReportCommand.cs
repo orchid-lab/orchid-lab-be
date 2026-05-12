@@ -303,12 +303,20 @@ namespace orchid_backend_net.Application.ExperimentLog.UseCase.ExportReport
 
         private static decimal GetTopConfidence(AnalyticResults ar)
         {
-            return new[]
+            if (string.IsNullOrEmpty(ar.PredictionsJson))
+                return 0;
+
+            try
             {
-                ar.Anthracnose, ar.BacterialWilt, ar.Blackrot, ar.Brownspots,
-                ar.MoldBacterial, ar.MoldFungus, ar.SoftRot, ar.StemRot,
-                ar.WitheredYellowRoot, ar.Healthy, ar.Oxidation, ar.Virus
-            }.Max();
+                var predictions = System.Text.Json.JsonSerializer
+                    .Deserialize<Dictionary<string, decimal>>(ar.PredictionsJson);
+
+                return predictions?.Values.Max() ?? 0;
+            }
+            catch
+            {
+                return ar.Confidence;
+            }
         }
     }
 }

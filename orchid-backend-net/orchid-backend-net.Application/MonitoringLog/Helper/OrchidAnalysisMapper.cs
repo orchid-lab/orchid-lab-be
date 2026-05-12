@@ -47,47 +47,35 @@ namespace orchid_backend_net.Application.MonitoringLog.Helper
         /// <returns>AnalyticResults entity ready for database insertion</returns>
         /// <exception cref="ArgumentNullException">If source is null</exception>
         /// <exception cref="ArgumentException">If disease data is missing</exception>
-        public static AnalyticResults ToAnalyticResult(OrchidAnalysisResult source)
-        {
-            ArgumentNullException.ThrowIfNull(source);
-            
-            if (source.Disease is null) 
-                throw new ArgumentException("Kết quả phân tích bệnh bị thiếu", nameof(source));
+        // Thay method ToAnalyticResult cũ bằng cái này
+public static AnalyticResults ToAnalyticResult(OrchidAnalysisResult source)
+{
+    ArgumentNullException.ThrowIfNull(source);
 
-            var probabilities = source.Disease.Probability ?? new Dictionary<string, float>();
+    if (source.Disease is null)
+        throw new ArgumentException("Kết quả phân tích bệnh bị thiếu", nameof(source));
 
-            // Helper to safely get and convert float → decimal
-            decimal GetProbability(string onnxKey)
-            {
-                if (probabilities.TryGetValue(onnxKey, out var value))
-                {
-                    // Handle NaN and Infinity cases
-                    if (float.IsNaN(value) || float.IsInfinity(value))
-                        return 0m;
-                    
-                    return Convert.ToDecimal(value, CultureInfo.InvariantCulture);
-                }
-                return 0m;
-            }
+    var probabilities = source.Disease.Probability ?? new Dictionary<string, float>();
 
-            // Map ONNX probabilities to AnalyticResults entity properties
-            // ONNX outputs PascalCase keys (e.g., "Anthracnose", "BacterialWilt")
-            return new AnalyticResults
-            {
-                Anthracnose = GetProbability("Anthracnose"),
-                BacterialWilt = GetProbability("BacterialWilt"),
-                Blackrot = GetProbability("Blackrot"),
-                Brownspots = GetProbability("Brownspots"),
-                MoldBacterial = GetProbability("MoldBacterial"),
-                MoldFungus = GetProbability("MoldFungus"),
-                SoftRot = GetProbability("SoftRot"),
-                StemRot = GetProbability("StemRot"),
-                WitheredYellowRoot = GetProbability("WitheredYellowRoot"),
-                Healthy = GetProbability("Healthy"),
-                Oxidation = GetProbability("Oxidation"),
-                Virus = GetProbability("Virus"),
-            };
-        }
+    // Convert float → decimal, lọc NaN/Infinity
+    var predictions = probabilities.ToDictionary(
+        kvp => kvp.Key,
+        kvp => (float.IsNaN(kvp.Value) || float.IsInfinity(kvp.Value))
+            ? 0m
+            : Convert.ToDecimal(kvp.Value, CultureInfo.InvariantCulture)
+    );
+
+    // Tìm bệnh có xác suất cao nhất
+    var topEntry = predictions.OrderByDescending(x => x.Value).FirstOrDefault();
+
+    return new AnalyticResults
+    {
+        PredictionsJson = System.Text.Json.JsonSerializer.Serialize(predictions),
+        TopDisease = topEntry.Key ?? "Unknown",
+        Confidence = topEntry.Value,
+        AnalyzedAt = DateTime.UtcNow
+    };
+}
 
         /// <summary>
         /// Validate and normalize stage name from ONNX output.

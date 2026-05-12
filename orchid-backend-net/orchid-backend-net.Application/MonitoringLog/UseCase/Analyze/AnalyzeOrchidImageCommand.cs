@@ -29,11 +29,40 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             if (analyticResult.Disease is null)
                 throw new ArgumentException("Kết quả phân tích bệnh bị thiếu", nameof(request));
 
-            //Validate stage name from ONNX (Coppice/Tissue/Tree)
+            // ── NORMALIZE: chỉ giữ bệnh đang active, chia lại % ──────────
+            var activeDiseases = await diseaseRepository.FindAllAsync(
+                d => d.IsActive && d.OnnxClassName != null,
+                cancellationToken);
+
+            var activeOnnxNames = activeDiseases
+                .Select(d => d.OnnxClassName!)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // Filter chỉ giữ bệnh active
+            var filteredProbs = analyticResult.Disease.Probability
+                .Where(kvp => activeOnnxNames.Contains(kvp.Key))
+                .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+
+            // Normalize về tổng = 1.0
+            var total = filteredProbs.Values.Sum();
+            var normalizedProbs = total > 0
+                ? filteredProbs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value / total)
+                : filteredProbs;
+
+            // Tìm top disease sau normalize
+            var topEntry = normalizedProbs
+                .OrderByDescending(x => x.Value)
+                .FirstOrDefault();
+
+            // Gán lại vào analyticResult
+            analyticResult.Disease.Probability = normalizedProbs;
+            analyticResult.Disease.Predict = topEntry.Key ?? analyticResult.Disease.Predict;
+            // ─────────────────────────────────────────────────────────────
+
+            // Validate stage name from ONNX (Coppice/Tissue/Tree)
             var stageName = OrchidAnalysisMapper.ValidateStageName(analyticResult.Stage);
 
-            //Convert ONNX disease name → database code for lookup
-            // e.g., "Anthracnose" → "disease_anthracnose"
+            // Convert ONNX disease name → database code for lookup
             var diseaseCode = OrchidAnalysisMapper.ToDiseaseCode(analyticResult.Disease.Predict);
 
             // Lookup disease entity from database by code
@@ -46,25 +75,24 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             var analyticResultEntity = OrchidAnalysisMapper.ToAnalyticResult(analyticResult);
             analyticResultRepository.Add(analyticResultEntity);
 
-            // Mục đích: Tự động tạo DiseaseIncident khi AI predict không phải "healthy"
-            // Chỉ chạy khi SampleStageId được cung cấp (có context mẫu vật cụ thể)
+            // Tự động tạo DiseaseIncident khi AI predict không phải "healthy"
             if (!string.IsNullOrWhiteSpace(request.SampleStageId)
                 && !analyticDisease.Code.ToLower().Equals("healthy"))
             {
                 var confidence = analyticResult.Disease.Probability
                     .GetValueOrDefault(analyticResult.Disease.Predict, 0f);
 
-                    var incident = new Domain.Entities.DiseaseIncident
-                    {
-                        SampleStageId = request.SampleStageId,
-                        MonitoringLogId = null,
-                        DiseaseId = analyticDisease.Id,
-                        AIConfidence = Convert.ToDecimal(confidence),
-                        Status = Domain.Common.Enum.DiseaseIncidentStatus.AIDetected,
-                        CreatedBy = "system",
-                        CreatedDate = DateTime.UtcNow
-                    };
-                    diseaseIncidentRepository.Add(incident);
+                var incident = new Domain.Entities.DiseaseIncident
+                {
+                    SampleStageId = request.SampleStageId,
+                    MonitoringLogId = null,
+                    DiseaseId = analyticDisease.Id,
+                    AIConfidence = Convert.ToDecimal(confidence),
+                    Status = Domain.Common.Enum.DiseaseIncidentStatus.AIDetected,
+                    CreatedBy = "system",
+                    CreatedDate = DateTime.UtcNow
+                };
+                diseaseIncidentRepository.Add(incident);
             }
 
             string? title = null;
@@ -88,7 +116,10 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
                     content = $"Mẫu '{sampleStage.Samples.Name}' được phân tích: Stage '{stageName}', bệnh '{analyticDisease.Name}'.";
 
                     notifications = recipientIds
-                        .Select(userId => CreateNotificationHelper.CreateForSingleUsers(userId, title, content, Domain.Common.Enum.NotificationTargetType.Sample, sampleStage.SampleId.ToString()))
+                        .Select(userId => CreateNotificationHelper.CreateForSingleUsers(
+                            userId, title, content,
+                            Domain.Common.Enum.NotificationTargetType.Sample,
+                            sampleStage.SampleId.ToString()))
                         .ToList();
 
                     notificationRepository.AddRange(notifications);
@@ -98,7 +129,7 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             // Build response DTO
             var resultObject = new AnalyticResultAfterAnalysisDto
             {
-                StageName = stageName,  // ✅ UPDATED #3: Use validated stage name
+                StageName = stageName,
                 Disease = analyticDisease,
                 AnalyticResult = AnalyticResultDto.Create(analyticResultEntity)
             };

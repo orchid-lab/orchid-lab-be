@@ -1,4 +1,4 @@
-using FirebaseAdmin;
+﻿using FirebaseAdmin;
 using FirebaseAdmin.Messaging;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.Extensions.Configuration;
@@ -8,16 +8,20 @@ namespace orchid_backend_net.Infrastructure.Service
 {
     public class FirebaseMessagingService : IFirebaseMessagingService
     {
-        private readonly FirebaseMessaging _messaging;
+        private readonly FirebaseMessaging? _messaging;
 
         public FirebaseMessagingService(IConfiguration configuration)
         {
-            // Expect configuration key: "Firebase:ServiceAccountPath" (absolute path or env var)
             var credPath = configuration["Firebase:ServiceAccountPath"];
-            if (string.IsNullOrWhiteSpace(credPath))
-                throw new InvalidOperationException("Firebase:ServiceAccountPath is not configured.");
 
-            // Only create app once
+            // Local không có Firebase thì bỏ qua
+            if (string.IsNullOrWhiteSpace(credPath) || !File.Exists(credPath))
+            {
+                Console.WriteLine("Warning: Firebase not configured, push notifications disabled.");
+                _messaging = null;
+                return;
+            }
+
             if (FirebaseApp.DefaultInstance == null)
             {
                 FirebaseApp.Create(new AppOptions
@@ -25,12 +29,13 @@ namespace orchid_backend_net.Infrastructure.Service
                     Credential = GoogleCredential.FromFile(credPath)
                 });
             }
-
             _messaging = FirebaseMessaging.DefaultInstance;
         }
 
         public async Task SendToTokenAsync(string token, string title, string body, CancellationToken cancellationToken = default)
         {
+            if (_messaging == null) return; // Firebase không có thì bỏ qua
+
             var message = new Message
             {
                 Token = token,
@@ -44,12 +49,13 @@ namespace orchid_backend_net.Infrastructure.Service
                     }
                 }
             };
-
             await _messaging.SendAsync(message, cancellationToken).ConfigureAwait(false);
         }
 
         public async Task SendToTokensAsync(IEnumerable<string> tokens, string title, string body, CancellationToken cancellationToken = default)
         {
+            if (_messaging == null) return; // Firebase không có thì bỏ qua
+
             var messages = tokens.Select(t => new Message
             {
                 Token = t,
@@ -65,8 +71,6 @@ namespace orchid_backend_net.Infrastructure.Service
             }).ToList();
 
             if (!messages.Any()) return;
-
-            // SendAllAsync sends a batch
             await _messaging.SendAllAsync(messages, cancellationToken).ConfigureAwait(false);
         }
     }

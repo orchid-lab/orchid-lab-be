@@ -9,7 +9,7 @@ namespace orchid_backend_net.Domain.Entities
         public required string Description { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public string? OnnxClassName { get; set; }
         public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
     }
 }

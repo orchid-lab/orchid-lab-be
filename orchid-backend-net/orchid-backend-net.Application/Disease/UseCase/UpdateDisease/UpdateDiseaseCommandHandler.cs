@@ -23,6 +23,7 @@ namespace orchid_backend_net.Application.Disease.UseCase.UpdateDisease
             disease.Name = request.Name.Trim();
             disease.Code = request.Code.Trim().ToUpper();
             disease.Description = request.Description?.Trim() ?? string.Empty;
+            disease.OnnxClassName = request.OnnxClassName?.Trim();
 
             repo.Update(disease);                          
             await repo.UnitOfWork.SaveChangesAsync(ct);

@@ -20,6 +20,7 @@ namespace orchid_backend_net.Application.Disease.UseCase.CreateDisease
                 Name = request.Name.Trim(),
                 Code = request.Code.Trim().ToUpper(),
                 Description = request.Description?.Trim() ?? string.Empty,
+                OnnxClassName = request.OnnxClassName?.Trim(),  
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };

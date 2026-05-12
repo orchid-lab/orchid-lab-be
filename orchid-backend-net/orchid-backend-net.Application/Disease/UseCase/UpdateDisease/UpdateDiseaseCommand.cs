@@ -6,6 +6,7 @@ namespace orchid_backend_net.Application.Disease.UseCase.UpdateDisease
         int Id,
         string Name,
         string Code,
-        string? Description
+        string? Description,
+        string? OnnxClassName  
     ) : IRequest<string>;
 }

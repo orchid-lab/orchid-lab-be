@@ -94,7 +94,8 @@ namespace orchid_backend_net.API.Controllers
             {
                 logger.LogInformation("PUT /api/diseases/{Id} at {Time}", id, DateTime.UtcNow);
                 var result = await Sender.Send(
-                    new UpdateDiseaseCommand(id, request.Name, request.Code, request.Description), ct);
+                    new UpdateDiseaseCommand(id, request.Name, request.Code,
+                        request.Description, request.OnnxClassName), ct);                 
                 return Ok(new JsonResponse<string>(result));
             }
             catch (Exception ex)

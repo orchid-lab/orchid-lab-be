@@ -3,6 +3,7 @@
     public record UpdateDiseaseRequest(
         string Name,
         string Code,
-        string? Description
+        string? Description,
+        string? OnnxClassName  
     );
 }

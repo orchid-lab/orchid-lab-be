@@ -4,9 +4,12 @@ namespace orchid_backend_net.Domain.Entities
 {
     public class Disease : BaseIntEntity
     {
-        public string Name { get; set; }
-        public string Code { get; set; }
-        public string Description { get; set; }
+        public required string Name { get; set; }       
+        public required string Code { get; set; }     
+        public required string Description { get; set; }
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? OnnxClassName { get; set; }
         public virtual List<MonitoringLogs> MonitoringLogs { get; set; } = new();
     }
 }

@@ -232,18 +232,24 @@ namespace orchid_backend_net.Infrastructure.Service.SeedData
                 {
                     var analytic = new AnalyticResults
                     {
-                        Anthracnose = 0.00m,
-                        BacterialWilt = 0.00m,
-                        Blackrot = 0.00m,
-                        Brownspots = 0.00m,
-                        MoldBacterial = 0.00m,
-                        MoldFungus = 0.00m,
-                        SoftRot = 0.00m,
-                        StemRot = 0.00m,
-                        WitheredYellowRoot = 0.00m,
-                        Healthy = 0.99m,
-                        Oxidation = 0.00m,
-                        Virus = 0.00m
+                        PredictionsJson = System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, decimal>
+                        {
+                            { "Healthy", 0.99m },
+                            { "Anthracnose", 0.00m },
+                            { "BacterialWilt", 0.00m },
+                            { "Blackrot", 0.00m },
+                            { "Brownspots", 0.00m },
+                            { "MoldBacterial", 0.00m },
+                            { "MoldFungus", 0.00m },
+                            { "SoftRot", 0.00m },
+                            { "StemRot", 0.00m },
+                            { "WitheredYellowRoot", 0.00m },
+                            { "Oxidation", 0.00m },
+                            { "Virus", 0.00m }
+                        }),
+                        TopDisease = "Healthy",
+                        Confidence = 0.99m,
+                        AnalyzedAt = DateTime.UtcNow
                     };
 
                     var sampleName = sampleNameById.TryGetValue(stage.SampleId, out var name)

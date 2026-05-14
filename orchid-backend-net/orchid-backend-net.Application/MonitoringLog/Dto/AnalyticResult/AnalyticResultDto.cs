@@ -13,17 +13,20 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.AnalyticResult
         public required decimal Confidence { get; set; }
         public DateTime AnalyzedAt { get; set; }
 
+        // Helper method — không dùng optional arguments
+        private static Dictionary<string, decimal> DeserializePredictions(string? json)
+        {
+            if (string.IsNullOrEmpty(json)) return new Dictionary<string, decimal>();
+            return JsonSerializer.Deserialize<Dictionary<string, decimal>>(json)
+                   ?? new Dictionary<string, decimal>();
+        }
+
         public static AnalyticResultDto Create(AnalyticResults entity)
         {
-            var predictions = string.IsNullOrEmpty(entity.PredictionsJson)
-                ? new Dictionary<string, decimal>()
-                : JsonSerializer.Deserialize<Dictionary<string, decimal>>(entity.PredictionsJson)
-                  ?? new Dictionary<string, decimal>();
-
             return new AnalyticResultDto
             {
                 Id = entity.ID.ToString(),
-                Predictions = predictions,
+                Predictions = DeserializePredictions(entity.PredictionsJson),
                 TopDisease = entity.TopDisease,
                 Confidence = entity.Confidence,
                 AnalyzedAt = entity.AnalyzedAt
@@ -32,7 +35,9 @@ namespace orchid_backend_net.Application.MonitoringLog.Dto.AnalyticResult
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<AnalyticResults, AnalyticResultDto>();
+            profile.CreateMap<AnalyticResults, AnalyticResultDto>()
+                .ForMember(d => d.Predictions,
+                    opt => opt.MapFrom(s => DeserializePredictions(s.PredictionsJson)));
         }
     }
 }

@@ -62,8 +62,19 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             // Validate stage name from ONNX (Coppice/Tissue/Tree)
             var stageName = OrchidAnalysisMapper.ValidateStageName(analyticResult.Stage);
 
-            // Convert ONNX disease name → database code for lookup
-            var diseaseCode = OrchidAnalysisMapper.ToDiseaseCode(analyticResult.Disease.Predict);
+            // Build mapping động từ DB: OnnxClassName → Code
+            var onnxToCodeMap = activeDiseases
+                .Where(d => !string.IsNullOrEmpty(d.OnnxClassName) && !string.IsNullOrEmpty(d.Code))
+                .ToDictionary(
+                    d => d.OnnxClassName!,
+                    d => d.Code,
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+            // Lookup code từ map động thay vì hardcode
+            var predictedOnnxName = analyticResult.Disease.Predict;
+            if (!onnxToCodeMap.TryGetValue(predictedOnnxName, out var diseaseCode))
+                throw new NotFoundException($"Không tìm thấy bệnh với OnnxClassName: {predictedOnnxName}");
 
             // Lookup disease entity from database by code
             var analyticDisease = await diseaseRepository.FindProjectToAsync<DiseaseDto>(

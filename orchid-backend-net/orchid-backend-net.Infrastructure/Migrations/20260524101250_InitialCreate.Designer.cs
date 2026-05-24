@@ -12,8 +12,8 @@ using orchid_backend_net.Infrastructure.Persistence;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     [DbContext(typeof(OrchidDbContext))]
-    [Migration("20260507160757_v1")]
-    partial class v1
+    [Migration("20260524101250_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,41 +33,22 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     b.Property<string>("ID")
                         .HasColumnType("text");
 
-                    b.Property<decimal>("Anthracnose")
+                    b.Property<DateTime>("AnalyzedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("AnalyzedBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Confidence")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("BacterialWilt")
-                        .HasColumnType("numeric");
+                    b.Property<string>("PredictionsJson")
+                        .IsRequired()
+                        .HasColumnType("text");
 
-                    b.Property<decimal>("Blackrot")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Brownspots")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Healthy")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("MoldBacterial")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("MoldFungus")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Oxidation")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("SoftRot")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("StemRot")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("Virus")
-                        .HasColumnType("numeric");
-
-                    b.Property<decimal>("WitheredYellowRoot")
-                        .HasColumnType("numeric");
+                    b.Property<string>("TopDisease")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("ID");
 
@@ -199,12 +180,21 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("OnnxClassName")
                         .HasColumnType("text");
 
                     b.HasKey("ID");
@@ -1241,6 +1231,9 @@ namespace orchid_backend_net.Infrastructure.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FcmToken")
                         .HasColumnType("text");
 
                     b.Property<string>("Name")

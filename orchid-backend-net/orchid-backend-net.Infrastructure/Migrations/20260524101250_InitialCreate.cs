@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace orchid_backend_net.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class v1 : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -17,18 +17,11 @@ namespace orchid_backend_net.Infrastructure.Migrations
                 columns: table => new
                 {
                     ID = table.Column<string>(type: "text", nullable: false),
-                    Anthracnose = table.Column<decimal>(type: "numeric", nullable: false),
-                    BacterialWilt = table.Column<decimal>(type: "numeric", nullable: false),
-                    Blackrot = table.Column<decimal>(type: "numeric", nullable: false),
-                    Brownspots = table.Column<decimal>(type: "numeric", nullable: false),
-                    MoldBacterial = table.Column<decimal>(type: "numeric", nullable: false),
-                    MoldFungus = table.Column<decimal>(type: "numeric", nullable: false),
-                    SoftRot = table.Column<decimal>(type: "numeric", nullable: false),
-                    StemRot = table.Column<decimal>(type: "numeric", nullable: false),
-                    WitheredYellowRoot = table.Column<decimal>(type: "numeric", nullable: false),
-                    Healthy = table.Column<decimal>(type: "numeric", nullable: false),
-                    Oxidation = table.Column<decimal>(type: "numeric", nullable: false),
-                    Virus = table.Column<decimal>(type: "numeric", nullable: false)
+                    PredictionsJson = table.Column<string>(type: "text", nullable: false),
+                    TopDisease = table.Column<string>(type: "text", nullable: false),
+                    Confidence = table.Column<decimal>(type: "numeric", nullable: false),
+                    AnalyzedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    AnalyzedBy = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -88,7 +81,10 @@ namespace orchid_backend_net.Infrastructure.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Code = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false)
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    OnnxClassName = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -388,7 +384,8 @@ namespace orchid_backend_net.Infrastructure.Migrations
                     DeletedBy = table.Column<string>(type: "text", nullable: true),
                     RoleID = table.Column<int>(type: "integer", nullable: false),
                     RefreshToken = table.Column<string>(type: "text", nullable: true),
-                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    RefreshTokenExpiryTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    FcmToken = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

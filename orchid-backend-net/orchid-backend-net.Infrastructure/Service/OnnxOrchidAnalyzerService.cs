@@ -123,6 +123,11 @@ namespace orchid_backend_net.Infrastructure.Service
                     _logger.LogInformation("✅ Loaded {Count} disease classes from DB: {Classes}",
                         classes.Length, string.Join(", ", classes));
                 }
+                else
+                {
+                    _diseaseClasses = DiseaseClassesFallback;
+                    _logger.LogWarning("⚠️ No active disease classes found in DB, using fallback");
+                }
             }
             catch (Exception ex)
             {
@@ -273,32 +278,6 @@ namespace orchid_backend_net.Infrastructure.Service
                 Probabilities = probDict
             };
         }
-
-        private static float[] Softmax(float[] logits)
-        {
-            var length = logits.Length;
-            var max = logits[0];
-            for (int i = 1; i < length; i++)
-                if (logits[i] > max) max = logits[i];
-
-            var probabilities = new float[length];
-            var sum = 0f;
-            for (int i = 0; i < length; i++)
-            {
-                var value = MathF.Exp(logits[i] - max);
-                probabilities[i] = value;
-                sum += value;
-            }
-
-            if (sum <= 0f) return probabilities;
-
-            var invSum = 1f / sum;
-            for (int i = 0; i < length; i++)
-                probabilities[i] *= invSum;
-
-            return probabilities;
-        }
-
         private static string ComputeImageHash(byte[] imageBytes)
         {
             using var sha256 = SHA256.Create();

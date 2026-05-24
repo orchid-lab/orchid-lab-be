@@ -29,7 +29,9 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             if (analyticResult.Disease is null)
                 throw new ArgumentException("Kết quả phân tích bệnh bị thiếu", nameof(request));
 
-            // ── NORMALIZE: chỉ giữ bệnh đang active, chia lại % ──────────
+            var rawProbabilities = analyticResult.Disease.Probability ?? new Dictionary<string, float>();
+
+            // Lấy danh sách bệnh đang active để ưu tiên kết quả hợp lệ trong business flow
             var activeDiseases = await diseaseRepository.FindAllAsync(
                 d => d.IsActive && d.OnnxClassName != null,
                 cancellationToken);
@@ -38,26 +40,16 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
                 .Select(d => d.OnnxClassName!)
                 .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-            // Filter chỉ giữ bệnh active
-            var filteredProbs = analyticResult.Disease.Probability
+            var activeProbabilities = rawProbabilities
                 .Where(kvp => activeOnnxNames.Contains(kvp.Key))
                 .ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-            // Normalize về tổng = 1.0
-            var total = filteredProbs.Values.Sum();
-            var normalizedProbs = total > 0
-                ? filteredProbs.ToDictionary(kvp => kvp.Key, kvp => kvp.Value / total)
-                : filteredProbs;
+            var selectedDiseaseName = activeProbabilities.Count > 0
+                ? activeProbabilities.OrderByDescending(x => x.Value).First().Key
+                : rawProbabilities.OrderByDescending(x => x.Value).Select(x => x.Key).FirstOrDefault() ?? analyticResult.Disease.Predict;
 
-            // Tìm top disease sau normalize
-            var topEntry = normalizedProbs
-                .OrderByDescending(x => x.Value)
-                .FirstOrDefault();
-
-            // Gán lại vào analyticResult
-            analyticResult.Disease.Probability = normalizedProbs;
-            analyticResult.Disease.Predict = topEntry.Key ?? analyticResult.Disease.Predict;
-            // ─────────────────────────────────────────────────────────────
+            if (!string.IsNullOrWhiteSpace(selectedDiseaseName))
+                analyticResult.Disease.Predict = selectedDiseaseName;
 
             // Validate stage name from ONNX (Coppice/Tissue/Tree)
             var stageName = OrchidAnalysisMapper.ValidateStageName(analyticResult.Stage);
@@ -79,8 +71,9 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             if (!string.IsNullOrWhiteSpace(request.SampleStageId)
                 && !analyticDisease.Code.ToLower().Equals("healthy"))
             {
-                var confidence = analyticResult.Disease.Probability
-                    .GetValueOrDefault(analyticResult.Disease.Predict, 0f);
+                var confidence = activeProbabilities.TryGetValue(analyticResult.Disease.Predict, out var activeConfidence)
+                    ? activeConfidence
+                    : rawProbabilities.GetValueOrDefault(analyticResult.Disease.Predict, 0f);
 
                 var incident = new Domain.Entities.DiseaseIncident
                 {

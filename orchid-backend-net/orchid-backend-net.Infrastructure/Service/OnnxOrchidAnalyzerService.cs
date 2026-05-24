@@ -96,7 +96,6 @@ namespace orchid_backend_net.Infrastructure.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, "❌ Failed to load ONNX models");
-                throw;
             }
         }
 
@@ -241,14 +240,20 @@ namespace orchid_backend_net.Infrastructure.Service
 
             var outputTensor = results.FirstOrDefault()?.AsEnumerable<float>().ToArray();
 
+            _logger.LogInformation("{ModelType} output length: {Length}", modelType, outputTensor?.Length ?? 0);
+
             if (outputTensor == null || outputTensor.Length == 0)
                 throw new InvalidOperationException($"{modelType} model produced no output");
 
             var probabilities = outputTensor;
 
+            var count = Math.Min(probabilities.Length, classNames.Length);
+            var probDict = new Dictionary<string, float>(count);
+
             var maxIdx = 0;
             var maxProb = probabilities[0];
-            for (int i = 1; i < probabilities.Length; i++)
+
+            for (int i = 1; i < count; i++)
             {
                 if (probabilities[i] > maxProb)
                 {
@@ -257,8 +262,6 @@ namespace orchid_backend_net.Infrastructure.Service
                 }
             }
 
-            var count = Math.Min(probabilities.Length, classNames.Length);
-            var probDict = new Dictionary<string, float>(count);
             for (int i = 0; i < count; i++)
             {
                 probDict[classNames[i]] = probabilities[i];

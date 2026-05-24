@@ -10,7 +10,9 @@
                     builder => builder
                         .WithOrigins(
                         "http://localhost:3000",
-                        "https://client.tissuex.me"
+                        "https://client.tissuex.me",
+                        "http://localhost:7059",  
+                        "https://localhost:7059"
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()

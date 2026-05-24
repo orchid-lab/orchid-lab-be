@@ -40,9 +40,9 @@ namespace orchid_backend_net.Infrastructure.Service
 
         private static readonly string[] StageClasses =
         {
-            "Coppice",
-            "Tissue",
-            "Tree"
+            "coppice",
+            "tissue",
+            "tree"
         };
 
         public OnnxOrchidAnalyzerService(
@@ -272,9 +272,13 @@ namespace orchid_backend_net.Infrastructure.Service
             inferenceTimer.Stop();
             _logger.LogDebug("{ModelType} inference: {Time}ms", modelType, inferenceTimer.ElapsedMilliseconds);
 
+            var predictedClass = classNames[maxIdx];
+            if (modelType.Equals("Stage", StringComparison.OrdinalIgnoreCase))
+                predictedClass = char.ToUpperInvariant(predictedClass[0]) + predictedClass[1..].ToLowerInvariant();
+
             return new InferenceOutput
             {
-                PredictedClass = classNames[maxIdx],
+                PredictedClass = predictedClass,
                 Probabilities = probDict
             };
         }

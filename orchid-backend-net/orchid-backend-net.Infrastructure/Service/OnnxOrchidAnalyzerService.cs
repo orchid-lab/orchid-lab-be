@@ -11,6 +11,7 @@ using SixLabors.ImageSharp.Processing;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 
 namespace orchid_backend_net.Infrastructure.Service
 {
@@ -37,6 +38,7 @@ namespace orchid_backend_net.Infrastructure.Service
         };
 
         private string[] _diseaseClasses;
+        private bool _diseaseClassesFromModel;
 
         private static readonly string[] StageClasses =
         {
@@ -82,6 +84,34 @@ namespace orchid_backend_net.Infrastructure.Service
                 _logger.LogInformation("Loading disease model: {Path}", diseaseModelPath);
                 _diseaseSession = new InferenceSession(diseaseModelPath, sessionOptions);
 
+                // Try to read class names from the disease model metadata (Ultralytics stores 'names')
+                try
+                {
+                    var meta = _diseaseSession.ModelMetadata;
+                    if (meta != null && meta.CustomMetadataMap != null && meta.CustomMetadataMap.TryGetValue("names", out var namesStr))
+                    {
+                        // namesStr example: "{0: 'disease_anthracnose', 1: 'disease_bacterial_wilt', ... }"
+                        var matches = Regex.Matches(namesStr, "'([^']+)'");
+                        var parsed = matches.Cast<Match>().Select(m => m.Groups[1].Value).ToArray();
+                        if (parsed.Length > 0)
+                        {
+                            _diseaseClasses = parsed;
+                            _diseaseClassesFromModel = true;
+                            _logger.LogInformation("✅ Loaded {Count} disease classes from model metadata: {Classes}", parsed.Length, string.Join(", ", parsed));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "⚠️ Failed to read disease model metadata names, will fallback to DB or defaults");
+                }
+
+                // If we didn't load from model metadata, keep fallback for now; RefreshDiseaseClassesAsync may override
+                if (_diseaseClasses == null || _diseaseClasses.Length == 0)
+                {
+                    _diseaseClasses = DiseaseClassesFallback;
+                }
+
                 var stageInput = _stageSession.InputMetadata.First();
                 _inputName = stageInput.Key;
                 var dims = stageInput.Value.Dimensions;
@@ -104,6 +134,13 @@ namespace orchid_backend_net.Infrastructure.Service
         {
             try
             {
+                // If disease classes were loaded directly from model metadata, keep them as canonical
+                if (_diseaseClassesFromModel)
+                {
+                    _logger.LogDebug("Using disease classes from model metadata; skipping DB override.");
+                    return;
+                }
+
                 using var scope = _serviceProvider.CreateScope();
                 var repo = scope.ServiceProvider.GetRequiredService<IDiseaseRepository>();
 

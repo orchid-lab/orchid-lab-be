@@ -35,28 +35,45 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
                 .Select(x => x.Key)
                 .FirstOrDefault() ?? analyticResult.Disease.Predict;
 
-            // Lấy danh sách bệnh đang active để kiểm tra raw top disease
-            var activeDiseases = await diseaseRepository.FindAllAsync(
-                d => d.IsActive && d.OnnxClassName != null,
+            // Lấy danh sách disease từ DB để mapping và kiểm tra trạng thái (active/inactive)
+            var allDiseases = await diseaseRepository.FindAllAsync(
+                d => d.OnnxClassName != null,
                 cancellationToken);
 
-            var activeOnnxNames = activeDiseases
-                .Select(d => d.OnnxClassName!)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            // Normalization helper
+            static string NormalizeName(string s)
+            {
+                if (string.IsNullOrWhiteSpace(s)) return string.Empty;
+                return System.Text.RegularExpressions.Regex.Replace(s.ToLowerInvariant(), "[^a-z0-9]", string.Empty);
+            }
 
-            var isRawTopDiseaseActive = !string.IsNullOrWhiteSpace(rawTopDisease)
-                && activeOnnxNames.Contains(rawTopDisease);
+            var dbNorm = allDiseases
+                .Select(d => new { Onnx = d.OnnxClassName!, Norm = NormalizeName(d.OnnxClassName!), IsActive = d.IsActive, Code = d.Code, Id = d.ID, Name = d.Name })
+                .ToList();
 
-            var selectedDiseaseName = isRawTopDiseaseActive
-                ? rawTopDisease
-                : "Unknown";
+            // Check if model rawTopDisease corresponds to any DB OnnxClassName (flexible matching)
+            string rawTopNorm = NormalizeName(rawTopDisease);
+            var matchForRawTop = dbNorm.FirstOrDefault(a => string.Equals(a.Onnx, rawTopDisease, StringComparison.OrdinalIgnoreCase)
+                                                            || rawTopNorm == a.Norm
+                                                            || rawTopNorm.Contains(a.Norm)
+                                                            || a.Norm.Contains(rawTopNorm));
+
+            bool isRawTopDiseaseActive = matchForRawTop != null && matchForRawTop.IsActive;
+
+            string selectedDiseaseName;
+            string matchedDbOnnxName = null;
+            if (isRawTopDiseaseActive)
+            {
+                matchedDbOnnxName = matchForRawTop.Onnx;
+                selectedDiseaseName = matchedDbOnnxName ?? rawTopDisease;
+            }
+            else
+            {
+                selectedDiseaseName = "Unknown";
+            }
 
             // Validate stage name from ONNX (Coppice/Tissue/Tree)
             var stageName = OrchidAnalysisMapper.ValidateStageName(analyticResult.Stage);
-
-            var diseaseCode = selectedDiseaseName.Equals("Unknown", StringComparison.OrdinalIgnoreCase)
-                ? "unknown"
-                : OrchidAnalysisMapper.ToDiseaseCode(selectedDiseaseName);
 
             DiseaseDto analyticDisease;
             if (selectedDiseaseName.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
@@ -76,6 +93,9 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             }
             else
             {
+                // Map matched DB OnnxClassName → Disease.Code
+                var diseaseCode = OrchidAnalysisMapper.ToDiseaseCode(selectedDiseaseName);
+
                 analyticDisease = await diseaseRepository.FindProjectToAsync<DiseaseDto>(
                     q => q.Where(d => d.Code.Equals(diseaseCode)),
                     cancellationToken)
@@ -85,6 +105,60 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             // Map ONNX probabilities to AnalyticResults entity
             var analyticResultEntity = OrchidAnalysisMapper.ToAnalyticResult(analyticResult);
             analyticResultRepository.Add(analyticResultEntity);
+
+            // Prepare response AnalyticResultDto — mark inactive only when DB mapping exists and IsActive == false
+            var analyticResultDto = AnalyticResultDto.Create(analyticResultEntity);
+
+            var fullPredictions = System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, decimal>>(analyticResultEntity.PredictionsJson)
+                                  ?? new Dictionary<string, decimal>();
+
+            var displayedPredictions = new Dictionary<string, decimal>(StringComparer.OrdinalIgnoreCase);
+            foreach (var kvp in fullPredictions)
+            {
+                var modelName = kvp.Key;
+
+                // Build friendly display name from model label (strip 'disease_' prefix and PascalCase tokens)
+                string baseName = modelName;
+                if (baseName.StartsWith("disease_", StringComparison.OrdinalIgnoreCase))
+                    baseName = baseName.Substring("disease_".Length);
+
+                var tokens = System.Text.RegularExpressions.Regex.Split(baseName, "[^A-Za-z0-9]+")
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .ToArray();
+
+                string displayName;
+                if (tokens.Length == 0)
+                    displayName = modelName;
+                else
+                    displayName = string.Concat(tokens.Select(t => char.ToUpperInvariant(t[0]) + (t.Length > 1 ? t.Substring(1) : string.Empty)));
+
+                // find DB mapping for this model label (if any)
+                var match = dbNorm.FirstOrDefault(a => string.Equals(a.Onnx, modelName, StringComparison.OrdinalIgnoreCase)
+                                                      || NormalizeName(a.Onnx) == NormalizeName(modelName)
+                                                      || NormalizeName(modelName).Contains(a.Norm)
+                                                      || a.Norm.Contains(NormalizeName(modelName)));
+
+                // Only mark inactive when there's a DB mapping and it's inactive
+                var isActive = match != null ? match.IsActive : true;
+                var displayKey = isActive ? displayName : $"{displayName} (inactive)";
+
+                // Avoid duplicate keys by appending a numeric suffix if needed
+                var keyToUse = displayKey;
+                var suffix = 1;
+                while (displayedPredictions.ContainsKey(keyToUse))
+                {
+                    keyToUse = displayKey + "_" + suffix++;
+                }
+
+                displayedPredictions[keyToUse] = kvp.Value;
+            }
+
+            analyticResultDto.Predictions = displayedPredictions;
+
+            analyticResultDto.TopDisease = selectedDiseaseName;
+            analyticResultDto.Confidence = selectedDiseaseName.Equals("Unknown", StringComparison.OrdinalIgnoreCase)
+                ? 0m
+                : analyticResultDto.Confidence;
 
             // Tự động tạo DiseaseIncident khi AI predict không phải "healthy"
             if (!string.IsNullOrWhiteSpace(request.SampleStageId)
@@ -138,13 +212,6 @@ namespace orchid_backend_net.Application.MonitoringLog.UseCase.Analyze
             }
 
             // Build response DTO
-            var analyticResultDto = AnalyticResultDto.Create(analyticResultEntity);
-            analyticResultDto.TopDisease = selectedDiseaseName;
-            if (selectedDiseaseName.Equals("Unknown", StringComparison.OrdinalIgnoreCase))
-            {
-                analyticResultDto.Confidence = 0m;
-            }
-
             var resultObject = new AnalyticResultAfterAnalysisDto
             {
                 StageName = stageName,
